@@ -70,45 +70,98 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff
 #arBg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(30,60,30,.9) 0%,transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(20,40,20,.8) 0%,transparent 50%),linear-gradient(170deg,#1a3320,#0d2418,#0a1e12);display:none;}
 #arBg.on{display:block;}
 #arBg::before{content:'🌿🌱🍃🌿🌱🍃';position:absolute;bottom:0;left:0;right:0;font-size:32px;letter-spacing:8px;opacity:.2;filter:blur(1px);padding:0 10px;}
+
 .ar-top{position:absolute;top:0;left:0;right:0;padding:14px 14px 20px;background:linear-gradient(to bottom,rgba(0,0,0,.65),transparent);display:flex;align-items:center;gap:10px;z-index:20;}
 .ar-title{font-family:'Fredoka One',cursive;font-size:17px;flex:1;text-shadow:0 2px 6px rgba(0,0,0,.6);}
 .ar-pill{background:rgba(0,0,0,.4);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:800;}
 
-/* Chiot AR */
-#arPup{position:absolute;display:none;flex-direction:column;align-items:center;z-index:15;cursor:pointer;}
-#arPup.on{display:flex;}
+/* ── Boussole gyro en bas ── */
+#compass{
+  position:absolute;bottom:100px;left:50%;transform:translateX(-50%);
+  width:220px;height:28px;z-index:20;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.15);border-radius:14px;
+  overflow:hidden;
+}
+#compassTrack{
+  position:absolute;top:0;height:100%;
+  display:flex;align-items:center;
+  transition:transform .05s linear;
+  white-space:nowrap;
+}
+.compass-tick{
+  display:inline-flex;flex-direction:column;align-items:center;
+  width:30px;font-size:9px;color:rgba(255,255,255,.5);
+  padding-top:3px;flex-shrink:0;
+}
+.compass-tick.cardinal{color:var(--gold);font-weight:900;font-size:10px;}
+.compass-tick-line{width:1px;height:6px;background:rgba(255,255,255,.3);margin-bottom:2px;}
+.compass-tick.cardinal .compass-tick-line{background:var(--gold);height:9px;}
+#compassCursor{
+  position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);
+  width:2px;background:var(--orange);
+  box-shadow:0 0 6px var(--orange);
+  pointer-events:none;
+}
+#compassCursor::after{
+  content:'▼';position:absolute;top:-1px;left:50%;
+  transform:translateX(-50%);
+  font-size:8px;color:var(--orange);
+}
+
+/* ── Indicateur direction chiot ── */
+#dirArrow{
+  position:absolute;top:70px;left:50%;transform:translateX(-50%);
+  z-index:20;display:none;
+  flex-direction:column;align-items:center;gap:4px;
+}
+#dirArrow.on{display:flex;}
+#dirArrowIcon{
+  font-size:28px;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));
+  transition:transform .1s;
+}
+#dirArrowLabel{
+  font-size:11px;font-weight:800;
+  background:rgba(0,0,0,.5);padding:3px 10px;border-radius:10px;
+  backdrop-filter:blur(6px);
+}
+
+/* ── Chiots AR (plusieurs à la fois) ── */
+.ar-pup-el{
+  position:absolute;display:flex;flex-direction:column;align-items:center;
+  z-index:15;cursor:pointer;
+  transition:opacity .3s;
+  transform:translateX(-50%);
+}
 .pup-bubble{background:#fff;border-radius:16px;padding:6px 14px;font-size:11px;font-weight:900;color:#222;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.35);margin-bottom:5px;position:relative;}
 .pup-bubble::after{content:'';position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#fff;border-bottom:none;}
-#pupSvgWrap{width:100px;height:82px;display:block;animation:dogBob .55s ease-in-out infinite alternate;transform-origin:50% 80%;}
+.pup-dog-svg{display:block;animation:dogBob .55s ease-in-out infinite alternate;transform-origin:50% 80%;}
 @keyframes dogBob{from{transform:rotate(-9deg)translateY(0)}to{transform:rotate(9deg)translateY(-8px)}}
 .pup-shadow{width:60px;height:14px;background:rgba(0,0,0,.3);border-radius:50%;filter:blur(4px);animation:shadowBob .55s ease-in-out infinite alternate;}
 @keyframes shadowBob{from{transform:scaleX(.75);opacity:.4}to{transform:scaleX(1.1);opacity:.2}}
 .pup-ring{position:absolute;border:3px solid var(--teal);border-radius:50%;width:90px;height:90px;top:50%;left:50%;transform:translate(-50%,-50%);animation:ringOut 1.8s ease-out infinite;pointer-events:none;}
 @keyframes ringOut{0%{transform:translate(-50%,-50%)scale(.7);opacity:.9}100%{transform:translate(-50%,-50%)scale(2.8);opacity:0}}
 
-/* Radar */
+/* ── Radar ── */
 #radar{position:absolute;top:74px;right:14px;width:80px;height:80px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);border:2px solid rgba(78,205,196,.4);overflow:hidden;z-index:20;}
 .r-sweep{position:absolute;top:50%;left:50%;width:50%;height:2px;background:linear-gradient(90deg,rgba(78,205,196,.9),transparent);transform-origin:left center;animation:sweep 3s linear infinite;}
 @keyframes sweep{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 .r-center{position:absolute;top:50%;left:50%;width:6px;height:6px;border-radius:50%;background:var(--teal);transform:translate(-50%,-50%);box-shadow:0 0 8px var(--teal);}
 .r-ring{position:absolute;border:1px solid rgba(78,205,196,.2);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
-#radarBlip{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 7px var(--gold);transform:translate(-50%,-50%);animation:blip 1s ease-in-out infinite;display:none;}
-#radarBlip.on{display:block;}
+.r-blip{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);transform:translate(-50%,-50%);animation:blip 1s ease-in-out infinite;}
 @keyframes blip{0%,100%{opacity:1}50%{opacity:.3}}
+#radarPlayer{position:absolute;top:50%;left:50%;width:6px;height:6px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 6px #fff;}
 
-/* Proximité */
-#proxBar{position:absolute;bottom:130px;left:20px;right:20px;z-index:20;display:none;}
-#proxBar.on{display:block;}
-.prox-label{font-size:12px;font-weight:800;text-align:center;margin-bottom:7px;text-shadow:0 2px 6px rgba(0,0,0,.7);}
-.prox-track{height:10px;background:rgba(255,255,255,.18);border-radius:5px;overflow:hidden;}
-.prox-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:5px;transition:width .5s ease;box-shadow:0 0 10px rgba(78,205,196,.6);}
-
-/* Boutons AR */
+/* ── Bouton attraper ── */
 #catchBtn{position:absolute;bottom:44px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--green),var(--teal));border:none;border-radius:26px;padding:18px 52px;font-family:'Fredoka One',cursive;font-size:22px;color:#fff;cursor:pointer;white-space:nowrap;box-shadow:0 8px 32px rgba(6,214,160,.5);animation:catchPulse 1.1s ease-in-out infinite;z-index:20;display:none;}
 #catchBtn.on{display:block;}
 @keyframes catchPulse{0%,100%{transform:translateX(-50%)scale(1)}50%{transform:translateX(-50%)scale(1.06)}}
-#spawnBtn{position:absolute;bottom:44px;right:16px;background:rgba(0,0,0,.45);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:12px 16px;font-family:'Fredoka One',cursive;font-size:14px;color:#fff;cursor:pointer;z-index:20;}
 #arBackBtn{position:absolute;bottom:44px;left:16px;background:rgba(0,0,0,.45);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:12px 16px;font-size:20px;cursor:pointer;z-index:20;}
+
+/* ── Message gyro ── */
+#gyroMsg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:25;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:20px 24px;font-size:14px;color:#fff;text-align:center;line-height:1.7;max-width:280px;display:none;}
+#gyroMsg.on{display:block;}
 
 /* ════ MODAL QR ════ */
 #modalQR{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;}
@@ -275,30 +328,44 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff
 <div class="screen" id="sAR">
   <video id="arVideo" autoplay playsinline muted></video>
   <div id="arBg"></div>
+
+  <!-- HUD haut -->
   <div class="ar-top">
     <button class="icon-btn" style="background:rgba(0,0,0,.4)" onclick="stopHunt()">←</button>
     <span class="ar-title">🐾 Mode Chasse</span>
     <span class="ar-pill" id="arScore">0/12</span>
   </div>
+
+  <!-- Radar miniature -->
   <div id="radar">
     <div class="r-ring" style="width:60%;height:60%"></div>
     <div class="r-ring" style="width:30%;height:30%"></div>
-    <div class="r-sweep"></div><div class="r-center"></div>
-    <div id="radarBlip"></div>
+    <div class="r-sweep"></div>
+    <div class="r-center"></div>
+    <div id="radarPlayer"></div>
+    <!-- les blips sont injectés dynamiquement -->
   </div>
-  <div id="arPup" onclick="tapPup()">
-    <div class="pup-bubble" id="pupLabel">Chiot</div>
-    <div id="pupSvgWrap"></div>
-    <div class="pup-shadow"></div>
-    <div class="pup-ring"></div>
+
+  <!-- Flèche directionnelle vers le chiot le plus proche -->
+  <div id="dirArrow">
+    <div id="dirArrowIcon">➡️</div>
+    <div id="dirArrowLabel">Tourne-toi !</div>
   </div>
-  <div id="proxBar">
-    <div class="prox-label" id="proxLabel">🐾 Approche-toi...</div>
-    <div class="prox-track"><div class="prox-fill" id="proxFill" style="width:0%"></div></div>
+
+  <!-- Les chiots AR sont injectés ici par JS -->
+
+  <!-- Boussole gyroscopique -->
+  <div id="compass">
+    <div id="compassTrack"></div>
+    <div id="compassCursor"></div>
   </div>
+
+  <!-- Bouton attraper -->
   <button id="catchBtn" onclick="openQR()">✋ Attraper !</button>
   <button id="arBackBtn" onclick="stopHunt()">🏠</button>
-  <button id="spawnBtn" onclick="spawnPup()">Faire apparaître</button>
+
+  <!-- Message si pas de gyroscope -->
+  <div id="gyroMsg"></div>
 </div>
 
 <!-- ════ ④ MODAL QR ════ -->
@@ -354,8 +421,13 @@ function dalSVG(idx, w, h, cls='', anim=''){
   return `<svg viewBox="0 0 120 100" width="${w}" height="${h}" class="${cls}" style="${anim}"><use href="#dal-body"/><use href="#sp${si}"/></svg>`;
 }
 
-let collected=new Set(), startTime=Date.now(), activePup=null, pendingPup=null;
-let proxTimer=null, proxVal=0, alertTimer=null, camStream=null;
+let collected=new Set(), startTime=Date.now(), pendingPup=null;
+let alertTimer=null, camStream=null;
+// Gyro
+let heading=0, gyroActive=false, arLoop=null;
+// Chiots dans l'espace
+const PUP_ANGLES=[0,30,60,90,120,150,180,210,240,270,300,330];
+let arPups={}, activePupId=null;
 
 function save(){try{localStorage.setItem('dal4_c',JSON.stringify([...collected]));localStorage.setItem('dal4_t',''+startTime);}catch(e){}}
 function load(){try{const c=localStorage.getItem('dal4_c'),t=localStorage.getItem('dal4_t');if(c)collected=new Set(JSON.parse(c).map(Number));if(t)startTime=parseInt(t);}catch(e){}}
@@ -376,135 +448,215 @@ function buildGrid(){
     const div=document.createElement('div');
     div.className='card '+(ok?'caught':'locked');
     div.innerHTML=
-      `<div class="card-dog">${dalSVG(p.id-1, 74, 60, ok?'':'', ok?'':'filter:grayscale(1) opacity(.25)')}</div>`+
+      `<div class="card-dog">${dalSVG(p.id-1,74,60,'',ok?'':'filter:grayscale(1) opacity(.25)')}</div>`+
       `<div class="card-name">${ok?p.name:'???'}</div>`+
       `<div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
     grid.appendChild(div);
   });
 }
 
-async function goHunt(){
-  show('sAR');
-  $('arScore').textContent=collected.size+'/12';
-  showCamStatus('⏳ Activation de la caméra...');
+/* ════ GYROSCOPE ════ */
+function startGyro(){
+  if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
+    DeviceOrientationEvent.requestPermission()
+      .then(s=>{ if(s==='granted') listenGyro(); else startSimGyro(); })
+      .catch(startSimGyro);
+  } else if(typeof DeviceOrientationEvent!=='undefined'){
+    listenGyro();
+  } else { startSimGyro(); }
+}
+function listenGyro(){
+  gyroActive=true;
+  const handler=e=>{
+    let h;
+    if(e.webkitCompassHeading!==undefined) h=e.webkitCompassHeading;
+    else if(e.absolute && e.alpha!==null) h=360-(e.alpha||0);
+    else h=360-(e.alpha||0);
+    heading=((h%360)+360)%360;
+  };
+  window.addEventListener('deviceorientationabsolute',handler,true);
+  window.addEventListener('deviceorientation',handler,true);
+}
+function startSimGyro(){
+  gyroActive=false;
+  // Rotation automatique douce si pas de gyro
+  let t=0;
+  const simId=setInterval(()=>{ if(!$('sAR').classList.contains('on')){clearInterval(simId);return;} t+=0.5; heading=(heading+0.5)%360; },50);
+  showGyroMsg('📱 Gyroscope non détecté<br><small>Rotation automatique simulée</small>',3000);
+}
+function stopGyro(){
+  window.removeEventListener('deviceorientationabsolute',()=>{},true);
+  window.removeEventListener('deviceorientation',()=>{},true);
+}
+function showGyroMsg(html,ms){
+  const m=$('gyroMsg');m.innerHTML=html;m.classList.add('on');
+  if(ms) setTimeout(()=>m.classList.remove('on'),ms);
+}
 
-  // Vérif support API
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    showCamStatus('📵 Caméra non supportée sur ce navigateur.<br>Mode forêt activé 🌿');
-    $('arBg').classList.add('on');
-    spawnPup(); scheduleAlert();
-    return;
+/* ════ BOUSSOLE ════ */
+function buildCompass(){
+  const track=$('compassTrack'); track.innerHTML='';
+  const cards={0:'N',90:'E',180:'S',270:'O'};
+  for(let rep=0;rep<3;rep++){
+    for(let d=0;d<360;d+=10){
+      const t=document.createElement('div');
+      t.className='compass-tick'+(cards[d]?' cardinal':'');
+      t.innerHTML='<div class="compass-tick-line"></div>'+(cards[d]||(d%30===0?d+'°':'·'));
+      track.appendChild(t);
+    }
+  }
+}
+function updateCompass(){
+  const pxPerDeg=30/10, totalOneTour=36*30;
+  const offset=-(heading*pxPerDeg)+110+totalOneTour;
+  $('compassTrack').style.transform=`translateX(${offset}px)`;
+}
+
+/* ════ CHIOTS SPATIAUX ════ */
+function spawnAllPups(){
+  document.querySelectorAll('.ar-pup-el').forEach(e=>e.remove());
+  document.querySelectorAll('.r-blip').forEach(e=>e.remove());
+  arPups={}; activePupId=null;
+  $('catchBtn').classList.remove('on');
+  $('dirArrow').classList.remove('on');
+
+  PUPS.filter(p=>!collected.has(p.id)).forEach(p=>{
+    const angle=PUP_ANGLES[p.id-1];
+    const vert=30+((p.id*7)%35);
+    const el=document.createElement('div');
+    el.className='ar-pup-el'; el.id='arp'+p.id;
+    el.style.top=vert+'%'; el.style.display='none';
+    el.innerHTML=
+      `<div class="pup-bubble">${p.name} #${String(p.id).padStart(2,'0')}</div>`+
+      `<div class="pup-dog-svg">${dalSVG(p.id-1,100,82)}</div>`+
+      `<div class="pup-shadow"></div><div class="pup-ring"></div>`;
+    el.addEventListener('click',()=>tryCapture(p.id));
+    $('sAR').appendChild(el);
+    arPups[p.id]={angle,vert,el};
+    // blip radar
+    const b=document.createElement('div');
+    b.className='r-blip'; b.id='rb'+p.id;
+    $('radar').appendChild(b);
+  });
+}
+
+function relAngle(a){ let d=a-heading; while(d>180)d-=360; while(d<-180)d+=360; return d; }
+const FOV=65, SW=window.innerWidth;
+
+function updateARFrame(){
+  if(!$('sAR').classList.contains('on')) return;
+  updateCompass();
+  let closestId=null, closestAbs=Infinity;
+
+  for(const [id,pup] of Object.entries(arPups)){
+    const diff=relAngle(pup.angle), abs=Math.abs(diff);
+    if(abs<FOV){
+      const sx=SW/2+(diff/FOV)*(SW/2);
+      pup.el.style.left=sx+'px'; pup.el.style.display='flex';
+      pup.el.style.opacity=String(0.4+(1-abs/FOV)*0.6);
+      const sc=0.6+(1-abs/FOV)*0.7;
+      const svg=pup.el.querySelector('.pup-dog-svg');
+      if(svg) svg.style.transform=`scale(${sc})`;
+      if(abs<closestAbs){closestAbs=abs;closestId=parseInt(id);}
+    } else {
+      pup.el.style.display='none';
+    }
+    // radar blip
+    const b=$('rb'+id);
+    if(b){ b.style.left=(50+relAngle(pup.angle)/180*38)+'%'; b.style.top=(25+(parseInt(id)*7%45))+'%'; }
   }
 
-  // Essai 1 : caméra arrière
-  let gotCam = false;
-  const attempts = [
-    {video:{facingMode:{exact:'environment'}}},
-    {video:{facingMode:'environment'}},
-    {video:{facingMode:{ideal:'environment'}, width:{ideal:1280}}},
-    {video:true}
-  ];
+  if(closestId && closestAbs<14){
+    activePupId=closestId;
+    $('catchBtn').classList.add('on');
+    $('dirArrow').classList.remove('on');
+  } else {
+    activePupId=null;
+    $('catchBtn').classList.remove('on');
+    updateDirArrow();
+  }
+}
 
-  for(const constraints of attempts){
-    try{
-      camStream = await navigator.mediaDevices.getUserMedia(constraints);
-      gotCam = true;
-      break;
-    }catch(e){
-      // Essai suivant
-      if(e.name==='NotAllowedError'){
-        showCamStatus('🔒 Permission caméra refusée.<br>Va dans <b>Paramètres Chrome → Autorisations → Caméra</b> et autorise ce site.<br><br>Mode forêt activé 🌿');
-        $('arBg').classList.add('on');
-        spawnPup(); scheduleAlert();
-        return;
-      }
+function updateDirArrow(){
+  const ids=Object.keys(arPups);
+  if(!ids.length){$('dirArrow').classList.remove('on');return;}
+  let best=null,bestD=Infinity;
+  for(const [id,pup] of Object.entries(arPups)){
+    const d=Math.abs(relAngle(pup.angle));
+    if(d<bestD){bestD=d;best={id:parseInt(id),pup};}
+  }
+  if(!best){$('dirArrow').classList.remove('on');return;}
+  const diff=relAngle(best.pup.angle);
+  const p=PUPS.find(x=>x.id===best.id);
+  $('dirArrowIcon').textContent=diff<-5?'⬅️':diff>5?'➡️':'⬆️';
+  $('dirArrowLabel').textContent=`${p.name} — ${diff<-5?'tourne à gauche':diff>5?'tourne à droite':'devant toi !'}`;
+  $('dirArrow').classList.add('on');
+}
+
+function tryCapture(id){if(id===activePupId)openQR(id);}
+
+/* ════ HUNT ════ */
+async function goHunt(){
+  show('sAR'); $('arScore').textContent=collected.size+'/12';
+  buildCompass();
+  showCamStatus('⏳ Activation de la caméra...');
+
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    $('arBg').classList.add('on'); hideCamStatus();
+  } else {
+    const tries=[
+      {video:{facingMode:{exact:'environment'}}},
+      {video:{facingMode:'environment'}},
+      {video:{facingMode:{ideal:'environment'},width:{ideal:1280}}},
+      {video:true}
+    ];
+    let got=false;
+    for(const c of tries){
+      try{ camStream=await navigator.mediaDevices.getUserMedia(c); got=true; break; }
+      catch(e){ if(e.name==='NotAllowedError'){showCamStatus('🔒 Permission caméra refusée<br>Mode forêt activé 🌿',4000);$('arBg').classList.add('on');break;} }
+    }
+    if(got){
+      const v=$('arVideo'); v.srcObject=camStream; v.classList.add('on');
+      try{await v.play();hideCamStatus();}
+      catch(e){v.oncanplay=()=>{v.play().catch(()=>{});hideCamStatus();v.oncanplay=null;};}
+    } else if(!$('arBg').classList.contains('on')){
+      $('arBg').classList.add('on'); hideCamStatus();
     }
   }
 
-  if(!gotCam){
-    showCamStatus('📵 Caméra inaccessible.<br>Mode forêt activé 🌿', 3000);
-    $('arBg').classList.add('on');
-    spawnPup(); scheduleAlert();
-    return;
-  }
-
-  // Caméra obtenue — attacher au <video>
-  const v = $('arVideo');
-  v.srcObject = camStream;
-  v.classList.add('on');
-
-  try{
-    await v.play();
-    hideCamStatus();
-  }catch(e){
-    // play() peut échouer sur certains Android, forcer avec événement
-    v.oncanplay = ()=>{ v.play().catch(()=>{}); hideCamStatus(); v.oncanplay=null; };
-  }
-
-  spawnPup();
+  startGyro();
+  spawnAllPups();
   scheduleAlert();
+  if(arLoop) clearInterval(arLoop);
+  arLoop=setInterval(updateARFrame,16);
 }
 
-function showCamStatus(msg, autohide=0){
-  let el = $('camStatus');
-  if(!el){
-    el = document.createElement('div');
-    el.id = 'camStatus';
-    el.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:25;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:20px 24px;font-size:14px;color:#fff;text-align:center;line-height:1.6;max-width:280px;pointer-events:none;';
-    $('sAR').appendChild(el);
-  }
-  el.innerHTML = msg;
-  el.style.display = 'block';
-  if(autohide) setTimeout(hideCamStatus, autohide);
-}
-function hideCamStatus(){ const el=$('camStatus'); if(el) el.style.display='none'; }
 function stopHuntClean(){
   if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
-  $('arVideo').classList.remove('on');$('arBg').classList.remove('on');
-  stopProx();removePup();activePup=null;
+  $('arVideo').classList.remove('on'); $('arBg').classList.remove('on');
+  stopGyro();
+  if(arLoop){clearInterval(arLoop);arLoop=null;}
+  document.querySelectorAll('.ar-pup-el').forEach(e=>e.remove());
+  document.querySelectorAll('.r-blip').forEach(e=>e.remove());
+  arPups={}; activePupId=null;
+  $('catchBtn').classList.remove('on'); $('dirArrow').classList.remove('on');
 }
 function stopHunt(){stopHuntClean();goHome();}
-function nextUncaught(){return PUPS.find(p=>!collected.has(p.id))||null;}
 
-function spawnPup(){
-  removePup();
-  const p=nextUncaught();if(!p)return;
-  activePup=p;
-  const x=12+Math.random()*56, y=18+Math.random()*38;
-  const el=$('arPup');
-  el.style.left=x+'%';el.style.top=y+'%';el.classList.add('on');
-  $('pupLabel').textContent=p.name+' #'+String(p.id).padStart(2,'0');
-  $('pupSvgWrap').innerHTML=dalSVG(p.id-1, 100, 82, '', 'animation:dogBob .55s ease-in-out infinite alternate;transform-origin:50% 80%');
-  const b=$('radarBlip');b.style.left=x+'%';b.style.top=y+'%';b.classList.add('on');
-  stopProx();proxVal=0;$('proxFill').style.width='0%';
-  $('proxBar').classList.remove('on');$('catchBtn').classList.remove('on');
-  startProx();
+function showCamStatus(msg,ms=0){
+  let el=$('camStatus');
+  if(!el){el=document.createElement('div');el.id='camStatus';el.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:25;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:20px 24px;font-size:14px;color:#fff;text-align:center;line-height:1.6;max-width:280px;pointer-events:none;';$('sAR').appendChild(el);}
+  el.innerHTML=msg; el.style.display='block';
+  if(ms) setTimeout(hideCamStatus,ms);
 }
-function removePup(){$('arPup').classList.remove('on');$('radarBlip').classList.remove('on');$('proxBar').classList.remove('on');$('catchBtn').classList.remove('on');}
+function hideCamStatus(){const el=$('camStatus');if(el)el.style.display='none';}
 
-function startProx(){
-  proxVal=0;
-  proxTimer=setInterval(()=>{
-    proxVal=Math.min(100,proxVal+1.4);
-    $('proxBar').classList.add('on');
-    $('proxFill').style.width=proxVal+'%';
-    const dist=Math.round((100-proxVal)/10);
-    if(dist<=0){$('proxLabel').textContent='🐾 À portée — prêt à attraper !';$('catchBtn').classList.add('on');}
-    else{$('proxLabel').textContent='🐾 '+dist+'m — Continue d\'avancer...';$('catchBtn').classList.remove('on');}
-    const sw=$('pupSvgWrap').querySelector('svg');
-    if(sw){const sc=1+(proxVal/100)*.65;sw.style.width=(100*sc)+'px';sw.style.height=(82*sc)+'px';}
-  },350);
-}
-function stopProx(){if(proxTimer){clearInterval(proxTimer);proxTimer=null;}}
-function tapPup(){proxVal=Math.min(100,proxVal+18);}
-
-function openQR(){
-  if(!activePup)return;
-  pendingPup=activePup;
-  $('qrDogWrap').innerHTML=dalSVG(pendingPup.id-1, 110, 90);
-  $('qrName').textContent=pendingPup.name+' #'+String(pendingPup.id).padStart(2,'0');
-  genQRDots(pendingPup.id);
-  $('modalQR').classList.add('on');
+function openQR(id){
+  const p=PUPS.find(x=>x.id===id); if(!p)return;
+  pendingPup=p;
+  $('qrDogWrap').innerHTML=dalSVG(p.id-1,110,90);
+  $('qrName').textContent=p.name+' #'+String(p.id).padStart(2,'0');
+  genQRDots(p.id); $('modalQR').classList.add('on');
 }
 function genQRDots(seed){
   const g=$('qrDots');g.innerHTML='';
@@ -513,12 +665,14 @@ function genQRDots(seed){
 }
 function doCapture(){
   if(!pendingPup)return;
-  const p=pendingPup;$('modalQR').classList.remove('on');pendingPup=null;
-  collected.add(p.id);save();
+  const p=pendingPup; $('modalQR').classList.remove('on'); pendingPup=null;
+  collected.add(p.id); save();
   $('arScore').textContent=collected.size+'/12';
-  showBurst(p.id-1);spawnPaws();vibrate([60,30,60,30,120]);
-  stopProx();removePup();activePup=null;
-  setTimeout(()=>{if(collected.size>=12){stopHuntClean();showWin();}else spawnPup();},1200);
+  showBurst(p.id-1); spawnPaws(); vibrate([60,30,60,30,120]);
+  const pd=arPups[p.id]; if(pd){pd.el.remove();delete arPups[p.id];}
+  const rb=$('rb'+p.id); if(rb)rb.remove();
+  activePupId=null; $('catchBtn').classList.remove('on');
+  if(collected.size>=12){stopHuntClean();showWin();}
 }
 
 function showBurst(idx){
@@ -562,7 +716,7 @@ function showWin(){
   vibrate([100,50,100,50,100,50,500]);
   show('sWin');
 }
-function reset(){collected=new Set();startTime=Date.now();save();activePup=null;pendingPup=null;goHome();}
+function reset(){collected=new Set();startTime=Date.now();save();pendingPup=null;goHome();}
 
 function drawStars(){
   const c=$('starCanvas');if(!c)return;
