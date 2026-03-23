@@ -5,32 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#12082b">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <title>101 Dalmatiens 🐾</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
   --bg:#12082b;--bg2:#1e1045;
   --orange:#ff6b35;--orange2:#ff9a3c;
   --teal:#4ecdc4;--gold:#ffd166;
-  --green:#06d6a0;--cream:#fdf6e3;
+  --green:#06d6a0;--red:#ef476f;--cream:#fdf6e3;
   --muted:rgba(255,255,255,0.45);
 }
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff;font-family:'Nunito',sans-serif;-webkit-font-smoothing:antialiased;}
-
 .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;}
 .screen.on{display:flex;}
 
-/* ════ HOME ════ */
+/* ══════════ HOME ══════════ */
 #sHome{background:linear-gradient(170deg,#12082b 0%,#1e1045 45%,#0c2a4a 100%);justify-content:center;padding:24px 24px 36px;}
 #starCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
-
 .home-hero{width:170px;height:138px;position:relative;z-index:1;margin-bottom:12px;animation:hFloat 3.5s ease-in-out infinite;}
 @keyframes hFloat{0%,100%{transform:translateY(0)rotate(-4deg)}50%{transform:translateY(-14px)rotate(4deg)}}
-
 .logo{font-family:'Fredoka One',cursive;font-size:40px;line-height:1.1;text-align:center;text-shadow:0 4px 24px rgba(255,107,53,.7);position:relative;z-index:1;margin-bottom:6px;}
 .logo em{color:var(--gold);font-style:normal;}
 .tagline{font-size:13px;letter-spacing:1.5px;color:var(--muted);margin-bottom:24px;position:relative;z-index:1;}
@@ -42,7 +40,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff
 .btn-hunt{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff;box-shadow:0 8px 28px rgba(255,107,53,.45);}
 .btn-coll{background:rgba(255,255,255,.07);color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.14);}
 
-/* ════ COLLECTION ════ */
+/* ══════════ COLLECTION ══════════ */
 #sColl{background:var(--cream);justify-content:flex-start;}
 .coll-head{width:100%;background:linear-gradient(135deg,var(--bg),var(--bg2));padding:18px 16px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 4px 20px rgba(0,0,0,.25);}
 .icon-btn{width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
@@ -54,7 +52,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--teal));border-radius:6px;transition:width .8s cubic-bezier(.34,1.56,.64,1);}
 .prog-lbl{font-size:11px;color:#888;text-align:right;margin-top:4px;}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-.card{background:#fff;border-radius:18px;padding:10px 8px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 3px 12px rgba(0,0,0,.09);border:2px solid transparent;position:relative;transition:all .4s cubic-bezier(.34,1.56,.64,1);}
+.card{background:#fff;border-radius:18px;padding:10px 8px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 3px 12px rgba(0,0,0,.09);border:2px solid transparent;position:relative;}
 .card.caught{border-color:var(--green);background:linear-gradient(135deg,#f0fff9,#fff);}
 .card.caught::after{content:'✓';position:absolute;top:6px;right:9px;font-size:11px;color:var(--green);font-weight:900;}
 .card-dog{width:74px;height:60px;}
@@ -63,107 +61,123 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff
 .card-num{font-size:9px;background:#f0f0f0;color:#999;padding:2px 8px;border-radius:10px;}
 .card.caught .card-num{background:rgba(6,214,160,.12);color:var(--green);}
 
-/* ════ AR ════ */
+/* ══════════ AR SCREEN ══════════ */
 #sAR{background:#000;justify-content:flex-start;overflow:hidden;}
-#arVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
-#arVideo.on{display:block;}
-#arBg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(30,60,30,.9) 0%,transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(20,40,20,.8) 0%,transparent 50%),linear-gradient(170deg,#1a3320,#0d2418,#0a1e12);display:none;}
-#arBg.on{display:block;}
-#arBg::before{content:'🌿🌱🍃🌿🌱🍃';position:absolute;bottom:0;left:0;right:0;font-size:32px;letter-spacing:8px;opacity:.2;filter:blur(1px);padding:0 10px;}
 
-.ar-top{position:absolute;top:0;left:0;right:0;padding:14px 14px 20px;background:linear-gradient(to bottom,rgba(0,0,0,.65),transparent);display:flex;align-items:center;gap:10px;z-index:20;}
+/* Caméra */
+#arVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+#arCanvas{position:absolute;inset:0;width:100%;height:100%;display:none;}
+
+/* HUD haut */
+.ar-top{position:absolute;top:0;left:0;right:0;padding:14px 14px 0;background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);display:flex;align-items:center;gap:10px;z-index:20;}
 .ar-title{font-family:'Fredoka One',cursive;font-size:17px;flex:1;text-shadow:0 2px 6px rgba(0,0,0,.6);}
 .ar-pill{background:rgba(0,0,0,.4);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:800;}
 
-/* ── Boussole gyro en bas ── */
-#compass{
-  position:absolute;bottom:100px;left:50%;transform:translateX(-50%);
-  width:220px;height:28px;z-index:20;
-  background:rgba(0,0,0,.45);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.15);border-radius:14px;
-  overflow:hidden;
+/* Viseur de scan central */
+#scanFrame{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-60%);
+  width:220px;height:220px;
+  z-index:18;pointer-events:none;
 }
-#compassTrack{
-  position:absolute;top:0;height:100%;
-  display:flex;align-items:center;
-  transition:transform .05s linear;
-  white-space:nowrap;
+.sf-corner{position:absolute;width:36px;height:36px;}
+.sf-corner.tl{top:0;left:0;border-top:3px solid rgba(255,255,255,.7);border-left:3px solid rgba(255,255,255,.7);border-radius:4px 0 0 0;}
+.sf-corner.tr{top:0;right:0;border-top:3px solid rgba(255,255,255,.7);border-right:3px solid rgba(255,255,255,.7);border-radius:0 4px 0 0;}
+.sf-corner.bl{bottom:0;left:0;border-bottom:3px solid rgba(255,255,255,.7);border-left:3px solid rgba(255,255,255,.7);border-radius:0 0 0 4px;}
+.sf-corner.br{bottom:0;right:0;border-bottom:3px solid rgba(255,255,255,.7);border-right:3px solid rgba(255,255,255,.7);border-radius:0 0 4px 0;}
+#scanLine{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent);box-shadow:0 0 8px var(--teal);animation:scanAnim 2s ease-in-out infinite;}
+@keyframes scanAnim{0%{top:4%}50%{top:92%}100%{top:4%}}
+
+/* Message de recherche */
+#searchHint{
+  position:absolute;bottom:160px;left:20px;right:20px;z-index:20;
+  text-align:center;
 }
-.compass-tick{
-  display:inline-flex;flex-direction:column;align-items:center;
-  width:30px;font-size:9px;color:rgba(255,255,255,.5);
-  padding-top:3px;flex-shrink:0;
+.hint-box{
+  display:inline-block;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.15);border-radius:16px;
+  padding:10px 20px;font-size:13px;font-weight:800;
+  line-height:1.4;
 }
-.compass-tick.cardinal{color:var(--gold);font-weight:900;font-size:10px;}
-.compass-tick-line{width:1px;height:6px;background:rgba(255,255,255,.3);margin-bottom:2px;}
-.compass-tick.cardinal .compass-tick-line{background:var(--gold);height:9px;}
-#compassCursor{
-  position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);
-  width:2px;background:var(--orange);
-  box-shadow:0 0 6px var(--orange);
+.hint-box .pup-target{
+  font-family:'Fredoka One',cursive;font-size:16px;
+  color:var(--gold);display:block;margin-bottom:2px;
+}
+
+/* Dalmatien AR superposé */
+#arDog{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-65%);
+  z-index:19;
+  display:none;
+  flex-direction:column;align-items:center;
   pointer-events:none;
 }
-#compassCursor::after{
-  content:'▼';position:absolute;top:-1px;left:50%;
-  transform:translateX(-50%);
-  font-size:8px;color:var(--orange);
+#arDog.on{display:flex;}
+#arDogSvg{
+  animation:dogBob .5s ease-in-out infinite alternate;
+  transform-origin:50% 85%;
+  filter:drop-shadow(0 12px 24px rgba(0,0,0,.5));
+  transition:width .15s, height .15s;
 }
+@keyframes dogBob{from{transform:rotate(-8deg)translateY(0)}to{transform:rotate(8deg)translateY(-10px)}}
+.ar-dog-shadow{
+  width:80px;height:16px;
+  background:rgba(0,0,0,.35);border-radius:50%;filter:blur(5px);
+  animation:shadowB .5s ease-in-out infinite alternate;
+}
+@keyframes shadowB{from{transform:scaleX(.7);opacity:.45}to{transform:scaleX(1.1);opacity:.2}}
+.ar-dog-ring{
+  position:absolute;border:3px solid var(--teal);border-radius:50%;
+  width:100px;height:100px;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:ringOut 1.8s ease-out infinite;pointer-events:none;
+}
+@keyframes ringOut{0%{transform:translate(-50%,-50%)scale(.6);opacity:.9}100%{transform:translate(-50%,-50%)scale(2.6);opacity:0}}
 
-/* ── Indicateur direction chiot ── */
-#dirArrow{
-  position:absolute;top:70px;left:50%;transform:translateX(-50%);
+/* Barre de proximité QR */
+#proxWrap{
+  position:absolute;bottom:160px;left:30px;right:30px;z-index:20;
+  display:none;flex-direction:column;gap:8px;
+}
+#proxWrap.on{display:flex;}
+#proxLbl{font-size:12px;font-weight:800;text-align:center;text-shadow:0 1px 4px rgba(0,0,0,.8);}
+#proxTrack{height:12px;background:rgba(255,255,255,.15);border-radius:6px;overflow:hidden;}
+#proxFill{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:6px;transition:width .2s ease;box-shadow:0 0 10px rgba(78,205,196,.5);}
+
+/* Bouton Attraper */
+#catchBtn{
+  position:absolute;bottom:50px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--green),var(--teal));
+  border:none;border-radius:26px;padding:18px 56px;
+  font-family:'Fredoka One',cursive;font-size:22px;color:#fff;
+  cursor:pointer;white-space:nowrap;
+  box-shadow:0 8px 32px rgba(6,214,160,.5);
+  animation:catchPulse 1.1s ease-in-out infinite;
   z-index:20;display:none;
-  flex-direction:column;align-items:center;gap:4px;
 }
-#dirArrow.on{display:flex;}
-#dirArrowIcon{
-  font-size:28px;
-  filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));
-  transition:transform .1s;
-}
-#dirArrowLabel{
-  font-size:11px;font-weight:800;
-  background:rgba(0,0,0,.5);padding:3px 10px;border-radius:10px;
-  backdrop-filter:blur(6px);
-}
-
-/* ── Chiots AR (plusieurs à la fois) ── */
-.ar-pup-el{
-  position:absolute;display:flex;flex-direction:column;align-items:center;
-  z-index:15;cursor:pointer;
-  transition:opacity .3s;
-  transform:translateX(-50%);
-}
-.pup-bubble{background:#fff;border-radius:16px;padding:6px 14px;font-size:11px;font-weight:900;color:#222;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.35);margin-bottom:5px;position:relative;}
-.pup-bubble::after{content:'';position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#fff;border-bottom:none;}
-.pup-dog-svg{display:block;animation:dogBob .55s ease-in-out infinite alternate;transform-origin:50% 80%;}
-@keyframes dogBob{from{transform:rotate(-9deg)translateY(0)}to{transform:rotate(9deg)translateY(-8px)}}
-.pup-shadow{width:60px;height:14px;background:rgba(0,0,0,.3);border-radius:50%;filter:blur(4px);animation:shadowBob .55s ease-in-out infinite alternate;}
-@keyframes shadowBob{from{transform:scaleX(.75);opacity:.4}to{transform:scaleX(1.1);opacity:.2}}
-.pup-ring{position:absolute;border:3px solid var(--teal);border-radius:50%;width:90px;height:90px;top:50%;left:50%;transform:translate(-50%,-50%);animation:ringOut 1.8s ease-out infinite;pointer-events:none;}
-@keyframes ringOut{0%{transform:translate(-50%,-50%)scale(.7);opacity:.9}100%{transform:translate(-50%,-50%)scale(2.8);opacity:0}}
-
-/* ── Radar ── */
-#radar{position:absolute;top:74px;right:14px;width:80px;height:80px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);border:2px solid rgba(78,205,196,.4);overflow:hidden;z-index:20;}
-.r-sweep{position:absolute;top:50%;left:50%;width:50%;height:2px;background:linear-gradient(90deg,rgba(78,205,196,.9),transparent);transform-origin:left center;animation:sweep 3s linear infinite;}
-@keyframes sweep{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.r-center{position:absolute;top:50%;left:50%;width:6px;height:6px;border-radius:50%;background:var(--teal);transform:translate(-50%,-50%);box-shadow:0 0 8px var(--teal);}
-.r-ring{position:absolute;border:1px solid rgba(78,205,196,.2);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
-.r-blip{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);transform:translate(-50%,-50%);animation:blip 1s ease-in-out infinite;}
-@keyframes blip{0%,100%{opacity:1}50%{opacity:.3}}
-#radarPlayer{position:absolute;top:50%;left:50%;width:6px;height:6px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 6px #fff;}
-
-/* ── Bouton attraper ── */
-#catchBtn{position:absolute;bottom:44px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--green),var(--teal));border:none;border-radius:26px;padding:18px 52px;font-family:'Fredoka One',cursive;font-size:22px;color:#fff;cursor:pointer;white-space:nowrap;box-shadow:0 8px 32px rgba(6,214,160,.5);animation:catchPulse 1.1s ease-in-out infinite;z-index:20;display:none;}
 #catchBtn.on{display:block;}
 @keyframes catchPulse{0%,100%{transform:translateX(-50%)scale(1)}50%{transform:translateX(-50%)scale(1.06)}}
-#arBackBtn{position:absolute;bottom:44px;left:16px;background:rgba(0,0,0,.45);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:12px 16px;font-size:20px;cursor:pointer;z-index:20;}
 
-/* ── Message gyro ── */
-#gyroMsg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:25;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:20px 24px;font-size:14px;color:#fff;text-align:center;line-height:1.7;max-width:280px;display:none;}
-#gyroMsg.on{display:block;}
+/* Bouton retour */
+#arBackBtn{
+  position:absolute;bottom:50px;left:16px;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.2);border-radius:16px;
+  padding:12px 16px;font-size:20px;cursor:pointer;z-index:20;
+}
 
-/* ════ MODAL QR ════ */
+/* Flash vert au scan */
+#scanFlash{
+  position:absolute;inset:0;z-index:25;
+  background:rgba(6,214,160,.25);
+  opacity:0;pointer-events:none;
+  transition:opacity .15s;
+}
+#scanFlash.on{opacity:1;}
+
+/* ══════════ MODAL QR ══════════ */
 #modalQR{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;}
 #modalQR.on{display:flex;}
 .qr-dog-wrap{width:110px;height:90px;animation:qrPop .6s cubic-bezier(.34,1.56,.64,1);}
@@ -178,20 +192,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff
 .qr-c.tl{top:0;left:0}.qr-c.tr{top:0;right:0}.qr-c.bl{bottom:0;left:0}
 .qr-dots-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:42px 6px 6px 42px;}
 .qd{border-radius:1px;}
-.qr-scan{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--green),transparent);box-shadow:0 0 10px var(--green);animation:qrScan 1.6s ease-in-out infinite;}
+.qr-scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--green),transparent);box-shadow:0 0 10px var(--green);animation:qrScan 1.6s ease-in-out infinite;}
 @keyframes qrScan{0%{top:8%}50%{top:88%}100%{top:8%}}
 .btn-capture{background:linear-gradient(135deg,var(--green),var(--teal));border:none;border-radius:22px;padding:18px 52px;font-family:'Fredoka One',cursive;font-size:22px;color:#fff;cursor:pointer;box-shadow:0 8px 28px rgba(6,214,160,.5);transition:transform .15s;}
 .btn-capture:active{transform:scale(.96);}
 
-/* ════ BURST ════ */
+/* ══════════ BURST ══════════ */
 #burst{position:fixed;inset:0;z-index:200;display:none;pointer-events:none;align-items:center;justify-content:center;}
 #burst.on{display:flex;}
-.burst-dog{width:130px;height:106px;animation:burstGo .9s cubic-bezier(.34,1.56,.64,1) forwards;}
+.burst-dog{animation:burstGo .9s cubic-bezier(.34,1.56,.64,1) forwards;}
 @keyframes burstGo{0%{transform:scale(.4);opacity:0;filter:blur(12px)}55%{transform:scale(1.35);opacity:1;filter:blur(0)}100%{transform:scale(1)translateY(-50px);opacity:0}}
 .burst-piece{position:absolute;font-size:22px;animation:piece linear forwards;}
 @keyframes piece{0%{transform:translate(0,0)scale(0);opacity:1}100%{transform:translate(var(--tx),var(--ty))scale(1);opacity:0}}
 
-/* ════ ALERTE ════ */
+/* ══════════ ALERTE ══════════ */
 #alertBanner{position:fixed;top:-110px;left:0;right:0;z-index:300;background:linear-gradient(135deg,#12082b,#1e1045);border-bottom:3px solid var(--gold);padding:12px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,.5);transition:top .45s cubic-bezier(.34,1.56,.64,1);cursor:pointer;}
 #alertBanner.show{top:0;}
 .alert-dog-wrap{width:54px;height:44px;animation:alertBob .5s ease-in-out infinite alternate;flex-shrink:0;}
@@ -202,7 +216,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff
 .alert-arr{font-size:22px;color:var(--gold);animation:arr .8s ease-in-out infinite;}
 @keyframes arr{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
 
-/* ════ WIN ════ */
+/* ══════════ WIN ══════════ */
 #sWin{background:linear-gradient(160deg,#12082b,#1e1045,#0c2a4a);justify-content:flex-start;padding:36px 24px 30px;gap:14px;overflow-y:auto;}
 .win-dogs-row{display:flex;justify-content:center;gap:4px;margin-bottom:4px;}
 .win-dog-sm{width:56px;height:46px;}
@@ -219,78 +233,64 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff
 .btn-replay:active{transform:scale(.96);}
 .paw-fx{position:fixed;pointer-events:none;z-index:250;font-size:22px;animation:pawFly 1s ease forwards;}
 @keyframes pawFly{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(.5)translateY(-30px)}}
+
+/* ══════════ PAGE QR CODES À IMPRIMER ══════════ */
+#sPrint{background:var(--cream);justify-content:flex-start;color:#222;overflow-y:auto;}
+.print-head{width:100%;background:linear-gradient(135deg,var(--bg),var(--bg2));padding:18px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.print-body{padding:16px;width:100%;}
+.print-intro{font-size:13px;color:#555;margin-bottom:16px;line-height:1.6;}
+.print-intro strong{color:var(--bg);}
+.qr-print-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.qr-print-card{background:#fff;border-radius:14px;padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 2px 10px rgba(0,0,0,.1);}
+.qr-print-card img{width:80px;height:80px;border-radius:6px;}
+.qr-print-name{font-size:9px;font-weight:800;color:#333;text-align:center;}
+.btn-print{width:100%;margin-top:16px;padding:16px;border-radius:18px;border:none;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff;font-family:'Fredoka One',cursive;font-size:17px;cursor:pointer;}
 </style>
 </head>
 <body>
 
-<!-- ═══════════ DALMATIEN SVG (une seule définition, réutilisée partout) ═══════════ -->
+<!-- ═══════ SVG DALMATIEN (défini une fois) ═══════ -->
 <svg width="0" height="0" style="position:absolute;overflow:hidden">
 <defs>
-
-<!-- Corps blanc sans taches -->
 <g id="dal-body">
-  <!-- Corps -->
   <ellipse cx="68" cy="64" rx="36" ry="24" fill="#f8f8f8" stroke="#e0e0e0" stroke-width="1.2"/>
-  <!-- Cou -->
   <ellipse cx="42" cy="54" rx="12" ry="10" fill="#f8f8f8" stroke="#e0e0e0" stroke-width="1"/>
-  <!-- Tête -->
   <circle cx="30" cy="42" r="21" fill="#f8f8f8" stroke="#e0e0e0" stroke-width="1.2"/>
-  <!-- Oreille gauche -->
   <ellipse cx="20" cy="26" rx="9" ry="13" fill="#e8cfc0" stroke="#d4b8a8" stroke-width="1" transform="rotate(-12 20 26)"/>
-  <!-- Oreille droite -->
   <ellipse cx="42" cy="24" rx="8" ry="12" fill="#e8cfc0" stroke="#d4b8a8" stroke-width="1" transform="rotate(10 42 24)"/>
-  <!-- Museau -->
   <ellipse cx="14" cy="50" rx="11" ry="8" fill="#f0ddd0" stroke="#e0c8b8" stroke-width="1"/>
-  <!-- Nez -->
   <ellipse cx="11" cy="46" rx="4.5" ry="3.5" fill="#1a1a1a"/>
   <ellipse cx="10" cy="45" rx="1.5" ry="1" fill="rgba(255,255,255,.4)"/>
-  <!-- Bouche -->
   <path d="M11 50 Q14 54 17 50" stroke="#c0a090" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-  <!-- Oeil -->
   <circle cx="25" cy="38" r="6" fill="#fff" stroke="#e0e0e0" stroke-width=".8"/>
   <circle cx="25" cy="38" r="3.8" fill="#2a1408"/>
   <circle cx="26.5" cy="36.5" r="1.4" fill="#fff"/>
-  <circle cx="24.5" cy="39.5" r=".6" fill="rgba(255,255,255,.5)"/>
-  <!-- Sourcil -->
   <path d="M20 33 Q25 31 30 33" stroke="#c0a090" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-  <!-- Pattes avant -->
   <rect x="38" y="78" width="11" height="19" rx="5.5" fill="#f8f8f8" stroke="#e0e0e0" stroke-width="1"/>
   <rect x="56" y="80" width="11" height="17" rx="5.5" fill="#f8f8f8" stroke="#e0e0e0" stroke-width="1"/>
-  <!-- Pattes arrière -->
   <rect x="76" y="78" width="11" height="17" rx="5.5" fill="#f8f8f8" stroke="#e0e0e0" stroke-width="1"/>
   <rect x="92" y="76" width="11" height="16" rx="5.5" fill="#f8f8f8" stroke="#e0e0e0" stroke-width="1"/>
-  <!-- Petits doigts -->
-  <ellipse cx="43" cy="97" rx="4" ry="2" fill="#f0d8c8"/>
-  <ellipse cx="61" cy="97" rx="4" ry="2" fill="#f0d8c8"/>
-  <ellipse cx="81" cy="95" rx="4" ry="2" fill="#f0d8c8"/>
-  <ellipse cx="97" cy="92" rx="4" ry="2" fill="#f0d8c8"/>
-  <!-- Queue -->
   <path d="M102 58 Q118 38 114 22" stroke="#f8f8f8" stroke-width="8" fill="none" stroke-linecap="round"/>
   <path d="M102 58 Q118 38 114 22" stroke="#e0e0e0" stroke-width="8" fill="none" stroke-linecap="round" opacity=".5"/>
-  <!-- Collier rouge -->
   <rect x="22" y="58" width="28" height="7" rx="3.5" fill="#e63946"/>
   <rect x="32" y="63" width="8" height="6" rx="2.5" fill="#ffd700"/>
-  <circle cx="36" cy="67" r="1.5" fill="#b8960c"/>
 </g>
-
-<!-- 12 patterns de taches, chacun unique -->
-<g id="sp0"><circle cx="72" cy="54" r="7" fill="#1a1a1a"/><circle cx="88" cy="67" r="5.5" fill="#1a1a1a"/><circle cx="56" cy="70" r="4.5" fill="#1a1a1a"/><circle cx="97" cy="56" r="4" fill="#1a1a1a"/><circle cx="38" cy="33" r="3.5" fill="#1a1a1a"/><circle cx="80" cy="82" r="3" fill="#1a1a1a"/><ellipse cx="62" cy="80" rx="5" ry="3.5" fill="#1a1a1a"/></g>
-<g id="sp1"><circle cx="68" cy="52" r="8" fill="#1a1a1a"/><circle cx="86" cy="63" r="5" fill="#1a1a1a"/><circle cx="50" cy="72" r="5" fill="#1a1a1a"/><circle cx="80" cy="80" r="3.5" fill="#1a1a1a"/><circle cx="40" cy="30" r="3" fill="#1a1a1a"/><ellipse cx="96" cy="50" rx="5.5" ry="4" fill="#1a1a1a"/><circle cx="65" cy="75" r="3" fill="#1a1a1a"/></g>
-<g id="sp2"><ellipse cx="74" cy="56" rx="9" ry="5.5" fill="#1a1a1a"/><circle cx="90" cy="71" r="4.5" fill="#1a1a1a"/><circle cx="58" cy="65" r="6" fill="#1a1a1a"/><circle cx="42" cy="36" r="4" fill="#1a1a1a"/><circle cx="95" cy="58" r="3.5" fill="#1a1a1a"/><circle cx="75" cy="82" r="3.5" fill="#1a1a1a"/></g>
-<g id="sp3"><circle cx="70" cy="48" r="7" fill="#1a1a1a"/><circle cx="85" cy="68" r="5.5" fill="#1a1a1a"/><ellipse cx="54" cy="72" rx="4.5" ry="6.5" fill="#1a1a1a"/><circle cx="98" cy="60" r="4" fill="#1a1a1a"/><circle cx="37" cy="34" r="3" fill="#1a1a1a"/><circle cx="86" cy="82" r="3.5" fill="#1a1a1a"/></g>
-<g id="sp4"><circle cx="76" cy="53" r="7.5" fill="#1a1a1a"/><circle cx="60" cy="67" r="5.5" fill="#1a1a1a"/><circle cx="91" cy="65" r="6" fill="#1a1a1a"/><circle cx="44" cy="31" r="4" fill="#1a1a1a"/><circle cx="79" cy="78" r="3.5" fill="#1a1a1a"/><ellipse cx="98" cy="48" rx="4" ry="3" fill="#1a1a1a"/></g>
-<g id="sp5"><ellipse cx="69" cy="58" rx="9.5" ry="5.5" fill="#1a1a1a"/><circle cx="87" cy="66" r="5" fill="#1a1a1a"/><circle cx="52" cy="61" r="4.5" fill="#1a1a1a"/><circle cx="95" cy="52" r="3.5" fill="#1a1a1a"/><circle cx="40" cy="38" r="3" fill="#1a1a1a"/><circle cx="77" cy="84" r="4.5" fill="#1a1a1a"/></g>
-<g id="sp6"><circle cx="66" cy="52" r="6.5" fill="#1a1a1a"/><circle cx="83" cy="72" r="6" fill="#1a1a1a"/><circle cx="56" cy="65" r="5" fill="#1a1a1a"/><ellipse cx="94" cy="58" rx="5.5" ry="3.5" fill="#1a1a1a"/><circle cx="42" cy="33" r="3.5" fill="#1a1a1a"/><circle cx="72" cy="80" r="3" fill="#1a1a1a"/></g>
-<g id="sp7"><circle cx="63" cy="56" r="7.5" fill="#1a1a1a"/><ellipse cx="83" cy="63" rx="6.5" ry="4" fill="#1a1a1a"/><circle cx="49" cy="70" r="4.5" fill="#1a1a1a"/><circle cx="90" cy="54" r="5" fill="#1a1a1a"/><circle cx="36" cy="36" r="3" fill="#1a1a1a"/><circle cx="79" cy="82" r="3.5" fill="#1a1a1a"/></g>
-<g id="sp8"><circle cx="70" cy="50" r="7" fill="#1a1a1a"/><circle cx="85" cy="67" r="5.5" fill="#1a1a1a"/><circle cx="55" cy="73" r="5.5" fill="#1a1a1a"/><circle cx="97" cy="62" r="3.5" fill="#1a1a1a"/><ellipse cx="41" cy="32" rx="4.5" ry="3" fill="#1a1a1a"/><circle cx="78" cy="83" r="3" fill="#1a1a1a"/></g>
-<g id="sp9"><ellipse cx="67" cy="55" rx="7.5" ry="5" fill="#1a1a1a"/><circle cx="88" cy="64" r="5.5" fill="#1a1a1a"/><circle cx="51" cy="67" r="5" fill="#1a1a1a"/><circle cx="93" cy="56" r="4" fill="#1a1a1a"/><circle cx="38" cy="35" r="3.5" fill="#1a1a1a"/><circle cx="74" cy="81" r="3" fill="#1a1a1a"/></g>
-<g id="sp10"><circle cx="71" cy="54" r="7.5" fill="#1a1a1a"/><circle cx="80" cy="69" r="6" fill="#1a1a1a"/><ellipse cx="57" cy="63" rx="5.5" ry="4" fill="#1a1a1a"/><circle cx="95" cy="57" r="4" fill="#1a1a1a"/><circle cx="40" cy="31" r="3" fill="#1a1a1a"/><circle cx="85" cy="79" r="3.5" fill="#1a1a1a"/></g>
-<g id="sp11"><circle cx="65" cy="51" r="6.5" fill="#1a1a1a"/><circle cx="89" cy="61" r="5.5" fill="#1a1a1a"/><circle cx="53" cy="71" r="6" fill="#1a1a1a"/><ellipse cx="93" cy="53" rx="5" ry="3.5" fill="#1a1a1a"/><circle cx="43" cy="34" r="3.5" fill="#1a1a1a"/><circle cx="76" cy="83" r="3" fill="#1a1a1a"/></g>
-
+<g id="sp0"><circle cx="72" cy="54" r="7" fill="#1a1a1a"/><circle cx="88" cy="67" r="5.5" fill="#1a1a1a"/><circle cx="56" cy="70" r="4.5" fill="#1a1a1a"/><circle cx="97" cy="56" r="4" fill="#1a1a1a"/><circle cx="38" cy="33" r="3.5" fill="#1a1a1a"/><circle cx="80" cy="82" r="3" fill="#1a1a1a"/></g>
+<g id="sp1"><circle cx="68" cy="52" r="8" fill="#1a1a1a"/><circle cx="86" cy="63" r="5" fill="#1a1a1a"/><circle cx="50" cy="72" r="5" fill="#1a1a1a"/><circle cx="80" cy="80" r="3.5" fill="#1a1a1a"/><circle cx="40" cy="30" r="3" fill="#1a1a1a"/><ellipse cx="96" cy="50" rx="5.5" ry="4" fill="#1a1a1a"/></g>
+<g id="sp2"><ellipse cx="74" cy="56" rx="9" ry="5.5" fill="#1a1a1a"/><circle cx="90" cy="71" r="4.5" fill="#1a1a1a"/><circle cx="58" cy="65" r="6" fill="#1a1a1a"/><circle cx="42" cy="36" r="4" fill="#1a1a1a"/><circle cx="75" cy="82" r="3.5" fill="#1a1a1a"/></g>
+<g id="sp3"><circle cx="70" cy="48" r="7" fill="#1a1a1a"/><circle cx="85" cy="68" r="5.5" fill="#1a1a1a"/><ellipse cx="54" cy="72" rx="4.5" ry="6.5" fill="#1a1a1a"/><circle cx="98" cy="60" r="4" fill="#1a1a1a"/><circle cx="86" cy="82" r="3.5" fill="#1a1a1a"/></g>
+<g id="sp4"><circle cx="76" cy="53" r="7.5" fill="#1a1a1a"/><circle cx="60" cy="67" r="5.5" fill="#1a1a1a"/><circle cx="91" cy="65" r="6" fill="#1a1a1a"/><circle cx="44" cy="31" r="4" fill="#1a1a1a"/><circle cx="79" cy="78" r="3.5" fill="#1a1a1a"/></g>
+<g id="sp5"><ellipse cx="69" cy="58" rx="9.5" ry="5.5" fill="#1a1a1a"/><circle cx="87" cy="66" r="5" fill="#1a1a1a"/><circle cx="52" cy="61" r="4.5" fill="#1a1a1a"/><circle cx="40" cy="38" r="3" fill="#1a1a1a"/><circle cx="77" cy="84" r="4.5" fill="#1a1a1a"/></g>
+<g id="sp6"><circle cx="66" cy="52" r="6.5" fill="#1a1a1a"/><circle cx="83" cy="72" r="6" fill="#1a1a1a"/><ellipse cx="94" cy="58" rx="5.5" ry="3.5" fill="#1a1a1a"/><circle cx="42" cy="33" r="3.5" fill="#1a1a1a"/><circle cx="72" cy="80" r="3" fill="#1a1a1a"/></g>
+<g id="sp7"><circle cx="63" cy="56" r="7.5" fill="#1a1a1a"/><ellipse cx="83" cy="63" rx="6.5" ry="4" fill="#1a1a1a"/><circle cx="49" cy="70" r="4.5" fill="#1a1a1a"/><circle cx="90" cy="54" r="5" fill="#1a1a1a"/><circle cx="79" cy="82" r="3.5" fill="#1a1a1a"/></g>
+<g id="sp8"><circle cx="70" cy="50" r="7" fill="#1a1a1a"/><circle cx="85" cy="67" r="5.5" fill="#1a1a1a"/><circle cx="55" cy="73" r="5.5" fill="#1a1a1a"/><circle cx="97" cy="62" r="3.5" fill="#1a1a1a"/><circle cx="78" cy="83" r="3" fill="#1a1a1a"/></g>
+<g id="sp9"><ellipse cx="67" cy="55" rx="7.5" ry="5" fill="#1a1a1a"/><circle cx="88" cy="64" r="5.5" fill="#1a1a1a"/><circle cx="51" cy="67" r="5" fill="#1a1a1a"/><circle cx="93" cy="56" r="4" fill="#1a1a1a"/><circle cx="74" cy="81" r="3" fill="#1a1a1a"/></g>
+<g id="sp10"><circle cx="71" cy="54" r="7.5" fill="#1a1a1a"/><circle cx="80" cy="69" r="6" fill="#1a1a1a"/><ellipse cx="57" cy="63" rx="5.5" ry="4" fill="#1a1a1a"/><circle cx="85" cy="79" r="3.5" fill="#1a1a1a"/></g>
+<g id="sp11"><circle cx="65" cy="51" r="6.5" fill="#1a1a1a"/><circle cx="89" cy="61" r="5.5" fill="#1a1a1a"/><circle cx="53" cy="71" r="6" fill="#1a1a1a"/><circle cx="93" cy="53" r="3.5" fill="#1a1a1a"/><circle cx="76" cy="83" r="3" fill="#1a1a1a"/></g>
 </defs>
 </svg>
 
-<!-- ════ ① HOME ════ -->
+<!-- ════════ HOME ════════ -->
 <div class="screen on" id="sHome">
   <canvas id="starCanvas"></canvas>
   <div class="home-hero">
@@ -299,16 +299,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff
     </svg>
   </div>
   <h1 class="logo">101<br><em>Dalmatiens</em></h1>
-  <p class="tagline">Attrape-les tous !</p>
+  <p class="tagline">Trouve-les tous !</p>
   <div class="score-box">
     <big id="homeScore">0 / 12</big>
     <span>chiots capturés</span>
   </div>
   <button class="btn btn-hunt" onclick="goHunt()">📷 Partir à la chasse</button>
   <button class="btn btn-coll" onclick="goColl()">📖 Ma collection</button>
+  <button class="btn btn-coll" onclick="goPrint()" style="margin-bottom:0">🖨️ QR codes à imprimer</button>
 </div>
 
-<!-- ════ ② COLLECTION ════ -->
+<!-- ════════ COLLECTION ════════ -->
 <div class="screen" id="sColl">
   <div class="coll-head">
     <button class="icon-btn" onclick="goHome()">←</button>
@@ -324,79 +325,105 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff
   </div>
 </div>
 
-<!-- ════ ③ AR ════ -->
+<!-- ════════ AR / CHASSE ════════ -->
 <div class="screen" id="sAR">
   <video id="arVideo" autoplay playsinline muted></video>
-  <div id="arBg"></div>
+  <canvas id="arCanvas"></canvas>
+
+  <!-- Flash vert au scan -->
+  <div id="scanFlash"></div>
 
   <!-- HUD haut -->
   <div class="ar-top">
     <button class="icon-btn" style="background:rgba(0,0,0,.4)" onclick="stopHunt()">←</button>
-    <span class="ar-title">🐾 Mode Chasse</span>
+    <span class="ar-title" id="arTitle">🐾 Cherche le chiot !</span>
     <span class="ar-pill" id="arScore">0/12</span>
   </div>
 
-  <!-- Radar miniature -->
-  <div id="radar">
-    <div class="r-ring" style="width:60%;height:60%"></div>
-    <div class="r-ring" style="width:30%;height:30%"></div>
-    <div class="r-sweep"></div>
-    <div class="r-center"></div>
-    <div id="radarPlayer"></div>
-    <!-- les blips sont injectés dynamiquement -->
+  <!-- Viseur central -->
+  <div id="scanFrame">
+    <div class="sf-corner tl"></div>
+    <div class="sf-corner tr"></div>
+    <div class="sf-corner bl"></div>
+    <div class="sf-corner br"></div>
+    <div id="scanLine"></div>
   </div>
 
-  <!-- Flèche directionnelle vers le chiot le plus proche -->
-  <div id="dirArrow">
-    <div id="dirArrowIcon">➡️</div>
-    <div id="dirArrowLabel">Tourne-toi !</div>
+  <!-- Dalmatien AR -->
+  <div id="arDog">
+    <svg id="arDogSvg" viewBox="0 0 120 100" width="140" height="114">
+      <use href="#dal-body"/><use id="arDogSpots" href="#sp0"/>
+    </svg>
+    <div class="ar-dog-shadow"></div>
+    <div class="ar-dog-ring"></div>
   </div>
 
-  <!-- Les chiots AR sont injectés ici par JS -->
+  <!-- Hint de recherche -->
+  <div id="searchHint">
+    <div class="hint-box">
+      <span class="pup-target" id="hintName">Pongo Jr</span>
+      Cherche le QR code caché dans la pièce 🔍
+    </div>
+  </div>
 
-  <!-- Boussole gyroscopique -->
-  <div id="compass">
-    <div id="compassTrack"></div>
-    <div id="compassCursor"></div>
+  <!-- Barre de proximité -->
+  <div id="proxWrap">
+    <div id="proxLbl">🐾 Continue à t'approcher...</div>
+    <div id="proxTrack"><div id="proxFill"></div></div>
   </div>
 
   <!-- Bouton attraper -->
-  <button id="catchBtn" onclick="openQR()">✋ Attraper !</button>
+  <button id="catchBtn" onclick="openCapture()">✋ Attraper !</button>
   <button id="arBackBtn" onclick="stopHunt()">🏠</button>
-
-  <!-- Message si pas de gyroscope -->
-  <div id="gyroMsg"></div>
 </div>
 
-<!-- ════ ④ MODAL QR ════ -->
+<!-- ════════ MODAL CAPTURE ════════ -->
 <div id="modalQR">
   <div class="qr-dog-wrap" id="qrDogWrap"></div>
   <div class="qr-name" id="qrName">Chiot #01</div>
-  <div class="qr-hint">QR Code virtuel détecté !<br>Confirme la capture 👇</div>
+  <div class="qr-hint">Tu l'as trouvé ! Confirme la capture 👇</div>
   <div class="qr-box">
     <div class="qr-inner">
       <div class="qr-c tl"></div><div class="qr-c tr"></div><div class="qr-c bl"></div>
       <div class="qr-dots-grid" id="qrDots"></div>
     </div>
-    <div class="qr-scan"></div>
+    <div class="qr-scan-line"></div>
   </div>
   <button class="btn-capture" onclick="doCapture()">🐾 Capturer !</button>
 </div>
 
-<!-- ════ ⑤ BURST ════ -->
+<!-- ════════ BURST ════════ -->
 <div id="burst"></div>
 
-<!-- ════ ⑥ ALERTE ════ -->
+<!-- ════════ ALERTE ════════ -->
 <div id="alertBanner" onclick="onAlert()">
   <div class="alert-dog-wrap" id="alertDogWrap"></div>
   <div class="alert-txt">
-    <div class="alert-h" id="alertH">Un dalmatien à proximité !</div>
-    <div class="alert-s" id="alertS">Tap pour lancer la chasse →</div>
+    <div class="alert-h" id="alertH">Un dalmatien à trouver !</div>
+    <div class="alert-s" id="alertS">Cherche le QR code →</div>
   </div>
   <div class="alert-arr">›</div>
 </div>
 
-<!-- ════ ⑦ WIN ════ -->
+<!-- ════════ QR CODES À IMPRIMER ════════ -->
+<div class="screen" id="sPrint">
+  <div class="print-head">
+    <button class="icon-btn" onclick="goHome()">←</button>
+    <span class="coll-title" style="color:#fff">QR Codes à imprimer</span>
+  </div>
+  <div class="print-body">
+    <p class="print-intro">
+      <strong>Comment jouer :</strong><br>
+      1. Imprime cette page ou fais une capture d'écran<br>
+      2. Découpe et cache chaque QR code dans la pièce<br>
+      3. Les joueurs cherchent avec leur caméra !
+    </p>
+    <div class="qr-print-grid" id="printGrid"></div>
+    <button class="btn-print" onclick="window.print()">🖨️ Imprimer</button>
+  </div>
+</div>
+
+<!-- ════════ WIN ════════ -->
 <div class="screen" id="sWin">
   <div class="win-dogs-row" id="winDogsRow"></div>
   <h2 class="win-h">Tous les<br><em>Dalmatiens</em><br>capturés !</h2>
@@ -408,34 +435,52 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#fff
 
 <script>
 'use strict';
-const PUPS=[
-  {id:1,name:"Pongo Jr"},{id:2,name:"Perdita"},{id:3,name:"Lucky"},
-  {id:4,name:"Rolly"},{id:5,name:"Patch"},{id:6,name:"Penny"},
-  {id:7,name:"Cadpig"},{id:8,name:"Freckles"},{id:9,name:"Spotty"},
-  {id:10,name:"Dot"},{id:11,name:"Dipstick"},{id:12,name:"Two-Tone"}
+
+/* ══════════════════════════════
+   DONNÉES
+══════════════════════════════ */
+const PUPS = [
+  {id:1, name:"Pongo Jr"},{id:2, name:"Perdita"},{id:3, name:"Lucky"},
+  {id:4, name:"Rolly"},{id:5, name:"Patch"},{id:6, name:"Penny"},
+  {id:7, name:"Cadpig"},{id:8, name:"Freckles"},{id:9, name:"Spotty"},
+  {id:10, name:"Dot"},{id:11, name:"Dipstick"},{id:12, name:"Two-Tone"}
 ];
+const QR_PREFIX = 'DAL_';
 
-/* Génère un SVG dalmatien inline (string) */
-function dalSVG(idx, w, h, cls='', anim=''){
-  const si = Math.max(0, Math.min(11, idx));
-  return `<svg viewBox="0 0 120 100" width="${w}" height="${h}" class="${cls}" style="${anim}"><use href="#dal-body"/><use href="#sp${si}"/></svg>`;
-}
+/* ══════════════════════════════
+   STATE
+══════════════════════════════ */
+let collected  = new Set();
+let startTime  = Date.now();
+let pendingPup = null;
+let alertTimer = null;
+let camStream  = null;
+let scanLoop   = null;
+let proxVal    = 0;      // 0-100 : proximité du QR
+let scanPaused = false;  // pause après détection
+let activePupId = null;  // chiot actuellement visible (QR scanné)
 
-let collected=new Set(), startTime=Date.now(), pendingPup=null;
-let alertTimer=null, camStream=null;
-// Gyro
-let heading=0, gyroActive=false, arLoop=null;
-// Chiots dans l'espace
-const PUP_ANGLES=[0,30,60,90,120,150,180,210,240,270,300,330];
-let arPups={}, activePupId=null;
+/* ══════════════════════════════
+   PERSISTENCE
+══════════════════════════════ */
+function save(){try{localStorage.setItem('dal5_c',JSON.stringify([...collected]));localStorage.setItem('dal5_t',''+startTime);}catch(e){}}
+function load(){try{const c=localStorage.getItem('dal5_c'),t=localStorage.getItem('dal5_t');if(c)collected=new Set(JSON.parse(c).map(Number));if(t)startTime=parseInt(t);}catch(e){}}
 
-function save(){try{localStorage.setItem('dal4_c',JSON.stringify([...collected]));localStorage.setItem('dal4_t',''+startTime);}catch(e){}}
-function load(){try{const c=localStorage.getItem('dal4_c'),t=localStorage.getItem('dal4_t');if(c)collected=new Set(JSON.parse(c).map(Number));if(t)startTime=parseInt(t);}catch(e){}}
-const $=id=>document.getElementById(id);
+/* ══════════════════════════════
+   HELPERS
+══════════════════════════════ */
+const $ = id => document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');}
+function dalSVG(idx,w,h,style=''){return `<svg viewBox="0 0 120 100" width="${w}" height="${h}" style="${style}"><use href="#dal-body"/><use href="#sp${Math.min(11,idx)}"/></svg>`;}
 
+/* ══════════════════════════════
+   HOME
+══════════════════════════════ */
 function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=collected.size+' / 12';}
 
+/* ══════════════════════════════
+   COLLECTION
+══════════════════════════════ */
 function goColl(){buildGrid();show('sColl');}
 function buildGrid(){
   const n=collected.size;
@@ -447,237 +492,248 @@ function buildGrid(){
     const ok=collected.has(p.id);
     const div=document.createElement('div');
     div.className='card '+(ok?'caught':'locked');
-    div.innerHTML=
-      `<div class="card-dog">${dalSVG(p.id-1,74,60,'',ok?'':'filter:grayscale(1) opacity(.25)')}</div>`+
+    div.innerHTML=`<div class="card-dog">${dalSVG(p.id-1,74,60,ok?'':'filter:grayscale(1)opacity(.25)')}</div>`+
       `<div class="card-name">${ok?p.name:'???'}</div>`+
       `<div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
     grid.appendChild(div);
   });
 }
 
-/* ════ GYROSCOPE ════ */
-function startGyro(){
-  if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
-    DeviceOrientationEvent.requestPermission()
-      .then(s=>{ if(s==='granted') listenGyro(); else startSimGyro(); })
-      .catch(startSimGyro);
-  } else if(typeof DeviceOrientationEvent!=='undefined'){
-    listenGyro();
-  } else { startSimGyro(); }
-}
-function listenGyro(){
-  gyroActive=true;
-  const handler=e=>{
-    let h;
-    if(e.webkitCompassHeading!==undefined) h=e.webkitCompassHeading;
-    else if(e.absolute && e.alpha!==null) h=360-(e.alpha||0);
-    else h=360-(e.alpha||0);
-    heading=((h%360)+360)%360;
-  };
-  window.addEventListener('deviceorientationabsolute',handler,true);
-  window.addEventListener('deviceorientation',handler,true);
-}
-function startSimGyro(){
-  gyroActive=false;
-  // Rotation automatique douce si pas de gyro
-  let t=0;
-  const simId=setInterval(()=>{ if(!$('sAR').classList.contains('on')){clearInterval(simId);return;} t+=0.5; heading=(heading+0.5)%360; },50);
-  showGyroMsg('📱 Gyroscope non détecté<br><small>Rotation automatique simulée</small>',3000);
-}
-function stopGyro(){
-  window.removeEventListener('deviceorientationabsolute',()=>{},true);
-  window.removeEventListener('deviceorientation',()=>{},true);
-}
-function showGyroMsg(html,ms){
-  const m=$('gyroMsg');m.innerHTML=html;m.classList.add('on');
-  if(ms) setTimeout(()=>m.classList.remove('on'),ms);
-}
-
-/* ════ BOUSSOLE ════ */
-function buildCompass(){
-  const track=$('compassTrack'); track.innerHTML='';
-  const cards={0:'N',90:'E',180:'S',270:'O'};
-  for(let rep=0;rep<3;rep++){
-    for(let d=0;d<360;d+=10){
-      const t=document.createElement('div');
-      t.className='compass-tick'+(cards[d]?' cardinal':'');
-      t.innerHTML='<div class="compass-tick-line"></div>'+(cards[d]||(d%30===0?d+'°':'·'));
-      track.appendChild(t);
-    }
-  }
-}
-function updateCompass(){
-  const pxPerDeg=30/10, totalOneTour=36*30;
-  const offset=-(heading*pxPerDeg)+110+totalOneTour;
-  $('compassTrack').style.transform=`translateX(${offset}px)`;
-}
-
-/* ════ CHIOTS SPATIAUX ════ */
-function spawnAllPups(){
-  document.querySelectorAll('.ar-pup-el').forEach(e=>e.remove());
-  document.querySelectorAll('.r-blip').forEach(e=>e.remove());
-  arPups={}; activePupId=null;
-  $('catchBtn').classList.remove('on');
-  $('dirArrow').classList.remove('on');
-
-  PUPS.filter(p=>!collected.has(p.id)).forEach(p=>{
-    const angle=PUP_ANGLES[p.id-1];
-    const vert=30+((p.id*7)%35);
-    const el=document.createElement('div');
-    el.className='ar-pup-el'; el.id='arp'+p.id;
-    el.style.top=vert+'%'; el.style.display='none';
-    el.innerHTML=
-      `<div class="pup-bubble">${p.name} #${String(p.id).padStart(2,'0')}</div>`+
-      `<div class="pup-dog-svg">${dalSVG(p.id-1,100,82)}</div>`+
-      `<div class="pup-shadow"></div><div class="pup-ring"></div>`;
-    el.addEventListener('click',()=>tryCapture(p.id));
-    $('sAR').appendChild(el);
-    arPups[p.id]={angle,vert,el};
-    // blip radar
-    const b=document.createElement('div');
-    b.className='r-blip'; b.id='rb'+p.id;
-    $('radar').appendChild(b);
+/* ══════════════════════════════
+   PAGE QR À IMPRIMER
+══════════════════════════════ */
+function goPrint(){
+  const grid=$('printGrid');grid.innerHTML='';
+  PUPS.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='qr-print-card';
+    const data=encodeURIComponent(QR_PREFIX+p.id);
+    card.innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${data}&bgcolor=ffffff&color=000000&qzone=1" alt="QR ${p.id}">`+
+      `<div class="qr-print-name">${p.name}<br>#${String(p.id).padStart(2,'0')}</div>`;
+    grid.appendChild(card);
   });
+  show('sPrint');
 }
 
-function relAngle(a){ let d=a-heading; while(d>180)d-=360; while(d<-180)d+=360; return d; }
-const FOV=65, SW=window.innerWidth;
+/* ══════════════════════════════
+   CHASSE AR + SCAN QR
+══════════════════════════════ */
+function nextUncaught(){return PUPS.find(p=>!collected.has(p.id))||null;}
 
-function updateARFrame(){
-  if(!$('sAR').classList.contains('on')) return;
-  updateCompass();
-  let closestId=null, closestAbs=Infinity;
-
-  for(const [id,pup] of Object.entries(arPups)){
-    const diff=relAngle(pup.angle), abs=Math.abs(diff);
-    if(abs<FOV){
-      const sx=SW/2+(diff/FOV)*(SW/2);
-      pup.el.style.left=sx+'px'; pup.el.style.display='flex';
-      pup.el.style.opacity=String(0.4+(1-abs/FOV)*0.6);
-      const sc=0.6+(1-abs/FOV)*0.7;
-      const svg=pup.el.querySelector('.pup-dog-svg');
-      if(svg) svg.style.transform=`scale(${sc})`;
-      if(abs<closestAbs){closestAbs=abs;closestId=parseInt(id);}
-    } else {
-      pup.el.style.display='none';
-    }
-    // radar blip
-    const b=$('rb'+id);
-    if(b){ b.style.left=(50+relAngle(pup.angle)/180*38)+'%'; b.style.top=(25+(parseInt(id)*7%45))+'%'; }
-  }
-
-  if(closestId && closestAbs<14){
-    activePupId=closestId;
-    $('catchBtn').classList.add('on');
-    $('dirArrow').classList.remove('on');
-  } else {
-    activePupId=null;
-    $('catchBtn').classList.remove('on');
-    updateDirArrow();
+function updateHint(){
+  const p=nextUncaught();
+  if(p){
+    $('hintName').textContent=p.name+' #'+String(p.id).padStart(2,'0');
+    $('arTitle').textContent='🐾 Cherche le QR code !';
   }
 }
 
-function updateDirArrow(){
-  const ids=Object.keys(arPups);
-  if(!ids.length){$('dirArrow').classList.remove('on');return;}
-  let best=null,bestD=Infinity;
-  for(const [id,pup] of Object.entries(arPups)){
-    const d=Math.abs(relAngle(pup.angle));
-    if(d<bestD){bestD=d;best={id:parseInt(id),pup};}
-  }
-  if(!best){$('dirArrow').classList.remove('on');return;}
-  const diff=relAngle(best.pup.angle);
-  const p=PUPS.find(x=>x.id===best.id);
-  $('dirArrowIcon').textContent=diff<-5?'⬅️':diff>5?'➡️':'⬆️';
-  $('dirArrowLabel').textContent=`${p.name} — ${diff<-5?'tourne à gauche':diff>5?'tourne à droite':'devant toi !'}`;
-  $('dirArrow').classList.add('on');
-}
-
-function tryCapture(id){if(id===activePupId)openQR(id);}
-
-/* ════ HUNT ════ */
 async function goHunt(){
-  show('sAR'); $('arScore').textContent=collected.size+'/12';
-  buildCompass();
-  showCamStatus('⏳ Activation de la caméra...');
+  show('sAR');
+  $('arScore').textContent=collected.size+'/12';
+  updateHint();
+  hideARDog();
+  proxVal=0; activePupId=null; scanPaused=false;
 
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    $('arBg').classList.add('on'); hideCamStatus();
-  } else {
-    const tries=[
-      {video:{facingMode:{exact:'environment'}}},
-      {video:{facingMode:'environment'}},
-      {video:{facingMode:{ideal:'environment'},width:{ideal:1280}}},
-      {video:true}
-    ];
-    let got=false;
-    for(const c of tries){
-      try{ camStream=await navigator.mediaDevices.getUserMedia(c); got=true; break; }
-      catch(e){ if(e.name==='NotAllowedError'){showCamStatus('🔒 Permission caméra refusée<br>Mode forêt activé 🌿',4000);$('arBg').classList.add('on');break;} }
-    }
-    if(got){
-      const v=$('arVideo'); v.srcObject=camStream; v.classList.add('on');
-      try{await v.play();hideCamStatus();}
-      catch(e){v.oncanplay=()=>{v.play().catch(()=>{});hideCamStatus();v.oncanplay=null;};}
-    } else if(!$('arBg').classList.contains('on')){
-      $('arBg').classList.add('on'); hideCamStatus();
+  // Caméra
+  const tries=[
+    {video:{facingMode:{exact:'environment'},width:{ideal:1280},height:{ideal:720}}},
+    {video:{facingMode:'environment'}},
+    {video:{facingMode:{ideal:'environment'}}},
+    {video:true}
+  ];
+  let got=false;
+  for(const c of tries){
+    try{camStream=await navigator.mediaDevices.getUserMedia(c);got=true;break;}
+    catch(e){if(e.name==='NotAllowedError'){showMsg('🔒 Autorise la caméra dans Chrome\npuis relance la chasse.');return;}}
+  }
+  if(!got){showMsg('📵 Caméra inaccessible.');return;}
+
+  const v=$('arVideo');
+  v.srcObject=camStream;
+  try{await v.play();}catch(e){v.oncanplay=()=>{v.play().catch(()=>{});v.oncanplay=null;};}
+
+  // Boucle scan QR
+  if(scanLoop) cancelAnimationFrame(scanLoop);
+  const canvas=$('arCanvas');
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});
+
+  function tick(){
+    if(!$('sAR').classList.contains('on')){return;}
+    scanLoop=requestAnimationFrame(tick);
+    if(scanPaused||v.readyState<2) return;
+
+    canvas.width=v.videoWidth;
+    canvas.height=v.videoHeight;
+    ctx.drawImage(v,0,0);
+
+    const img=ctx.getImageData(0,0,canvas.width,canvas.height);
+    const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});
+    if(code && code.data.startsWith(QR_PREFIX)){
+      const id=parseInt(code.data.slice(QR_PREFIX.length));
+      if(!isNaN(id) && id>=1 && id<=12) handleQRDetected(id);
     }
   }
-
-  startGyro();
-  spawnAllPups();
+  scanLoop=requestAnimationFrame(tick);
   scheduleAlert();
-  if(arLoop) clearInterval(arLoop);
-  arLoop=setInterval(updateARFrame,16);
+}
+
+function handleQRDetected(id){
+  if(collected.has(id)){
+    // Déjà capturé — feedback léger
+    if(activePupId!==id) flashMsg('✓ Déjà capturé !',1200);
+    return;
+  }
+
+  if(activePupId===id){
+    // QR déjà détecté, on augmente la proximité
+    return;
+  }
+
+  // Nouveau QR détecté !
+  activePupId=id;
+  scanPaused=true;
+  proxVal=0;
+
+  const p=PUPS.find(x=>x.id===id);
+  $('arDogSpots').setAttribute('href','#sp'+(id-1));
+  $('arTitle').textContent=`🐾 ${p.name} trouvé !`;
+  showARDog(id);
+  flashGreen();
+  vibrate([60,40,120]);
+
+  // Proximité augmente sur 3 secondes
+  $('proxWrap').classList.add('on');
+  $('proxFill').style.width='0%';
+  $('proxLbl').textContent='🐾 Reste en face du QR code...';
+  $('catchBtn').classList.remove('on');
+
+  let pv=0;
+  const prox=setInterval(()=>{
+    pv=Math.min(100,pv+2.5);
+    $('proxFill').style.width=pv+'%';
+    // Chiot grossit
+    const sc=0.9+(pv/100)*0.6;
+    $('arDogSvg').style.width=(140*sc)+'px';
+    $('arDogSvg').style.height=(114*sc)+'px';
+
+    if(pv>=100){
+      clearInterval(prox);
+      $('proxLbl').textContent='🐾 Prêt à attraper !';
+      $('catchBtn').classList.add('on');
+      scanPaused=false;
+    }
+  },60);
+
+  // Si l'utilisateur bouge (QR disparaît), on reset après 2s
+  setTimeout(()=>{ scanPaused=false; },2200);
+}
+
+function showARDog(id){
+  $('searchHint').style.display='none';
+  $('arDog').classList.add('on');
+}
+function hideARDog(){
+  $('arDog').classList.remove('on');
+  $('searchHint').style.display='';
+  $('proxWrap').classList.remove('on');
+  $('catchBtn').classList.remove('on');
+  activePupId=null;
+  $('arDogSvg').style.width='140px';
+  $('arDogSvg').style.height='114px';
+}
+
+function flashGreen(){
+  const f=$('scanFlash');
+  f.classList.add('on');
+  setTimeout(()=>f.classList.remove('on'),300);
 }
 
 function stopHuntClean(){
+  if(scanLoop){cancelAnimationFrame(scanLoop);scanLoop=null;}
   if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
-  $('arVideo').classList.remove('on'); $('arBg').classList.remove('on');
-  stopGyro();
-  if(arLoop){clearInterval(arLoop);arLoop=null;}
-  document.querySelectorAll('.ar-pup-el').forEach(e=>e.remove());
-  document.querySelectorAll('.r-blip').forEach(e=>e.remove());
-  arPups={}; activePupId=null;
-  $('catchBtn').classList.remove('on'); $('dirArrow').classList.remove('on');
+  hideARDog();
+  $('arVideo').srcObject=null;
 }
 function stopHunt(){stopHuntClean();goHome();}
 
-function showCamStatus(msg,ms=0){
-  let el=$('camStatus');
-  if(!el){el=document.createElement('div');el.id='camStatus';el.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:25;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:20px 24px;font-size:14px;color:#fff;text-align:center;line-height:1.6;max-width:280px;pointer-events:none;';$('sAR').appendChild(el);}
-  el.innerHTML=msg; el.style.display='block';
-  if(ms) setTimeout(hideCamStatus,ms);
-}
-function hideCamStatus(){const el=$('camStatus');if(el)el.style.display='none';}
-
-function openQR(id){
-  const p=PUPS.find(x=>x.id===id); if(!p)return;
+/* ══════════════════════════════
+   CAPTURE
+══════════════════════════════ */
+function openCapture(){
+  if(!activePupId) return;
+  const p=PUPS.find(x=>x.id===activePupId);
   pendingPup=p;
   $('qrDogWrap').innerHTML=dalSVG(p.id-1,110,90);
   $('qrName').textContent=p.name+' #'+String(p.id).padStart(2,'0');
-  genQRDots(p.id); $('modalQR').classList.add('on');
+  genQRDots(p.id);
+  $('modalQR').classList.add('on');
 }
+
 function genQRDots(seed){
   const g=$('qrDots');g.innerHTML='';
   let r=seed*9301+49297;
   for(let i=0;i<35;i++){r=(r*9301+49297)%233280;const on=(r/233280)>0.42;const d=document.createElement('div');d.className='qd';d.style.background=on?'#111':'transparent';g.appendChild(d);}
 }
+
 function doCapture(){
-  if(!pendingPup)return;
-  const p=pendingPup; $('modalQR').classList.remove('on'); pendingPup=null;
-  collected.add(p.id); save();
+  if(!pendingPup) return;
+  const p=pendingPup;
+  $('modalQR').classList.remove('on');
+  pendingPup=null;
+
+  collected.add(p.id);
+  save();
   $('arScore').textContent=collected.size+'/12';
-  showBurst(p.id-1); spawnPaws(); vibrate([60,30,60,30,120]);
-  const pd=arPups[p.id]; if(pd){pd.el.remove();delete arPups[p.id];}
-  const rb=$('rb'+p.id); if(rb)rb.remove();
-  activePupId=null; $('catchBtn').classList.remove('on');
-  if(collected.size>=12){stopHuntClean();showWin();}
+
+  showBurst(p.id-1);
+  spawnPaws();
+  vibrate([60,30,60,30,120]);
+
+  hideARDog();
+  activePupId=null;
+  proxVal=0;
+
+  if(collected.size>=12){
+    stopHuntClean();
+    showWin();
+  } else {
+    // Prochaine cible
+    updateHint();
+    flashMsg('🎉 Capturé ! Cherche le suivant !',2500);
+  }
+}
+
+/* ══════════════════════════════
+   UI HELPERS
+══════════════════════════════ */
+function showMsg(txt){
+  let el=$('sysMsg');
+  if(!el){
+    el=document.createElement('div');el.id='sysMsg';
+    el.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:30;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:20px 24px;font-size:14px;color:#fff;text-align:center;line-height:1.6;max-width:280px;white-space:pre-line;';
+    $('sAR').appendChild(el);
+  }
+  el.textContent=txt; el.style.display='block';
+}
+
+let flashT=null;
+function flashMsg(txt,ms=2000){
+  let el=$('flashMsg');
+  if(!el){
+    el=document.createElement('div');el.id='flashMsg';
+    el.style.cssText='position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:400;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:10px 22px;font-size:13px;font-weight:800;color:#fff;white-space:nowrap;pointer-events:none;transition:opacity .3s;';
+    document.body.appendChild(el);
+  }
+  el.textContent=txt; el.style.opacity='1';
+  clearTimeout(flashT);
+  flashT=setTimeout(()=>el.style.opacity='0',ms);
 }
 
 function showBurst(idx){
   const b=$('burst');
-  b.innerHTML=dalSVG(idx, 130, 106, 'burst-dog');
+  b.innerHTML=dalSVG(idx,130,106,'');
+  b.querySelector('svg').classList.add('burst-dog');
   const pieces=['⭐','✨','💫','🌟','🐾','❤️'];
   for(let i=0;i<14;i++){
     const angle=(i/14)*360,r=70+Math.random()*70;
@@ -690,22 +746,29 @@ function showBurst(idx){
   b.classList.add('on');
   setTimeout(()=>{b.classList.remove('on');b.innerHTML='';},900);
 }
+
 function spawnPaws(){for(let i=0;i<6;i++)setTimeout(()=>{const p=document.createElement('div');p.className='paw-fx';p.textContent='🐾';p.style.cssText=`left:${15+Math.random()*70}%;top:${25+Math.random()*50}%;transform:rotate(${Math.random()*60-30}deg)`;document.body.appendChild(p);setTimeout(()=>p.remove(),1000);},i*140);}
 function vibrate(pat){try{if(navigator.vibrate)navigator.vibrate(pat);}catch(e){}}
 
+/* ══════════════════════════════
+   ALERTE
+══════════════════════════════ */
 function triggerAlert(){
   const unc=PUPS.filter(p=>!collected.has(p.id));if(!unc.length)return;
-  const p=unc[Math.floor(Math.random()*unc.length)];
-  $('alertDogWrap').innerHTML=dalSVG(p.id-1, 54, 44);
-  $('alertH').textContent=p.name+' est à proximité !';
-  $('alertS').textContent='Chiot #'+String(p.id).padStart(2,'0')+' — Tap pour chasser →';
+  const p=unc[0]; // toujours le prochain
+  $('alertDogWrap').innerHTML=dalSVG(p.id-1,54,44);
+  $('alertH').textContent=p.name+' attend d\'être trouvé !';
+  $('alertS').textContent='Cherche le QR code dans la pièce →';
   $('alertBanner').classList.add('show');
-  vibrate([100,50,100,50,200]);
-  setTimeout(()=>$('alertBanner').classList.remove('show'),5500);
+  vibrate([100,50,100]);
+  setTimeout(()=>$('alertBanner').classList.remove('show'),6000);
 }
 function onAlert(){$('alertBanner').classList.remove('show');if(!$('sAR').classList.contains('on'))goHunt();}
-function scheduleAlert(){clearTimeout(alertTimer);alertTimer=setTimeout(triggerAlert,3500);}
+function scheduleAlert(){clearTimeout(alertTimer);alertTimer=setTimeout(triggerAlert,4000);}
 
+/* ══════════════════════════════
+   WIN
+══════════════════════════════ */
 function showWin(){
   const row=$('winDogsRow');row.innerHTML='';
   for(let i=0;i<6;i++){const d=document.createElement('div');d.className='win-dog-sm';d.innerHTML=dalSVG(i,56,46);row.appendChild(d);}
@@ -716,8 +779,11 @@ function showWin(){
   vibrate([100,50,100,50,100,50,500]);
   show('sWin');
 }
-function reset(){collected=new Set();startTime=Date.now();save();pendingPup=null;goHome();}
+function reset(){collected=new Set();startTime=Date.now();save();pendingPup=null;activePupId=null;goHome();}
 
+/* ══════════════════════════════
+   ÉTOILES HOME
+══════════════════════════════ */
 function drawStars(){
   const c=$('starCanvas');if(!c)return;
   c.width=c.offsetWidth;c.height=c.offsetHeight;
@@ -725,7 +791,16 @@ function drawStars(){
   for(let i=0;i<80;i++){const x=Math.random()*c.width,y=Math.random()*c.height,r=.5+Math.random()*2;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+(0.1+Math.random()*.6)+')';ctx.fill();}
 }
 
-setInterval(()=>{if($('sHome').classList.contains('on')&&collected.size<12)triggerAlert();},14000);
+/* ══════════════════════════════
+   ALERTES PÉRIODIQUES
+══════════════════════════════ */
+setInterval(()=>{
+  if($('sHome').classList.contains('on')&&collected.size<12) triggerAlert();
+},15000);
+
+/* ══════════════════════════════
+   INIT
+══════════════════════════════ */
 load();drawStars();
 $('homeScore').textContent=collected.size+' / 12';
 setTimeout(()=>{if($('sHome').classList.contains('on')&&collected.size<12)triggerAlert();},5000);
