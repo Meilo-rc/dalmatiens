@@ -335,6 +335,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <g id="sp9"><ellipse cx="67" cy="55" rx="7.5" ry="5" fill="#1a1a1a"/><circle cx="88" cy="64" r="5.5" fill="#1a1a1a"/><circle cx="51" cy="67" r="5" fill="#1a1a1a"/><circle cx="93" cy="56" r="4" fill="#1a1a1a"/><circle cx="74" cy="81" r="3" fill="#1a1a1a"/></g>
 <g id="sp10"><circle cx="71" cy="54" r="7.5" fill="#1a1a1a"/><circle cx="80" cy="69" r="6" fill="#1a1a1a"/><ellipse cx="57" cy="63" rx="5.5" ry="4" fill="#1a1a1a"/><circle cx="85" cy="79" r="3.5" fill="#1a1a1a"/></g>
 <g id="sp11"><circle cx="65" cy="51" r="6.5" fill="#1a1a1a"/><circle cx="89" cy="61" r="5.5" fill="#1a1a1a"/><circle cx="53" cy="71" r="6" fill="#1a1a1a"/><circle cx="93" cy="53" r="3.5" fill="#1a1a1a"/><circle cx="76" cy="83" r="3" fill="#1a1a1a"/></g>
+<g id="sp12"><circle cx="73" cy="53" r="8" fill="#1a1a1a"/><circle cx="58" cy="68" r="5" fill="#1a1a1a"/><circle cx="92" cy="64" r="6" fill="#1a1a1a"/><circle cx="44" cy="34" r="3.5" fill="#1a1a1a"/><ellipse cx="84" cy="80" rx="6" ry="4" fill="#1a1a1a"/></g>
+<g id="sp13"><ellipse cx="66" cy="57" rx="8" ry="5.5" fill="#1a1a1a"/><circle cx="86" cy="65" r="5.5" fill="#1a1a1a"/><circle cx="53" cy="69" r="5" fill="#1a1a1a"/><circle cx="95" cy="54" r="4" fill="#1a1a1a"/><circle cx="77" cy="82" r="3.5" fill="#1a1a1a"/></g>
+<g id="sp14"><circle cx="69" cy="51" r="7" fill="#1a1a1a"/><circle cx="84" cy="66" r="6" fill="#1a1a1a"/><circle cx="57" cy="72" r="5" fill="#1a1a1a"/><ellipse cx="96" cy="60" rx="5" ry="3.5" fill="#1a1a1a"/><circle cx="72" cy="83" r="3" fill="#1a1a1a"/></g>
+<g id="sp15"><circle cx="75" cy="55" r="7.5" fill="#1a1a1a"/><circle cx="61" cy="64" r="5.5" fill="#1a1a1a"/><circle cx="89" cy="70" r="5" fill="#1a1a1a"/><circle cx="45" cy="33" r="3.5" fill="#1a1a1a"/><circle cx="82" cy="81" r="4" fill="#1a1a1a"/></g>
+<g id="sp16"><ellipse cx="68" cy="54" rx="9" ry="5" fill="#1a1a1a"/><circle cx="85" cy="63" r="5.5" fill="#1a1a1a"/><circle cx="54" cy="70" r="5" fill="#1a1a1a"/><circle cx="94" cy="56" r="4" fill="#1a1a1a"/><circle cx="76" cy="84" r="3.5" fill="#1a1a1a"/></g>
 </defs>
 </svg>
 
@@ -347,8 +352,26 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ HOME ════ -->
 <div class="screen" id="sHome">
   <div class="home-mascot">
-    <svg viewBox="0 0 120 100" width="150" height="120" style="animation:dogBob 3.5s ease-in-out infinite alternate;transform-origin:50% 80%">
-      <use href="#dal-body"/><use href="#sp0"/>
+    <!-- Pokéball SVG inline -->
+    <svg viewBox="0 0 120 120" width="110" height="110" style="animation:mascotFloat 3s ease-in-out infinite;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.25))">
+      <!-- Ombre -->
+      <ellipse cx="60" cy="113" rx="30" ry="7" fill="rgba(0,0,0,0.12)"/>
+      <!-- Cercle extérieur noir -->
+      <circle cx="60" cy="60" r="52" fill="#111"/>
+      <!-- Moitié haute rouge -->
+      <path d="M8 60 A52 52 0 0 1 112 60 Z" fill="#e00"/>
+      <!-- Moitié basse blanche -->
+      <path d="M8 60 A52 52 0 0 0 112 60 Z" fill="#fff"/>
+      <!-- Bande centrale noire -->
+      <rect x="8" y="54" width="104" height="12" fill="#111"/>
+      <!-- Cercle central noir -->
+      <circle cx="60" cy="60" r="16" fill="#111"/>
+      <!-- Cercle central blanc intérieur -->
+      <circle cx="60" cy="60" r="10" fill="#fff"/>
+      <!-- Ombre interne bas-droite -->
+      <path d="M66 67 A10 10 0 0 1 52 67" fill="rgba(180,180,180,0.35)"/>
+      <!-- Reflet haut-gauche -->
+      <ellipse cx="43" cy="36" rx="9" ry="6" fill="rgba(255,255,255,0.25)" transform="rotate(-30 43 36)"/>
     </svg>
   </div>
   <h1 class="game-title">101 Dalmatiens<small>Attrape-les tous !</small></h1>
@@ -466,7 +489,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <h2 class="win-h">Tous les<br><em>Dalmatiens</em><br>capturés !</h2>
   <div class="parade-wrap"><div class="parade" id="winParade"></div></div>
   <div class="win-stat"><strong id="winTime">--:--</strong><small>temps de chasse</small></div>
-  <div class="win-stat" style="margin-top:-6px"><strong>12 🐾</strong><small>chiots sauvés !</small></div>
+  <div class="win-stat" style="margin-top:-6px"><strong id="winTotal">17 🐾</strong><small>chiots sauvés !</small></div>
   <button class="btn-replay" onclick="reset()">🔄 Nouvelle Chasse</button>
 </div>
 
@@ -478,8 +501,11 @@ const PUPS=[
   {id:1,name:"Pongo Jr"},{id:2,name:"Perdita"},{id:3,name:"Lucky"},
   {id:4,name:"Rolly"},{id:5,name:"Patch"},{id:6,name:"Penny"},
   {id:7,name:"Cadpig"},{id:8,name:"Freckles"},{id:9,name:"Spotty"},
-  {id:10,name:"Dot"},{id:11,name:"Dipstick"},{id:12,name:"Two-Tone"}
+  {id:10,name:"Dot"},{id:11,name:"Dipstick"},{id:12,name:"Two-Tone"},
+  {id:13,name:"Pepper"},{id:14,name:"Wizzer"},{id:15,name:"Blob"},
+  {id:16,name:"Latch"},{id:17,name:"Jewel"}
 ];
+const TOTAL=17;
 const QR_PREFIX='DAL_';
 
 /* ══ STATE ══ */
@@ -488,12 +514,12 @@ let camStream=null,scanLoop=null,scanPaused=false,activePupId=null;
 let bgMusic=null,audioCtx=null;
 
 /* ══ PERSIST ══ */
-function save(){try{localStorage.setItem('dal6_c',JSON.stringify([...collected]));localStorage.setItem('dal6_t',''+startTime);}catch(e){}}
-function load(){try{const c=localStorage.getItem('dal6_c'),t=localStorage.getItem('dal6_t');if(c)collected=new Set(JSON.parse(c).map(Number));if(t)startTime=parseInt(t);}catch(e){}}
+function save(){try{localStorage.setItem('dal7_c',JSON.stringify([...collected]));localStorage.setItem('dal7_t',''+startTime);}catch(e){}}
+function load(){try{const c=localStorage.getItem('dal7_c'),t=localStorage.getItem('dal7_t');if(c)collected=new Set(JSON.parse(c).map(Number));if(t)startTime=parseInt(t);}catch(e){}}
 
 const $=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');}
-function dalSVG(idx,w,h,style=''){return `<svg viewBox="0 0 120 100" width="${w}" height="${h}" style="${style}"><use href="#dal-body"/><use href="#sp${Math.min(11,idx)}"/></svg>`;}
+function dalSVG(idx,w,h,style=''){return `<svg viewBox="0 0 120 100" width="${w}" height="${h}" style="${style}"><use href="#dal-body"/><use href="#sp${Math.min(16,idx)}"/></svg>`;}
 
 /* ══ MUSIQUE (Web Audio — mélodie d'aventure) ══ */
 function startMusic(){
@@ -544,19 +570,19 @@ function playAdventureLoop(){
 function startFromSplash(){
   try { startMusic(); } catch(e) {}
   show('sHome');
-  $('homeScore').textContent = collected.size + ' / 12';
+  $('homeScore').textContent = collected.size + ' / ' + TOTAL;
 }
 
 /* ══ HOME ══ */
-function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=collected.size+' / 12';}
+function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=collected.size+' / '+TOTAL;}
 
 /* ══ COLLECTION ══ */
 function goColl(){buildGrid();show('sColl');}
 function buildGrid(){
   const n=collected.size;
-  $('collPill').textContent=n+'/12';
-  $('progFill').style.width=(n/12*100)+'%';
-  $('progLbl').textContent=n+' capturé(s) sur 12';
+  $('collPill').textContent=n+'/'+TOTAL;
+  $('progFill').style.width=(n/TOTAL*100)+'%';
+  $('progLbl').textContent=n+' capturé(s) sur '+TOTAL;
   const grid=$('collGrid');grid.innerHTML='';
   PUPS.forEach(p=>{
     const ok=collected.has(p.id);
@@ -572,6 +598,16 @@ function buildGrid(){
 /* ══ QR À IMPRIMER ══ */
 function goPrint(){
   const grid=$('printGrid');grid.innerHTML='';
+
+  // QR code du lien de l'appli en premier
+  const appCard=document.createElement('div');
+  appCard.className='qr-print-card';
+  appCard.style.cssText='grid-column:1/-1;flex-direction:row;gap:14px;padding:14px 16px;';
+  appCard.innerHTML=
+    `<img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent('https://meilo-rc.github.io/dalmatiens/')}&bgcolor=ffffff&color=000000&qzone=1" style="width:90px;height:90px;border-radius:8px;flex-shrink:0" alt="Lien appli">`+
+    `<div style="text-align:left"><div style="font-family:'Fredoka One',cursive;font-size:14px;color:#cc1111;margin-bottom:4px">🐾 Lien de l'appli</div><div style="font-size:10px;color:#555;line-height:1.5">Scanne ce QR code<br>pour ouvrir le jeu !</div></div>`;
+  grid.appendChild(appCard);
+
   PUPS.forEach(p=>{
     const card=document.createElement('div');
     card.className='qr-print-card';
@@ -592,7 +628,7 @@ function updateHint(){
 
 async function goHunt(){
   show('sAR');
-  $('arScore').textContent=collected.size+'/12';
+  $('arScore').textContent=collected.size+'/'+TOTAL;
   updateHint();hideARDog();
   activePupId=null;scanPaused=false;
 
@@ -626,7 +662,7 @@ async function goHunt(){
     const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});
     if(code&&code.data.startsWith(QR_PREFIX)){
       const id=parseInt(code.data.slice(QR_PREFIX.length));
-      if(!isNaN(id)&&id>=1&&id<=12)handleQRDetected(id);
+      if(!isNaN(id)&&id>=1&&id<=TOTAL)handleQRDetected(id);
     }
   }
   scanLoop=requestAnimationFrame(tick);
@@ -680,11 +716,11 @@ function doCapture(){
   if(!pendingPup)return;
   const p=pendingPup;$('modalQR').classList.remove('on');pendingPup=null;
   collected.add(p.id);save();
-  $('arScore').textContent=collected.size+'/12';
+  $('arScore').textContent=collected.size+'/'+TOTAL;
   showBurst(p.id-1);spawnPaws();vibrate([60,30,60,30,120]);
   playCaptureSfx();
   hideARDog();activePupId=null;
-  if(collected.size>=12){stopHuntClean();showWin();}
+  if(collected.size>=TOTAL){stopHuntClean();showWin();}
   else{updateHint();flashMsg('🎉 Capturé ! Cherche le suivant !',2500);}
 }
 
@@ -746,9 +782,10 @@ function showWin(){
   const row=$('winDogsRow');row.innerHTML='';
   for(let i=0;i<6;i++){const d=document.createElement('div');d.className='win-dog-sm';d.innerHTML=dalSVG(i,56,46);row.appendChild(d);}
   const par=$('winParade');par.innerHTML='';
-  for(let i=0;i<12;i++){const d=document.createElement('div');d.className='parade-dog';d.innerHTML=dalSVG(i,52,42);par.appendChild(d);}
+  for(let i=0;i<TOTAL;i++){const d=document.createElement('div');d.className='parade-dog';d.innerHTML=dalSVG(i%12,52,42);par.appendChild(d);}
   const s=Math.floor((Date.now()-startTime)/1000);
   $('winTime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  $('winTotal').textContent=TOTAL+' 🐾';
   vibrate([100,50,100,50,100,50,500]);
   show('sWin');
 }
@@ -769,8 +806,8 @@ const splashEl = $('sSplash');
 // Retirer l'onclick inline pour éviter double déclenchement
 splashEl.removeAttribute('onclick');
 
-setInterval(()=>{if($('sHome').classList.contains('on')&&collected.size<12)triggerAlert();},15000);
-setTimeout(()=>{if($('sHome').classList.contains('on')&&collected.size<12)triggerAlert();},5000);
+setInterval(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},15000);
+setTimeout(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},5000);
 </script>
 </body>
 </html>
