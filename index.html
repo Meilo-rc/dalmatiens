@@ -339,8 +339,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <g id="sp13"><ellipse cx="66" cy="57" rx="8" ry="5.5" fill="#1a1a1a"/><circle cx="86" cy="65" r="5.5" fill="#1a1a1a"/><circle cx="53" cy="69" r="5" fill="#1a1a1a"/><circle cx="95" cy="54" r="4" fill="#1a1a1a"/><circle cx="77" cy="82" r="3.5" fill="#1a1a1a"/></g>
 <g id="sp14"><circle cx="69" cy="51" r="7" fill="#1a1a1a"/><circle cx="84" cy="66" r="6" fill="#1a1a1a"/><circle cx="57" cy="72" r="5" fill="#1a1a1a"/><ellipse cx="96" cy="60" rx="5" ry="3.5" fill="#1a1a1a"/><circle cx="72" cy="83" r="3" fill="#1a1a1a"/></g>
 <g id="sp15"><circle cx="75" cy="55" r="7.5" fill="#1a1a1a"/><circle cx="61" cy="64" r="5.5" fill="#1a1a1a"/><circle cx="89" cy="70" r="5" fill="#1a1a1a"/><circle cx="45" cy="33" r="3.5" fill="#1a1a1a"/><circle cx="82" cy="81" r="4" fill="#1a1a1a"/></g>
-<g id="sp16"><ellipse cx="68" cy="54" rx="9" ry="5" fill="#1a1a1a"/><circle cx="85" cy="63" r="5.5" fill="#1a1a1a"/><circle cx="54" cy="70" r="5" fill="#1a1a1a"/><circle cx="94" cy="56" r="4" fill="#1a1a1a"/><circle cx="76" cy="84" r="3.5" fill="#1a1a1a"/></g>
-</defs>
+<g id="sp17"><circle cx="71" cy="53" r="7" fill="#1a1a1a"/><circle cx="87" cy="68" r="5" fill="#1a1a1a"/><ellipse cx="55" cy="66" rx="5.5" ry="4" fill="#1a1a1a"/><circle cx="96" cy="55" r="3.5" fill="#1a1a1a"/><circle cx="79" cy="81" r="4" fill="#1a1a1a"/></g>
+<g id="sp18"><ellipse cx="67" cy="56" rx="8" ry="5" fill="#1a1a1a"/><circle cx="84" cy="64" r="6" fill="#1a1a1a"/><circle cx="52" cy="72" r="5" fill="#1a1a1a"/><circle cx="93" cy="57" r="3.5" fill="#1a1a1a"/><circle cx="74" cy="83" r="3" fill="#1a1a1a"/></g>
 </svg>
 
 <!-- ════ SPLASH ════ -->
@@ -381,7 +381,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     <span>chiots capturés</span>
   </div>
   <button class="btn btn-primary" onclick="goHunt()">📷 Partir à la chasse !</button>
-  <button class="btn btn-secondary" onclick="goColl()">📖 Ma collection</button>
+  <button class="btn btn-secondary" onclick="goColl()">📖 Ugodex</button>
   <button class="btn btn-ghost" onclick="goPrint()">🖨️ QR codes à imprimer</button>
 </div>
 
@@ -389,7 +389,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <div class="screen" id="sColl" style="background:var(--cream)">
   <div class="panel-head">
     <button class="icon-btn" onclick="goHome()">←</button>
-    <span class="panel-title">Ma Collection</span>
+    <span class="panel-title">Ugodex</span>
     <span class="pill" id="collPill">0/12</span>
   </div>
   <div class="coll-body">
@@ -503,9 +503,9 @@ const PUPS=[
   {id:7,name:"Cadpig"},{id:8,name:"Freckles"},{id:9,name:"Spotty"},
   {id:10,name:"Dot"},{id:11,name:"Dipstick"},{id:12,name:"Two-Tone"},
   {id:13,name:"Pepper"},{id:14,name:"Wizzer"},{id:15,name:"Blob"},
-  {id:16,name:"Latch"},{id:17,name:"Jewel"}
+  {id:16,name:"Latch"},{id:17,name:"Jewel"},{id:18,name:"Roly"},{id:19,name:"Dipper"}
 ];
-const TOTAL=17;
+const TOTAL=19;
 const QR_PREFIX='DAL_';
 
 /* ══ STATE ══ */
@@ -519,7 +519,23 @@ function load(){try{const c=localStorage.getItem('dal7_c'),t=localStorage.getIte
 
 const $=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');}
-function dalSVG(idx,w,h,style=''){return `<svg viewBox="0 0 120 100" width="${w}" height="${h}" style="${style}"><use href="#dal-body"/><use href="#sp${Math.min(16,idx)}"/></svg>`;}
+function pokeballSVG(caught){
+  const topColor = caught ? '#e00' : '#999';
+  const bottomColor = caught ? '#fff' : '#ccc';
+  const borderColor = caught ? '#111' : '#888';
+  const gloss = caught ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)';
+  return `<svg viewBox="0 0 60 60" width="54" height="54">
+    <circle cx="30" cy="30" r="27" fill="${borderColor}"/>
+    <path d="M3 30 A27 27 0 0 1 57 30 Z" fill="${topColor}"/>
+    <path d="M3 30 A27 27 0 0 0 57 30 Z" fill="${bottomColor}"/>
+    <rect x="3" y="27" width="54" height="6" fill="${borderColor}"/>
+    <circle cx="30" cy="30" r="9" fill="${borderColor}"/>
+    <circle cx="30" cy="30" r="5.5" fill="${caught?'#fff':'#bbb'}"/>
+    <path d="M34 34 A5.5 5.5 0 0 1 26 34" fill="rgba(0,0,0,0.1)"/>
+    <ellipse cx="22" cy="17" rx="5" ry="3.5" fill="${gloss}" transform="rotate(-30 22 17)"/>
+  </svg>`;
+}
+function dalSVG(idx,w,h,style=''){return `<svg viewBox="0 0 120 100" width="${w}" height="${h}" style="${style}"><use href="#dal-body"/><use href="#sp${Math.min(18,idx)}"/></svg>`;}
 
 /* ══ MUSIQUE (Web Audio — mélodie d'aventure) ══ */
 function startMusic(){
@@ -588,7 +604,7 @@ function buildGrid(){
     const ok=collected.has(p.id);
     const div=document.createElement('div');
     div.className='card '+(ok?'caught':'locked');
-    div.innerHTML=`<div class="card-dog">${dalSVG(p.id-1,74,60,ok?'':'filter:grayscale(1)opacity(.25)')}</div>`+
+    div.innerHTML=`<div class="card-dog">${pokeballSVG(ok)}</div>`+
       `<div class="card-name">${ok?p.name:'???'}</div>`+
       `<div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
     grid.appendChild(div);
