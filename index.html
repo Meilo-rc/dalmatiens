@@ -172,8 +172,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .sf-corner.tr{top:0;right:0;border-top:4px solid #fff;border-right:4px solid #fff;border-radius:0 4px 0 0;}
 .sf-corner.bl{bottom:0;left:0;border-bottom:4px solid #fff;border-left:4px solid #fff;border-radius:0 0 0 4px;}
 .sf-corner.br{bottom:0;right:0;border-bottom:4px solid #fff;border-right:4px solid #fff;border-radius:0 0 4px 0;}
-#scanLine{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--rouge2),transparent);box-shadow:0 0 10px var(--rouge2);animation:scanAnim 2s ease-in-out infinite;}
-@keyframes scanAnim{0%{top:4%}50%{top:92%}100%{top:4%}}
+#scanLine{display:none;}
+#snapBtn{
+  position:absolute;bottom:50px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.6);backdrop-filter:blur(10px);
+  border:3px solid rgba(255,255,255,.5);border-radius:50px;
+  padding:18px 36px;
+  font-family:'Fredoka One',cursive;font-size:20px;color:#fff;
+  cursor:pointer;white-space:nowrap;z-index:20;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+  transition:transform .1s,background .1s;
+}
+#snapBtn:active{transform:translateX(-50%)scale(.93);background:rgba(0,0,0,.85);}
+#snapBtn.scanning{background:rgba(204,17,17,.7);border-color:rgba(255,255,255,.8);}
 
 #arDog{position:absolute;left:50%;top:50%;transform:translate(-50%,-65%);z-index:19;display:none;flex-direction:column;align-items:center;pointer-events:none;}
 #arDog.on{display:flex;}
@@ -407,19 +418,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <video id="arVideo" autoplay playsinline muted></video>
   <canvas id="arCanvas"></canvas>
   <div id="scanFlash"></div>
+
   <div class="ar-top">
     <button class="icon-btn" style="background:rgba(0,0,0,.5);border-color:rgba(255,255,255,.3)" onclick="stopHunt()">←</button>
     <span class="ar-title" id="arTitle">🐾 Cherche le QR code !</span>
-    <span class="ar-pill" id="arScore">0/12</span>
+    <span class="ar-pill" id="arScore">0/19</span>
   </div>
+
+  <!-- Viseur -->
   <div id="scanFrame">
     <div class="sf-corner tl"></div><div class="sf-corner tr"></div>
     <div class="sf-corner bl"></div><div class="sf-corner br"></div>
-    <div id="scanLine"></div>
   </div>
-  <div id="scanStatus" style="position:absolute;top:50%;left:50%;transform:translate(-50%,80px);z-index:18;font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);text-align:center;text-shadow:0 1px 4px rgba(0,0,0,0.8);pointer-events:none;">
-    Pointe vers un QR code 📷
-  </div>
+
+  <!-- Chiot AR -->
   <div id="arDog">
     <svg id="arDogSvg" viewBox="0 0 120 100" width="140" height="114">
       <use href="#dal-body"/><use id="arDogSpots" href="#sp0"/>
@@ -427,16 +439,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     <div class="ar-dog-shadow"></div>
     <div class="ar-dog-ring"></div>
   </div>
+
+  <!-- Hint recherche -->
   <div id="searchHint">
     <div class="hint-box">
       <span class="pup-target" id="hintName">Pongo Jr</span>
-      Cherche le QR code caché dans la pièce 🔍
+      Cadre le QR code et appuie sur le bouton 👇
     </div>
   </div>
-  <div id="proxWrap">
-    <div id="proxLbl">🐾 Continue à t'approcher...</div>
-    <div id="proxTrack"><div id="proxFill"></div></div>
+
+  <!-- Résultat scan -->
+  <div id="scanResult" style="display:none;position:absolute;bottom:160px;left:20px;right:20px;z-index:22;text-align:center;">
+    <div id="scanResultBox" style="display:inline-block;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);border-radius:14px;padding:10px 20px;font-size:13px;font-weight:800;color:#fff;"></div>
   </div>
+
+  <!-- BOUTON PHOTO — gros, central, facile à taper -->
+  <button id="snapBtn" onclick="takeSnap()">
+    📸 Scanner le QR code
+  </button>
+
   <button id="catchBtn" onclick="openCapture()">✋ Attraper !</button>
   <button id="arBackBtn" onclick="stopHunt()">🏠</button>
 </div>
@@ -655,18 +676,20 @@ async function goHunt(){
   $('arScore').textContent=collected.size+'/'+TOTAL;
   updateHint();hideARDog();
   activePupId=null;scanPaused=false;
+  $('catchBtn').classList.remove('on');
+  $('scanResult').style.display='none';
 
   const tries=[
-    {video:{facingMode:{exact:'environment'},width:{ideal:1920},height:{ideal:1080},focusMode:'continuous'}},
+    {video:{facingMode:{exact:'environment'},width:{ideal:1920},height:{ideal:1080}}},
     {video:{facingMode:{exact:'environment'},width:{ideal:1280},height:{ideal:720}}},
-    {video:{facingMode:'environment',width:{ideal:1280}}},
+    {video:{facingMode:'environment'}},
     {video:{facingMode:{ideal:'environment'}}},
     {video:true}
   ];
   let got=false;
   for(const c of tries){
     try{camStream=await navigator.mediaDevices.getUserMedia(c);got=true;break;}
-    catch(e){if(e.name==='NotAllowedError'){showSysMsg('🔒 Autorise la caméra puis relance la chasse.');return;}}
+    catch(e){if(e.name==='NotAllowedError'){showSysMsg('🔒 Autorise la caméra puis relance.');return;}}
   }
   if(!got){showSysMsg('📵 Caméra inaccessible.');return;}
 
@@ -674,95 +697,111 @@ async function goHunt(){
   v.srcObject=camStream;
   try{await v.play();}catch(e){v.oncanplay=()=>{v.play().catch(()=>{});v.oncanplay=null;};}
 
-  // ── Détection QR : BarcodeDetector natif si dispo, sinon jsQR ──
-  const useNative = ('BarcodeDetector' in window);
-  let detector = null;
-  if(useNative){
-    try{
-      detector = new BarcodeDetector({formats:['qr_code']});
-      flashMsg('📷 Scanner natif activé ✓', 2000);
-    }catch(e){ detector=null; }
-  }
-
-  const canvas=$('arCanvas');
-  const ctx = detector ? null : canvas.getContext('2d',{willReadFrequently:true});
-  const SCAN_SIZE = 400;
-  let lastScanTime = 0;
-
-  function processQRData(data){
-    if(!data) return;
-    let id=null;
-    if(data.startsWith(QR_PREFIX)){
-      id=parseInt(data.slice(QR_PREFIX.length));
-    } else if(/^\d+$/.test(data.trim())){
-      id=parseInt(data.trim());
-    }
-    if(id&&!isNaN(id)&&id>=1&&id<=TOTAL) handleQRDetected(id);
-  }
-
-  async function tickNative(){
-    if(!$('sAR').classList.contains('on'))return;
-    scanLoop=requestAnimationFrame(tickNative);
-    if(scanPaused||v.readyState<2)return;
-    const now=Date.now();
-    if(now-lastScanTime<300)return; // ~3 scans/sec suffit avec BarcodeDetector
-    lastScanTime=now;
-    try{
-      const codes=await detector.detect(v);
-      if(codes.length>0) processQRData(codes[0].rawValue);
-    }catch(e){}
-  }
-
-  function tickJsQR(){
-    if(!$('sAR').classList.contains('on'))return;
-    scanLoop=requestAnimationFrame(tickJsQR);
-    if(scanPaused||v.readyState<2)return;
-    const now=Date.now();
-    if(now-lastScanTime<66)return;
-    lastScanTime=now;
-    const vw=v.videoWidth, vh=v.videoHeight;
-    if(!vw||!vh)return;
-    const side=Math.min(vw,vh);
-    const sx=(vw-side)/2, sy=(vh-side)/2;
-    canvas.width=SCAN_SIZE; canvas.height=SCAN_SIZE;
-    ctx.drawImage(v,sx,sy,side,side,0,0,SCAN_SIZE,SCAN_SIZE);
-    const img=ctx.getImageData(0,0,SCAN_SIZE,SCAN_SIZE);
-    const code=jsQR(img.data,SCAN_SIZE,SCAN_SIZE,{inversionAttempts:'attemptBoth'});
-    if(code&&code.data) processQRData(code.data);
-  }
-
-  scanLoop=requestAnimationFrame(detector ? tickNative : tickJsQR);
   scheduleAlert();
 }
 
+// Prend une photo et analyse le QR
+async function takeSnap(){
+  const v=$('arVideo');
+  if(!camStream||v.readyState<2){showScanResult('⚠️ Caméra pas prête','#e88');return;}
+
+  const btn=$('snapBtn');
+  btn.classList.add('scanning');
+  btn.textContent='⏳ Analyse...';
+
+  const canvas=$('arCanvas');
+
+  // ── Essai 1 : BarcodeDetector natif (le plus fiable) ──
+  if('BarcodeDetector' in window){
+    try{
+      const det=new BarcodeDetector({formats:['qr_code']});
+      const codes=await det.detect(v);
+      btn.classList.remove('scanning');
+      btn.textContent='📸 Scanner le QR code';
+      if(codes.length>0){processQRData(codes[0].rawValue);return;}
+      // Pas trouvé avec le flux — essaie sur photo haute res
+      const codes2=await det.detect(await captureFrame(v,canvas,1280));
+      if(codes2.length>0){processQRData(codes2[0].rawValue);return;}
+      showScanResult('❌ Pas de QR détecté — Rapproche-toi','#e88');
+      return;
+    }catch(e){}
+  }
+
+  // ── Essai 2 : jsQR sur photo ──
+  try{
+    const img=captureImageData(v,canvas,600);
+    const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'attemptBoth'});
+    btn.classList.remove('scanning');
+    btn.textContent='📸 Scanner le QR code';
+    if(code&&code.data){processQRData(code.data);return;}
+    // Essai en haute résolution
+    const img2=captureImageData(v,canvas,v.videoWidth);
+    const code2=jsQR(img2.data,img2.width,img2.height,{inversionAttempts:'attemptBoth'});
+    if(code2&&code2.data){processQRData(code2.data);return;}
+    showScanResult('❌ Pas de QR détecté — Rapproche-toi','#e88');
+  }catch(e){
+    btn.classList.remove('scanning');
+    btn.textContent='📸 Scanner le QR code';
+    showScanResult('⚠️ Erreur : '+e.message,'#e88');
+  }
+}
+
+function captureFrame(video,canvas,size){
+  canvas.width=size; canvas.height=size;
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});
+  const s=Math.min(video.videoWidth,video.videoHeight);
+  ctx.drawImage(video,(video.videoWidth-s)/2,(video.videoHeight-s)/2,s,s,0,0,size,size);
+  return canvas;
+}
+
+function captureImageData(video,canvas,size){
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});
+  const s=Math.min(video.videoWidth,video.videoHeight);
+  canvas.width=size; canvas.height=size;
+  ctx.drawImage(video,(video.videoWidth-s)/2,(video.videoHeight-s)/2,s,s,0,0,size,size);
+  return ctx.getImageData(0,0,size,size);
+}
+
+function processQRData(data){
+  if(!data)return;
+  let id=null;
+  if(data.startsWith(QR_PREFIX)) id=parseInt(data.slice(QR_PREFIX.length));
+  else if(/^\d+$/.test(data.trim())) id=parseInt(data.trim());
+  if(id&&!isNaN(id)&&id>=1&&id<=TOTAL) handleQRDetected(id);
+  else showScanResult('❌ QR non reconnu','#e88');
+}
+
+function showScanResult(msg,color='#fff'){
+  const box=$('scanResultBox');
+  box.textContent=msg;
+  box.style.color=color||'#fff';
+  $('scanResult').style.display='block';
+  setTimeout(()=>$('scanResult').style.display='none',2500);
+}
+
 function handleQRDetected(id){
-  if(collected.has(id)){flashMsg('✓ Déjà capturé !',1200);return;}
+  if(collected.has(id)){showScanResult('✓ '+PUPS.find(x=>x.id===id).name+' déjà capturé !','#ffaa44');return;}
   if(activePupId===id)return;
-  activePupId=id;scanPaused=true;
+  activePupId=id;
   const p=PUPS.find(x=>x.id===id);
   $('arDogSpots').setAttribute('href','#sp'+(id-1));
   $('arTitle').textContent='🐾 '+p.name+' trouvé !';
   showARDog();flashGreen();vibrate([60,40,120]);
-  $('proxWrap').classList.add('on');
-  $('proxFill').style.width='0%';
-  $('proxLbl').textContent='🐾 Reste en face du QR code...';
-  $('catchBtn').classList.remove('on');
-  let pv=0;
-  const prox=setInterval(()=>{
-    pv=Math.min(100,pv+2.5);
-    $('proxFill').style.width=pv+'%';
-    const sc=0.9+(pv/100)*0.6;
-    $('arDogSvg').style.width=(140*sc)+'px';
-    $('arDogSvg').style.height=(114*sc)+'px';
-    if(pv>=100){clearInterval(prox);$('proxLbl').textContent='🐾 Prêt à attraper !';$('catchBtn').classList.add('on');scanPaused=false;}
-  },60);
-  setTimeout(()=>{scanPaused=false;},2500);
+  showScanResult('✓ '+p.name+' détecté !','#6ef');
+  $('catchBtn').classList.add('on');
 }
 
 function showARDog(){$('searchHint').style.display='none';$('arDog').classList.add('on');}
-function hideARDog(){$('arDog').classList.remove('on');$('searchHint').style.display='';$('proxWrap').classList.remove('on');$('catchBtn').classList.remove('on');activePupId=null;$('arDogSvg').style.width='140px';$('arDogSvg').style.height='114px';}
+function hideARDog(){
+  $('arDog').classList.remove('on');
+  $('searchHint').style.display='';
+  $('catchBtn').classList.remove('on');
+  activePupId=null;
+  $('arDogSvg').style.width='140px';
+  $('arDogSvg').style.height='114px';
+}
 function flashGreen(){const f=$('scanFlash');f.classList.add('on');setTimeout(()=>f.classList.remove('on'),300);}
-function stopHuntClean(){if(scanLoop){cancelAnimationFrame(scanLoop);scanLoop=null;}if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}hideARDog();try{$('arVideo').srcObject=null;}catch(e){}}
+function stopHuntClean(){if(scanLoop){cancelAnimationFrame(scanLoop);scanLoop=null;}if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}hideARDog();try{$('arVideo').srcObject=null;}catch(e){}try{$('scanResult').style.display='none';}catch(e){}}
 function stopHunt(){stopHuntClean();goHome();}
 
 /* ══ CAPTURE ══ */
