@@ -674,54 +674,64 @@ async function goHunt(){
   v.srcObject=camStream;
   try{await v.play();}catch(e){v.oncanplay=()=>{v.play().catch(()=>{});v.oncanplay=null;};}
 
-  if(scanLoop)cancelAnimationFrame(scanLoop);
-  const canvas=$('arCanvas');
-  const ctx=canvas.getContext('2d',{willReadFrequently:true});
+  // ── Détection QR : BarcodeDetector natif si dispo, sinon jsQR ──
+  const useNative = ('BarcodeDetector' in window);
+  let detector = null;
+  if(useNative){
+    try{
+      detector = new BarcodeDetector({formats:['qr_code']});
+      flashMsg('📷 Scanner natif activé ✓', 2000);
+    }catch(e){ detector=null; }
+  }
 
-  // jsQR fonctionne mieux sur une image réduite (320-400px) et bien contrastée
+  const canvas=$('arCanvas');
+  const ctx = detector ? null : canvas.getContext('2d',{willReadFrequently:true});
   const SCAN_SIZE = 400;
   let lastScanTime = 0;
 
-  function tick(){
+  function processQRData(data){
+    if(!data) return;
+    let id=null;
+    if(data.startsWith(QR_PREFIX)){
+      id=parseInt(data.slice(QR_PREFIX.length));
+    } else if(/^\d+$/.test(data.trim())){
+      id=parseInt(data.trim());
+    }
+    if(id&&!isNaN(id)&&id>=1&&id<=TOTAL) handleQRDetected(id);
+  }
+
+  async function tickNative(){
     if(!$('sAR').classList.contains('on'))return;
-    scanLoop=requestAnimationFrame(tick);
+    scanLoop=requestAnimationFrame(tickNative);
     if(scanPaused||v.readyState<2)return;
-
-    // Limite à ~15 scans/sec pour économiser la batterie et laisser jsQR travailler
     const now=Date.now();
-    if(now-lastScanTime < 66) return;
+    if(now-lastScanTime<300)return; // ~3 scans/sec suffit avec BarcodeDetector
     lastScanTime=now;
+    try{
+      const codes=await detector.detect(v);
+      if(codes.length>0) processQRData(codes[0].rawValue);
+    }catch(e){}
+  }
 
-    // Redimensionner à SCAN_SIZE pour accélérer jsQR
+  function tickJsQR(){
+    if(!$('sAR').classList.contains('on'))return;
+    scanLoop=requestAnimationFrame(tickJsQR);
+    if(scanPaused||v.readyState<2)return;
+    const now=Date.now();
+    if(now-lastScanTime<66)return;
+    lastScanTime=now;
     const vw=v.videoWidth, vh=v.videoHeight;
     if(!vw||!vh)return;
-
-    // Crop carré central (le QR est souvent au centre)
     const side=Math.min(vw,vh);
     const sx=(vw-side)/2, sy=(vh-side)/2;
-
-    canvas.width=SCAN_SIZE;
-    canvas.height=SCAN_SIZE;
-    ctx.drawImage(v, sx, sy, side, side, 0, 0, SCAN_SIZE, SCAN_SIZE);
-
+    canvas.width=SCAN_SIZE; canvas.height=SCAN_SIZE;
+    ctx.drawImage(v,sx,sy,side,side,0,0,SCAN_SIZE,SCAN_SIZE);
     const img=ctx.getImageData(0,0,SCAN_SIZE,SCAN_SIZE);
-
-    // Essaie les 4 modes d'inversion — crucial pour QR sur fond clair ET sombre
-    const code=
-      jsQR(img.data,SCAN_SIZE,SCAN_SIZE,{inversionAttempts:'attemptBoth'});
-
-    if(code&&code.data){
-      // Accepte aussi QR sans préfixe (tout contenu numérique 1-19)
-      let id=null;
-      if(code.data.startsWith(QR_PREFIX)){
-        id=parseInt(code.data.slice(QR_PREFIX.length));
-      } else if(/^\d+$/.test(code.data.trim())){
-        id=parseInt(code.data.trim());
-      }
-      if(id&&!isNaN(id)&&id>=1&&id<=TOTAL) handleQRDetected(id);
-    }
+    const code=jsQR(img.data,SCAN_SIZE,SCAN_SIZE,{inversionAttempts:'attemptBoth'});
+    if(code&&code.data) processQRData(code.data);
   }
-  scanLoop=requestAnimationFrame(tick);
+
+  scanLoop=requestAnimationFrame(detector ? tickNative : tickJsQR);
   scheduleAlert();
 }
 
