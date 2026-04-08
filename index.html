@@ -417,6 +417,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     <div class="sf-corner bl"></div><div class="sf-corner br"></div>
     <div id="scanLine"></div>
   </div>
+  <div id="scanStatus" style="position:absolute;top:50%;left:50%;transform:translate(-50%,80px);z-index:18;font-size:12px;font-weight:800;color:rgba(255,255,255,0.7);text-align:center;text-shadow:0 1px 4px rgba(0,0,0,0.8);pointer-events:none;">
+    Pointe vers un QR code 📷
+  </div>
   <div id="arDog">
     <svg id="arDogSvg" viewBox="0 0 120 100" width="140" height="114">
       <use href="#dal-body"/><use id="arDogSpots" href="#sp0"/>
@@ -654,8 +657,9 @@ async function goHunt(){
   activePupId=null;scanPaused=false;
 
   const tries=[
+    {video:{facingMode:{exact:'environment'},width:{ideal:1920},height:{ideal:1080},focusMode:'continuous'}},
     {video:{facingMode:{exact:'environment'},width:{ideal:1280},height:{ideal:720}}},
-    {video:{facingMode:'environment'}},
+    {video:{facingMode:'environment',width:{ideal:1280}}},
     {video:{facingMode:{ideal:'environment'}}},
     {video:true}
   ];
@@ -673,17 +677,48 @@ async function goHunt(){
   if(scanLoop)cancelAnimationFrame(scanLoop);
   const canvas=$('arCanvas');
   const ctx=canvas.getContext('2d',{willReadFrequently:true});
+
+  // jsQR fonctionne mieux sur une image réduite (320-400px) et bien contrastée
+  const SCAN_SIZE = 400;
+  let lastScanTime = 0;
+
   function tick(){
     if(!$('sAR').classList.contains('on'))return;
     scanLoop=requestAnimationFrame(tick);
     if(scanPaused||v.readyState<2)return;
-    canvas.width=v.videoWidth;canvas.height=v.videoHeight;
-    ctx.drawImage(v,0,0);
-    const img=ctx.getImageData(0,0,canvas.width,canvas.height);
-    const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});
-    if(code&&code.data.startsWith(QR_PREFIX)){
-      const id=parseInt(code.data.slice(QR_PREFIX.length));
-      if(!isNaN(id)&&id>=1&&id<=TOTAL)handleQRDetected(id);
+
+    // Limite à ~15 scans/sec pour économiser la batterie et laisser jsQR travailler
+    const now=Date.now();
+    if(now-lastScanTime < 66) return;
+    lastScanTime=now;
+
+    // Redimensionner à SCAN_SIZE pour accélérer jsQR
+    const vw=v.videoWidth, vh=v.videoHeight;
+    if(!vw||!vh)return;
+
+    // Crop carré central (le QR est souvent au centre)
+    const side=Math.min(vw,vh);
+    const sx=(vw-side)/2, sy=(vh-side)/2;
+
+    canvas.width=SCAN_SIZE;
+    canvas.height=SCAN_SIZE;
+    ctx.drawImage(v, sx, sy, side, side, 0, 0, SCAN_SIZE, SCAN_SIZE);
+
+    const img=ctx.getImageData(0,0,SCAN_SIZE,SCAN_SIZE);
+
+    // Essaie les 4 modes d'inversion — crucial pour QR sur fond clair ET sombre
+    const code=
+      jsQR(img.data,SCAN_SIZE,SCAN_SIZE,{inversionAttempts:'attemptBoth'});
+
+    if(code&&code.data){
+      // Accepte aussi QR sans préfixe (tout contenu numérique 1-19)
+      let id=null;
+      if(code.data.startsWith(QR_PREFIX)){
+        id=parseInt(code.data.slice(QR_PREFIX.length));
+      } else if(/^\d+$/.test(code.data.trim())){
+        id=parseInt(code.data.trim());
+      }
+      if(id&&!isNaN(id)&&id>=1&&id<=TOTAL) handleQRDetected(id);
     }
   }
   scanLoop=requestAnimationFrame(tick);
