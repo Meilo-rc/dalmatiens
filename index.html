@@ -551,6 +551,7 @@ function unlockUGOAT(){
   <!-- Hint recherche -->
   <div id="searchHint">
     <div class="hint-box">
+      <span class="pup-target" id="hintName">Pongo Jr</span>
       Cadre le QR code et appuie sur le bouton 👇
     </div>
   </div>
@@ -964,8 +965,7 @@ function openCapture(){
   pendingPup=p;
  // REMPLACEMENT ICI : On met l'image au lieu du SVG de la pokeball
   $('catchPokeWrap').innerHTML = `<img src="pup${p.id}.webp" style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 15px white);">`;
- // SUPPRIMER le nom de l'item :
-  // $('catchPupName').textContent=p.name;
+  $('catchPupName').textContent=p.name;
   $('catchPupNum').textContent='#'+String(p.id).padStart(2,'0');
   show('sCatch');
 }
