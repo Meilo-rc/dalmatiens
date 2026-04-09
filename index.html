@@ -147,14 +147,40 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   border:2px solid #ddd;
   box-shadow:3px 3px 0 #bbb;position:relative;
 }
-.card.caught{border-color:var(--rouge);box-shadow:3px 3px 0 var(--rougefonce);background:linear-gradient(135deg,#fff8f8,#fff);}
-.card.caught::after{content:'✓';position:absolute;top:4px;right:7px;font-size:13px;color:var(--rouge);font-weight:900;}
+.card.caught{border-color:var(--rouge);box-shadow:3px 3px 0 var(--rougefonce);background:linear-gradient(135deg,#fff8f8,#fff);cursor:pointer;}
+.card.secret{border-color:#888;background:linear-gradient(135deg,#f5f5f5,#fff);opacity:.5;pointer-events:none;}
+.card.caught::after{content:'';position:absolute;top:4px;right:6px;width:14px;height:14px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1 6l4 4 6-7' stroke='%23cc1111' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/contain;}
 .card-dog{width:74px;height:132px;display:flex;align-items:center;justify-content:center;}
 .card-dog img{width:74px;height:132px;object-fit:cover;border-radius:8px;display:block;}
 .card-name{font-size:10px;font-weight:900;color:var(--noir);text-align:center;}
 .card.locked .card-name{color:#bbb;}
 .card-num{font-size:9px;background:#f0f0f0;color:#888;padding:2px 8px;border-radius:10px;font-weight:800;}
 .card.caught .card-num{background:rgba(204,17,17,.1);color:var(--rouge);}
+
+
+/* ══ ÉCRAN CAPTURE ══ */
+#sCatch{background:#fff;justify-content:flex-start;}
+
+/* ══ VIEWER UGODEX (image + QR swipe) ══ */
+#sViewer{background:#111;justify-content:flex-start;}
+.viewer-head{width:100%;display:flex;align-items:center;padding:14px 16px;background:#111;flex-shrink:0;}
+.viewer-name{font-family:'Fredoka One',cursive;font-size:18px;color:#fff;flex:1;text-align:center;}
+.viewer-body{flex:1;width:100%;position:relative;overflow:hidden;display:flex;}
+.viewer-slide{min-width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;}
+.viewer-img{max-width:100%;max-height:75vh;object-fit:contain;border-radius:12px;}
+.viewer-qr-box{background:#fff;border-radius:16px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.viewer-qr-box img{width:200px;height:200px;}
+.viewer-qr-label{font-family:'Fredoka One',cursive;font-size:16px;color:#333;text-align:center;}
+.viewer-dots{display:flex;gap:8px;margin-top:8px;}
+.viewer-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);}
+.viewer-dot.active{background:#fff;}
+.viewer-hint{font-size:11px;color:rgba(255,255,255,0.45);margin-top:6px;letter-spacing:1px;}
+
+/* ══ BONUS ITEM ══ */
+.card.bonus{border-color:var(--rouge);background:linear-gradient(135deg,#fff8f8,#fff);position:relative;}
+.card.bonus::before{content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:28px;z-index:2;}
+.card.bonus.caught::before{display:none;}
+.card.bonus-locked{opacity:0.5;}
 
 /* ══ AR ══ */
 #sAR{background:#000;justify-content:flex-start;overflow:hidden;}
@@ -186,7 +212,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 #snapBtn:active{transform:translateX(-50%)scale(.93);background:rgba(0,0,0,.85);}
 #snapBtn.scanning{background:rgba(204,17,17,.7);border-color:rgba(255,255,255,.8);}
 
-#arDog{position:absolute;left:50%;top:50%;transform:translate(-50%,-65%);z-index:19;display:none;flex-direction:column;align-items:center;pointer-events:none;}
+#arDog{position:absolute;left:50%;top:50%;transform:translate(-50%,-65%);z-index:19;display:none;flex-direction:column;align-items:center;pointer-events:none;animation:dogBob .8s ease-in-out infinite alternate;}
 #arDog.on{display:flex;}
 #arDogSvg{animation:dogBob .5s ease-in-out infinite alternate;transform-origin:50% 85%;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5));transition:width .15s,height .15s;}
 @keyframes dogBob{from{transform:rotate(-8deg)translateY(0)}to{transform:rotate(8deg)translateY(-10px)}}
@@ -249,6 +275,65 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .burst-piece{position:absolute;font-size:22px;animation:piece linear forwards;}
 @keyframes piece{0%{transform:translate(0,0)scale(0);opacity:1}100%{transform:translate(var(--tx),var(--ty))scale(1);opacity:0}}
 
+/* ══ DETAIL UGODEX ══ */
+let detailId=null, detailShowQR=false;
+
+function openDetail(id, fromCapture=false){
+  const p=PUPS.find(x=>x.id===id);
+  if(!p)return;
+  detailId=id; detailShowQR=false;
+  $('detailName').textContent=p.name;
+  $('detailImg').src='pup'+id+'.webp';
+  $('detailImg').style.display='block';
+  $('detailQR').style.display='none';
+  $('detailSwipeHint').textContent='Swipe → pour le QR code';
+  show('sDetail');
+  if(fromCapture) flashMsg('🎉 Capturé ! Cherche le suivant !',2500);
+  // Swipe
+  setupDetailSwipe();
+}
+
+function closeDetail(){
+  show('sColl');
+  buildGrid();
+}
+
+function setupDetailSwipe(){
+  const el=$('sDetail');
+  let sx=0;
+  el.ontouchstart=e=>sx=e.touches[0].clientX;
+  el.ontouchend=e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>50) toggleDetailView();
+  };
+}
+
+function toggleDetailView(){
+  detailShowQR=!detailShowQR;
+  if(detailShowQR){
+    const p=PUPS.find(x=>x.id===detailId);
+    const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(QR_PREFIX+detailId)+'&bgcolor=ffffff&color=000000&qzone=1';
+    $('detailQRImg').src=qrUrl;
+    $('detailQRName').textContent=p.name;
+    $('detailImg').style.display='none';
+    $('detailQR').style.display='flex';
+    $('detailSwipeHint').textContent='← Swipe pour l'image';
+    $('detailName').style.color='#111';
+  } else {
+    $('detailImg').style.display='block';
+    $('detailQR').style.display='none';
+    $('detailSwipeHint').textContent='Swipe → pour le QR code';
+    $('detailName').style.color='#fff';
+  }
+}
+
+function unlockUGOAT(){
+  collected.add(22);save();
+  buildGrid();
+  show('sColl');
+  flashMsg('🏆 UGOAT ajouté à l'Ugodex !',3000);
+}
+
 /* ══ ALERTE ══ */
 #alertBanner{
   position:fixed;top:-115px;left:0;right:0;z-index:300;
@@ -306,6 +391,31 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .btn-replay:active{transform:translateY(4px);box-shadow:0 1px 0 var(--rougefonce);}
 .paw-fx{position:fixed;pointer-events:none;z-index:250;font-size:22px;animation:pawFly 1s ease forwards;}
 @keyframes pawFly{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(.5)translateY(-30px)}}
+
+/* ══ DETAIL / VIEWER ══ */
+#sDetail{background:#111;justify-content:flex-start;overflow:hidden;}
+.detail-head{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;align-items:center;gap:10px;z-index:10;background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);}
+.detail-name{font-family:'Fredoka One',cursive;font-size:18px;color:#fff;flex:1;text-shadow:0 2px 6px rgba(0,0,0,.8);}
+#detailImg{width:100%;height:100%;object-fit:contain;position:absolute;inset:0;}
+/* QR overlay dans le swipe */
+#detailQR{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:#fff;gap:16px;}
+#detailQR.on{display:flex;}
+#detailQRImg{width:200px;height:200px;}
+#detailQRName{font-family:'Fredoka One',cursive;font-size:22px;color:#111;text-align:center;}
+#detailQRSub{font-size:13px;color:#888;text-align:center;}
+.swipe-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-size:12px;color:rgba(255,255,255,0.5);font-weight:800;pointer-events:none;white-space:nowrap;}
+#detailQR .swipe-hint{color:rgba(0,0,0,0.35);}
+
+/* ══ MODAL CAPTURE (remplace dog SVG par pokeball) ══ */
+#modalQR{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:28px;}
+#modalQR.on{display:flex;}
+#capturePokeWrap{width:110px;height:110px;display:flex;align-items:center;justify-content:center;animation:qrPop .5s cubic-bezier(.34,1.56,.64,1);}
+
+/* ══ SCREEN RECOMPENSE (item 22) ══ */
+#sReward{background:linear-gradient(135deg,#111,#222);justify-content:center;align-items:center;padding:30px;gap:20px;}
+.reward-title{font-family:'Fredoka One',cursive;font-size:32px;color:var(--gold2);text-align:center;text-shadow:0 0 20px rgba(255,220,68,.5);}
+.reward-img{width:80%;max-width:300px;border-radius:16px;box-shadow:0 0 40px rgba(255,220,68,.3);}
+.reward-sub{font-size:14px;color:rgba(255,255,255,.6);text-align:center;}
 </style>
 </head>
 <body>
@@ -433,9 +543,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 
   <!-- Chiot AR -->
   <div id="arDog">
-    <svg id="arDogSvg" viewBox="0 0 120 100" width="140" height="114">
-      <use href="#dal-body"/><use id="arDogSpots" href="#sp0"/>
-    </svg>
+    <div id="arPokeball" style="width:120px;height:120px;display:flex;align-items:center;justify-content:center;"></div>
     <div class="ar-dog-shadow"></div>
     <div class="ar-dog-ring"></div>
   </div>
@@ -462,19 +570,43 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <button id="arBackBtn" onclick="stopHunt()">🏠</button>
 </div>
 
-<!-- ════ MODAL CAPTURE ════ -->
-<div id="modalQR">
-  <div class="qr-dog-wrap" id="qrDogWrap"></div>
-  <div class="qr-name" id="qrName">Chiot #01</div>
-  <div class="qr-hint">Tu l'as trouvé ! Confirme la capture 👇</div>
-  <div class="qr-box">
-    <div class="qr-inner">
-      <div class="qr-c tl"></div><div class="qr-c tr"></div><div class="qr-c bl"></div>
-      <div class="qr-dots-grid" id="qrDots"></div>
-    </div>
-    <div class="qr-scan-line"></div>
+<!-- ════ ÉCRAN CAPTURE ════ -->
+<div class="screen" id="sCatch">
+  <div style="position:relative;width:100%;flex:1;overflow:hidden;background:#111;">
+    <!-- Pokéball animée pendant la capture -->
+    <div id="catchPokeWrap" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"></div>
   </div>
-  <button class="btn-capture" onclick="doCapture()">🐾 Capturer !</button>
+  <div style="padding:20px 24px 36px;background:#fff;width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;">
+    <div id="catchPupName" style="font-family:'Fredoka One',cursive;font-size:26px;color:var(--rouge);text-align:center;"></div>
+    <div id="catchPupNum" style="font-size:12px;color:#888;font-weight:800;letter-spacing:1px;"></div>
+    <button class="btn-capture" onclick="doCapture()" style="width:100%;max-width:310px;">🐾 Capturer !</button>
+    <button onclick="closeCatch()" style="background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;padding:4px;">Annuler</button>
+  </div>
+</div>
+
+<!-- ════ SCREEN DETAIL Ugodex (image grande + swipe QR) ════ -->
+<div class="screen" id="sDetail">
+  <img id="detailImg" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#111;">
+  <div id="detailQR" style="position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:#fff;gap:16px;">
+    <img id="detailQRImg" src="" alt="" style="width:200px;height:200px;border-radius:8px;">
+    <div id="detailQRName" style="font-family:'Fredoka One',cursive;font-size:22px;color:#111;text-align:center;"></div>
+    <div style="font-size:13px;color:#888;">QR code pour partager cet item</div>
+    <div style="font-size:11px;color:rgba(0,0,0,0.3);font-weight:800;">← Swipe pour revenir</div>
+  </div>
+  <div style="position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;align-items:center;gap:10px;z-index:10;background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);">
+    <button class="icon-btn" style="background:rgba(0,0,0,.5)" onclick="closeDetail()">←</button>
+    <span id="detailName" style="font-family:'Fredoka One',cursive;font-size:18px;color:#fff;flex:1;text-shadow:0 2px 6px rgba(0,0,0,.8);"></span>
+  </div>
+  <div id="detailSwipeHint" style="position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(255,255,255,0.4);font-weight:800;pointer-events:none;white-space:nowrap;">Swipe → pour le QR code</div>
+</div>
+
+<!-- ════ SCREEN RÉCOMPENSE UGOAT ════ -->
+<div class="screen" id="sReward" style="background:linear-gradient(135deg,#111,#1a1a2e);justify-content:center;align-items:center;padding:30px;gap:20px;">
+  <div style="font-size:48px;">🏆</div>
+  <div style="font-family:'Fredoka One',cursive;font-size:32px;color:var(--gold2,#ffdd44);text-align:center;text-shadow:0 0 20px rgba(255,220,68,.5);">UGOAT débloqué !</div>
+  <img src="pup22.webp" alt="UGOAT" style="width:80%;max-width:300px;border-radius:16px;box-shadow:0 0 40px rgba(255,220,68,.3);" onerror="this.style.display='none'">
+  <div style="font-size:14px;color:rgba(255,255,255,.6);text-align:center;">Tu as tout collecté.<br>Le légendaire UGOAT est à toi !</div>
+  <button class="btn btn-primary" onclick="unlockUGOAT()">🐾 Ajouter à l'Ugodex</button>
 </div>
 
 <!-- ════ BURST ════ -->
@@ -523,14 +655,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 
 /* ══ DONNÉES ══ */
 const PUPS=[
-  {id:1,name:"Pongo Jr"},{id:2,name:"Perdita"},{id:3,name:"Lucky"},
-  {id:4,name:"Rolly"},{id:5,name:"Patch"},{id:6,name:"Penny"},
-  {id:7,name:"Cadpig"},{id:8,name:"Freckles"},{id:9,name:"Spotty"},
-  {id:10,name:"Dot"},{id:11,name:"Dipstick"},{id:12,name:"Two-Tone"},
-  {id:13,name:"Pepper"},{id:14,name:"Wizzer"},{id:15,name:"Blob"},
-  {id:16,name:"Latch"},{id:17,name:"Jewel"},{id:18,name:"Roly"},{id:19,name:"Dipper"}
+  {id:1, name:"Ugo Belin"},   {id:2, name:"Ugo Boss"},
+  {id:3, name:"Ugo Chavez"},  {id:4, name:"Ugo Clément"},
+  {id:5, name:"Ugo Décrypte"},{id:6, name:"Ugo de Michet"},
+  {id:7, name:"Ugo Belet"},   {id:8, name:"Ugo Éland"},
+  {id:9, name:"Ugo Rbartchev"},{id:10,name:"Ugo Rille"},
+  {id:11,name:"Ugo Thique"},  {id:12,name:"Ugo Yave"},
+  {id:13,name:"Ugo Humbert"}, {id:14,name:"Ugo Jackman"},
+  {id:15,name:"Ugo Laurie"},  {id:16,name:"Ugo Lloris"},
+  {id:17,name:"Ugo Dzilla"},  {id:18,name:"Ugo Victor"},
+  {id:19,name:"Ugo Weaving"}, {id:20,name:"Cruella"},
+  {id:21,name:"Cruélisa"},    {id:22,name:"UGOAT",secret:true}
 ];
-const TOTAL=19;
+const TOTAL=22;
+const BONUS_ID=22; // débloqué quand tous les 21 autres sont capturés
 const QR_PREFIX='DAL_';
 
 /* ══ STATE ══ */
@@ -620,22 +758,35 @@ function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=colle
 /* ══ COLLECTION ══ */
 function goColl(){buildGrid();show('sColl');}
 function buildGrid(){
-  const n=collected.size;
-  $('collPill').textContent=n+'/'+TOTAL;
-  $('progFill').style.width=(n/TOTAL*100)+'%';
-  $('progLbl').textContent=n+' capturé(s) sur '+TOTAL;
+  const nonSecret=PUPS.filter(p=>!p.secret);
+  const nCaught=nonSecret.filter(p=>collected.has(p.id)).length;
+  $('collPill').textContent=collected.size+'/'+TOTAL;
+  $('progFill').style.width=(nCaught/nonSecret.length*100)+'%';
+  $('progLbl').textContent=nCaught+' capturé(s) sur '+nonSecret.length;
   const grid=$('collGrid');grid.innerHTML='';
   PUPS.forEach(p=>{
     const ok=collected.has(p.id);
     const div=document.createElement('div');
-    div.className='card '+(ok?'caught':'locked');
-    // Image du chiot si capturé, pokéball sinon
-    const dogHtml = ok
-      ? `<div class="card-dog"><img src="pup${p.id}.webp" alt="${p.name}" onerror="this.parentNode.innerHTML=\`${pokeballSVG(true).replace(/`/g,'\\`')}\`"></div>`
-      : `<div class="card-dog">${pokeballSVG(false)}</div>`;
-    div.innerHTML= dogHtml +
-      `<div class="card-name">${ok?p.name:'???'}</div>`+
-      `<div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
+    if(p.secret&&!ok){
+      // Item 22 secret verrouillé
+      div.className='card';
+      div.style.opacity='.45';div.style.border='2px dashed #ccc';
+      div.innerHTML=`<div class="card-dog" style="height:74px">${pokeballSVG(false)}</div>`+
+        `<div class="card-name" style="color:#cc1111;font-size:9px">🔒 Tout trouver !</div>`+
+        `<div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
+    } else if(ok){
+      div.className='card caught';
+      div.style.cursor='pointer';
+      div.onclick=()=>openDetail(p.id);
+      div.innerHTML=`<div class="card-dog"><img src="pup${p.id}.webp" alt="${p.name}" onerror="this.parentNode.innerHTML='${pokeballSVG(true).replace(/'/g,"&#39;")}' "></div>`+
+        `<div class="card-name">${p.name}</div>`+
+        `<div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
+    } else {
+      div.className='card locked';
+      div.innerHTML=`<div class="card-dog" style="height:74px">${pokeballSVG(false)}</div>`+
+        `<div class="card-name">???</div>`+
+        `<div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
+    }
     grid.appendChild(div);
   });
 }
@@ -767,7 +918,7 @@ function processQRData(data){
   let id=null;
   if(data.startsWith(QR_PREFIX)) id=parseInt(data.slice(QR_PREFIX.length));
   else if(/^\d+$/.test(data.trim())) id=parseInt(data.trim());
-  if(id&&!isNaN(id)&&id>=1&&id<=TOTAL) handleQRDetected(id);
+  if(id&&!isNaN(id)&&id>=1&&id<=21) handleQRDetected(id); // 22 = secret, pas de QR
   else showScanResult('❌ QR non reconnu','#e88');
 }
 
@@ -784,7 +935,7 @@ function handleQRDetected(id){
   if(activePupId===id)return;
   activePupId=id;
   const p=PUPS.find(x=>x.id===id);
-  $('arDogSpots').setAttribute('href','#sp'+(id-1));
+  $('arPokeball').innerHTML=pokeballSVG(true);
   $('arTitle').textContent='🐾 '+p.name+' trouvé !';
   showARDog();flashGreen();vibrate([60,40,120]);
   showScanResult('✓ '+p.name+' détecté !','#6ef');
@@ -793,12 +944,15 @@ function handleQRDetected(id){
 
 function showARDog(){$('searchHint').style.display='none';$('arDog').classList.add('on');}
 function hideARDog(){
-  $('arDog').classList.remove('on');
+  const dogEl=$('arDog');
+  dogEl.classList.remove('on');
+  const svgEl=$('arDogSvg');
+  if(svgEl){svgEl.style.display='';svgEl.style.width='140px';svgEl.style.height='114px';}
+  const pk=dogEl.querySelector('.ar-poke');
+  if(pk) pk.remove();
   $('searchHint').style.display='';
   $('catchBtn').classList.remove('on');
   activePupId=null;
-  $('arDogSvg').style.width='140px';
-  $('arDogSvg').style.height='114px';
 }
 function flashGreen(){const f=$('scanFlash');f.classList.add('on');setTimeout(()=>f.classList.remove('on'),300);}
 function stopHuntClean(){if(scanLoop){cancelAnimationFrame(scanLoop);scanLoop=null;}if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}hideARDog();try{$('arVideo').srcObject=null;}catch(e){}try{$('scanResult').style.display='none';}catch(e){}}
@@ -809,9 +963,16 @@ function openCapture(){
   if(!activePupId)return;
   const p=PUPS.find(x=>x.id===activePupId);
   pendingPup=p;
-  $('qrDogWrap').innerHTML=dalSVG(p.id-1,110,90);
-  $('qrName').textContent=p.name+' #'+String(p.id).padStart(2,'0');
-  genQRDots(p.id);$('modalQR').classList.add('on');
+  // Pokéball animée
+  $('catchPokeWrap').innerHTML=`<div style="animation:catchPulse 1s ease-in-out infinite">${pokeballSVG(true)}</div>`;
+  $('catchPupName').textContent=p.name;
+  $('catchPupNum').textContent='#'+String(p.id).padStart(2,'0');
+  show('sCatch');
+}
+function closeCatch(){
+  if(pendingPup) activePupId=pendingPup.id;
+  pendingPup=null;
+  show('sAR');
 }
 function genQRDots(seed){
   const g=$('qrDots');g.innerHTML='';let r=seed*9301+49297;
@@ -819,14 +980,32 @@ function genQRDots(seed){
 }
 function doCapture(){
   if(!pendingPup)return;
-  const p=pendingPup;$('modalQR').classList.remove('on');pendingPup=null;
+  const p=pendingPup; pendingPup=null;
   collected.add(p.id);save();
-  $('arScore').textContent=collected.size+'/'+TOTAL;
   showBurst(p.id-1);spawnPaws();vibrate([60,30,60,30,120]);
   playCaptureSfx();
   hideARDog();activePupId=null;
-  if(collected.size>=TOTAL){stopHuntClean();showWin();}
-  else{updateHint();flashMsg('🎉 Capturé ! Cherche le suivant !',2500);}
+  $('arScore').textContent=collected.size+'/'+TOTAL;
+
+  // Vérif débloquage UGOAT (item 22) — quand les 21 autres sont capturés
+  const nonSecret=PUPS.filter(x=>!x.secret);
+  const allNonSecret=nonSecret.every(x=>collected.has(x.id));
+  if(allNonSecret&&!collected.has(22)){
+    setTimeout(()=>show('sReward'),600);
+    return;
+  }
+  if(collected.size>=TOTAL){stopHuntClean();showWin();return;}
+
+  // Afficher l'image capturée en grand
+  openDetail(p.id, true);
+  updateHint();
+}
+
+function unlockBonus(){
+  const p=PUPS.find(x=>x.id===BONUS_ID);
+  collected.add(BONUS_ID); save();
+  flashMsg('🏆 UGOAT débloqué ! Tu as tout trouvé !', 4000);
+  vibrate([100,50,100,50,300]);
 }
 
 /* ══ SFX CAPTURE ══ */
@@ -860,8 +1039,7 @@ function flashMsg(txt,ms=2000){
 }
 function showBurst(idx){
   const b=$('burst');
-  b.innerHTML=dalSVG(idx,130,106,'');
-  b.querySelector('svg').classList.add('burst-dog');
+  b.innerHTML=`<div class="burst-dog" style="width:120px;height:120px">${pokeballSVG(true)}</div>`;
   const pieces=['⭐','✨','💫','🌟','🐾','❤️','🍀'];
   for(let i=0;i<14;i++){const angle=(i/14)*360,r=70+Math.random()*70;const tx=Math.cos(angle*Math.PI/180)*r,ty=Math.sin(angle*Math.PI/180)*r;const el=document.createElement('div');el.className='burst-piece';el.style.cssText=`--tx:${tx}px;--ty:${ty}px;animation-duration:${.5+Math.random()*.4}s`;el.textContent=pieces[Math.floor(Math.random()*pieces.length)];b.appendChild(el);}
   b.classList.add('on');setTimeout(()=>{b.classList.remove('on');b.innerHTML=''},900);
@@ -873,7 +1051,7 @@ function vibrate(pat){try{if(navigator.vibrate)navigator.vibrate(pat);}catch(e){
 function triggerAlert(){
   const unc=PUPS.filter(p=>!collected.has(p.id));if(!unc.length)return;
   const p=unc[0];
-  $('alertDogWrap').innerHTML=dalSVG(p.id-1,54,44);
+  $('alertDogWrap').innerHTML=pokeballSVG(false);
   $('alertH').textContent=p.name+' attend d\'être trouvé !';
   $('alertS').textContent='Cherche le QR code dans la pièce →';
   $('alertBanner').classList.add('show');vibrate([100,50,100]);
@@ -883,11 +1061,79 @@ function onAlert(){$('alertBanner').classList.remove('show');if(!$('sAR').classL
 function scheduleAlert(){clearTimeout(alertTimer);alertTimer=setTimeout(triggerAlert,4000);}
 
 /* ══ WIN ══ */
+
+/* ══ VIEWER UGODEX ══ */
+let viewerPupId=null, viewerSlide=0;
+
+function openViewer(id){
+  viewerPupId=id;
+  viewerSlide=0;
+  const p=PUPS.find(x=>x.id===id);
+  $('viewerName').textContent=p.name;
+
+  // Slide 0 : image du chiot
+  // Slide 1 : QR code
+  const body=$('viewerBody');
+  body.innerHTML='';
+
+  // Slide image
+  const s0=document.createElement('div');
+  s0.className='viewer-slide';
+  s0.innerHTML=`<img class="viewer-img" src="pup${id}.webp" alt="${p.name}" onerror="this.parentNode.innerHTML='<div style=\'color:#fff;font-size:48px;text-align:center\'>🐾<br><small style=\'font-size:16px\'>${p.name}</small></div>'">`
+  body.appendChild(s0);
+
+  // Slide QR
+  const s1=document.createElement('div');
+  s1.className='viewer-slide';
+  const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent('DAL_'+id)+'&bgcolor=ffffff&color=000000&qzone=2';
+  s1.innerHTML=`<div class="viewer-qr-box"><img src="${qrUrl}" alt="QR"><div class="viewer-qr-label">${p.name}<br><small>#${String(id).padStart(2,'0')}</small></div></div>`;
+  body.appendChild(s1);
+
+  // Dots
+  const dots=$('viewerDots');
+  dots.innerHTML='<div class="viewer-dot active"></div><div class="viewer-dot"></div>';
+
+  // Swipe
+  setupViewerSwipe(body,2);
+  show('sViewer');
+}
+
+function setupViewerSwipe(el,total){
+  let startX=0,dragging=false;
+  el.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;dragging=true;},{passive:true});
+  el.addEventListener('touchend',e=>{
+    if(!dragging)return;dragging=false;
+    const dx=e.changedTouches[0].clientX-startX;
+    if(dx< -50&&viewerSlide<total-1) setViewerSlide(viewerSlide+1);
+    else if(dx>50&&viewerSlide>0) setViewerSlide(viewerSlide-1);
+  },{passive:true});
+}
+
+function setViewerSlide(n){
+  viewerSlide=n;
+  const slides=$('viewerBody').children;
+  Array.from(slides).forEach((s,i)=>s.style.transform=`translateX(${(i-n)*100}%)`);
+  // Rétrocompatibilité : positionnement flex
+  $('viewerBody').style.transform=`translateX(-${n*100}%)`;
+  const dots=$('viewerDots').children;
+  Array.from(dots).forEach((d,i)=>d.classList.toggle('active',i===n));
+}
+
+function closeViewer(){goColl();}
+
+/* ══ BONUS ══ */
+function unlockBonus(){
+  const p=PUPS.find(x=>x.id===BONUS_ID);
+  collected.add(BONUS_ID);save();
+  flashMsg('🏆 '+p.name+' débloqué ! Félicitations !',5000);
+  vibrate([100,50,100,50,300]);
+}
+
 function showWin(){
   const row=$('winDogsRow');row.innerHTML='';
-  for(let i=0;i<6;i++){const d=document.createElement('div');d.className='win-dog-sm';d.innerHTML=dalSVG(i,56,46);row.appendChild(d);}
+  for(let i=0;i<6;i++){const d=document.createElement('div');d.className='win-dog-sm';d.innerHTML=pokeballSVG(true);row.appendChild(d);}
   const par=$('winParade');par.innerHTML='';
-  for(let i=0;i<TOTAL;i++){const d=document.createElement('div');d.className='parade-dog';d.innerHTML=dalSVG(i%12,52,42);par.appendChild(d);}
+  for(let i=0;i<TOTAL;i++){const d=document.createElement('div');d.className='parade-dog';d.innerHTML=pokeballSVG(true);par.appendChild(d);}
   const s=Math.floor((Date.now()-startTime)/1000);
   $('winTime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
   $('winTotal').textContent=TOTAL+' 🐾';
@@ -914,5 +1160,21 @@ splashEl.removeAttribute('onclick');
 setInterval(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},15000);
 setTimeout(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},5000);
 </script>
+
+<!-- ════ VIEWER UGODEX ════ -->
+<div class="screen" id="sViewer">
+  <div class="viewer-head">
+    <button class="icon-btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff" onclick="closeViewer()">←</button>
+    <span class="viewer-name" id="viewerName"></span>
+    <div style="width:38px"></div>
+  </div>
+  <div class="viewer-body" id="viewerBody" style="flex-wrap:nowrap;transition:transform .3s ease;">
+    <!-- slides injectées dynamiquement -->
+  </div>
+  <div class="viewer-dots" id="viewerDots" style="margin:10px auto 6px;"></div>
+  <div class="viewer-hint">← Glisse pour voir le QR code →</div>
+  <div style="height:16px"></div>
+</div>
+
 </body>
 </html>
