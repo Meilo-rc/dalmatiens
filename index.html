@@ -175,7 +175,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .viewer-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);}
 .viewer-dot.active{background:#fff;}
 .viewer-hint{font-size:11px;color:rgba(255,255,255,0.45);margin-top:6px;letter-spacing:1px;}
-
+/* Suppression des symboles/types étranges du jeu original */
+#viewerTypes { display: none !important; }
+  
 /* ══ BONUS ITEM ══ */
 .card.bonus{border-color:var(--rouge);background:linear-gradient(135deg,#fff8f8,#fff);position:relative;}
 .card.bonus::before{content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:28px;z-index:2;}
@@ -468,7 +470,7 @@ function unlockUGOAT(){
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 4 </div>
+  <div id="tapToStart">🐾 START 5 </div>
 </div>
 
 <!-- ════ HOME ════ -->
