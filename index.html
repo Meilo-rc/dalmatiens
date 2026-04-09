@@ -212,7 +212,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 #snapBtn:active{transform:translateX(-50%)scale(.93);background:rgba(0,0,0,.85);}
 #snapBtn.scanning{background:rgba(204,17,17,.7);border-color:rgba(255,255,255,.8);}
 
-#arDog{position:absolute;left:50%;top:50%;transform:translate(-50%,-65%);z-index:19;display:none;flex-direction:column;align-items:center;pointer-events:none;animation:dogBob .8s ease-in-out infinite alternate;}
+#arDog{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:19;display:none;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
 #arDog.on{display:flex;}
 #arDogSvg{animation:dogBob .5s ease-in-out infinite alternate;transform-origin:50% 85%;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5));transition:width .15s,height .15s;}
 @keyframes dogBob{from{transform:rotate(-8deg)translateY(0)}to{transform:rotate(8deg)translateY(-10px)}}
@@ -543,7 +543,7 @@ function unlockUGOAT(){
 
   <!-- Chiot AR -->
   <div id="arDog">
-    <div id="arPokeball" style="width:120px;height:120px;display:flex;align-items:center;justify-content:center;"></div>
+    <div id="arPokeball" style="width:180px;height:180px;display:flex;align-items:center;justify-content:center;animation:catchPulse 1.2s ease-in-out infinite;"></div>
     <div class="ar-dog-shadow"></div>
     <div class="ar-dog-ring"></div>
   </div>
@@ -682,12 +682,12 @@ function load(){try{const c=localStorage.getItem('dal7_c'),t=localStorage.getIte
 
 const $=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');}
-function pokeballSVG(caught){
+function pokeballSVG(caught, size=54){
   const topColor = caught ? '#e00' : '#999';
   const bottomColor = caught ? '#fff' : '#ccc';
   const borderColor = caught ? '#111' : '#888';
   const gloss = caught ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)';
-  return `<svg viewBox="0 0 60 60" width="54" height="54">
+  return `<svg viewBox="0 0 60 60" width="${size}" height="${size}">
     <circle cx="30" cy="30" r="27" fill="${borderColor}"/>
     <path d="M3 30 A27 27 0 0 1 57 30 Z" fill="${topColor}"/>
     <path d="M3 30 A27 27 0 0 0 57 30 Z" fill="${bottomColor}"/>
@@ -935,7 +935,7 @@ function handleQRDetected(id){
   if(activePupId===id)return;
   activePupId=id;
   const p=PUPS.find(x=>x.id===id);
-  $('arPokeball').innerHTML=pokeballSVG(true);
+  $('arPokeball').innerHTML=pokeballSVG(true,180);
   $('arTitle').textContent='🐾 '+p.name+' trouvé !';
   showARDog();flashGreen();vibrate([60,40,120]);
   showScanResult('✓ '+p.name+' détecté !','#6ef');
