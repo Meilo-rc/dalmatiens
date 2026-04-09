@@ -470,7 +470,7 @@ function unlockUGOAT(){
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 5 </div>
+  <div id="tapToStart">🐾 START 6 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -1086,7 +1086,7 @@ function openViewer(id){
   // Slide image
   const s0=document.createElement('div');
   s0.className='viewer-slide';
-  s0.innerHTML=`<img class="viewer-img" src="pup${id}.webp" alt="${p.name}" onerror="this.parentNode.innerHTML='<div style=\'color:#fff;font-size:48px;text-align:center\'>🐾<br><small style=\'font-size:16px\'>${p.name}</small></div>'">`
+  s0.innerHTML=`<img class="viewer-img" src="pup${id}.webp" alt="${p.name}">`;
   body.appendChild(s0);
 
   // Slide QR
