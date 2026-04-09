@@ -470,7 +470,7 @@ function unlockUGOAT(){
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 6 </div>
+  <div id="tapToStart">🐾 START 8 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -760,34 +760,48 @@ function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=colle
 /* ══ COLLECTION ══ */
 function goColl(){buildGrid();show('sColl');}
 function buildGrid(){
-  const nonSecret=PUPS.filter(p=>!p.secret);
-  const nCaught=nonSecret.filter(p=>collected.has(p.id)).length;
-  $('collPill').textContent=collected.size+'/'+TOTAL;
-  $('progFill').style.width=(nCaught/nonSecret.length*100)+'%';
-  $('progLbl').textContent=nCaught+' capturé(s) sur '+nonSecret.length;
-  const grid=$('collGrid');grid.innerHTML='';
-  PUPS.forEach(p=>{
-    const ok=collected.has(p.id);
-    const div=document.createElement('div');
-    if(p.secret&&!ok){
-      // Item 22 secret verrouillé
-      div.className='card';
-      div.style.opacity='.45';div.style.border='2px dashed #ccc';
-      div.innerHTML=`<div class="card-dog" style="height:74px">${pokeballSVG(false)}</div>`+
-        `<div class="card-name" style="color:#cc1111;font-size:9px">🔒 Tout trouver !</div>`+
-        `<div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
-    } else if(ok){
-      div.className='card caught';
-      div.style.cursor='pointer';
-      div.onclick=()=>openDetail(p.id);
-      div.innerHTML=`<div class="card-dog"><img src="pup${p.id}.webp" alt="${p.name}" onerror="this.parentNode.innerHTML='${pokeballSVG(true).replace(/'/g,"&#39;")}' "></div>`+
-        `<div class="card-name">${p.name}</div>`+
-        `<div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
-    } else {
-      div.className='card locked';
-      div.innerHTML=`<div class="card-dog" style="height:74px">${pokeballSVG(false)}</div>`+
-        `<div class="card-name">???</div>`+
-        `<div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
+  const nonSecret = PUPS.filter(p => !p.secret);
+  const nCaught = nonSecret.filter(p => collected.has(p.id)).length;
+  
+  if($('collPill')) $('collPill').textContent = collected.size + '/' + TOTAL;
+  if($('progFill')) $('progFill').style.width = (nCaught / nonSecret.length * 100) + '%';
+  if($('progLbl')) $('progLbl').textContent = nCaught + ' capturé(s) sur ' + nonSecret.length;
+  
+  const grid = $('collGrid');
+  grid.innerHTML = '';
+
+  PUPS.forEach(p => {
+    const ok = collected.has(p.id);
+    const div = document.createElement('div');
+    
+    if(p.secret && !ok){
+      // Chiot secret verrouillé
+      div.className = 'card';
+      div.style.opacity = '.45';
+      div.style.border = '2px dashed #ccc';
+      div.innerHTML = `<div class="card-dog" style="height:74px">${pokeballSVG(false)}</div>
+                       <div class="card-name" style="color:#cc1111;font-size:9px">🔒 Tout trouver !</div>
+                       <div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
+    } 
+    else if(ok){
+      // Chiot capturé : ON ACTIVE LE CLIC ICI
+      div.className = 'card caught';
+      div.style.cursor = 'pointer';
+      
+      // On lie la fonction openDetail proprement
+      div.onclick = () => openDetail(p.id); 
+      
+      // On retire le onerror qui créait les symboles ' ">
+      div.innerHTML = `<div class="card-dog"><img src="pup${p.id}.webp" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;"></div>
+                       <div class="card-name">${p.name}</div>
+                       <div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
+    } 
+    else {
+      // Chiot normal verrouillé
+      div.className = 'card locked';
+      div.innerHTML = `<div class="card-dog" style="height:74px">${pokeballSVG(false)}</div>
+                       <div class="card-name">???</div>
+                       <div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
     }
     grid.appendChild(div);
   });
