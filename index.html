@@ -468,7 +468,7 @@ function unlockUGOAT(){
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 3 </div>
+  <div id="tapToStart">🐾 START 4 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -580,7 +580,7 @@ function unlockUGOAT(){
     <div id="catchPupName" style="font-family:'Fredoka One',cursive;font-size:26px;color:var(--rouge);text-align:center;"></div>
     <div id="catchPupNum" style="font-size:12px;color:#888;font-weight:800;letter-spacing:1px;"></div>
     <button class="btn-capture" onclick="doCapture()" style="width:100%;max-width:310px;">🐾 Capturer !</button>
-    <button onclick="closeCatch()" style="background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;padding:4px;">Laisser filer l'animal</button>
+    <button id="btnCancel" onclick="closeCatch()" style="background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;padding:4px;">Laisser filer l'animal</button>
   </div>
 </div>
 
@@ -963,6 +963,8 @@ function openCapture(){
   if(!activePupId)return;
   const p=PUPS.find(x=>x.id===activePupId);
   pendingPup=p;
+  // MODIF : Bouton contextuel laisser filer/annuler
+  document.getElementById('btnCancel').textContent = "Laisser filer l'animal";
  // REMPLACEMENT ICI : On met l'image au lieu du SVG de la pokeball
   $('catchPokeWrap').innerHTML = `<img src="pup${p.id}.webp" style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 15px white);">`;
 // SUPPRIMER OU COMMENTER CETTE LIGNE :
@@ -987,7 +989,9 @@ function doCapture(){
   playCaptureSfx();
   hideARDog();activePupId=null;
   $('arScore').textContent=collected.size+'/'+TOTAL;
-
+// ICI : On change le texte du bouton d'annulation en "Retour"
+  if($('btnCancel')) $('btnCancel').textContent = "Retour";
+  
   // Vérif débloquage UGOAT (item 22) — quand les 21 autres sont capturés
   const nonSecret=PUPS.filter(x=>!x.secret);
   const allNonSecret=nonSecret.every(x=>collected.has(x.id));
