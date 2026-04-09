@@ -468,7 +468,7 @@ function unlockUGOAT(){
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 1 </div>
+  <div id="tapToStart">🐾 START 2 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -566,7 +566,7 @@ function unlockUGOAT(){
     📸 Scanner le QR code
   </button>
 
-  <button id="catchBtn" onclick="doCapture()">✋ Attraper !</button>
+  <button id="catchBtn" onclick="openCapture()">✋ Attraper !</button>
   <button id="arBackBtn" onclick="stopHunt()">🏠</button>
 </div>
 
@@ -937,8 +937,8 @@ function handleQRDetected(id){
   const p=PUPS.find(x=>x.id===id);
   $('arPokeball').innerHTML=pokeballSVG(true,180);
   $('arTitle').textContent='🐾 '+p.name+' trouvé !';
-  showARDog(); flashGreen(); vibrate([60,40,120]);
-  showScanResult('✓ '+p.name+' — Attrape-le !','#6ef');
+  showARDog();flashGreen();vibrate([60,40,120]);
+  showScanResult('✓ '+p.name+' détecté !','#6ef');
   $('catchBtn').classList.add('on');
 }
 
@@ -980,17 +980,15 @@ function genQRDots(seed){
   for(let i=0;i<35;i++){r=(r*9301+49297)%233280;const on=(r/233280)>0.42;const d=document.createElement('div');d.className='qd';d.style.background=on?'#111':'transparent';g.appendChild(d);}
 }
 function doCapture(){
-  const id = pendingPup ? pendingPup.id : activePupId;
-  if(!id) return;
-  const p = PUPS.find(x=>x.id===id);
-  pendingPup=null;
-  collected.add(p.id); save();
-  showBurst(p.id-1); spawnPaws(); vibrate([60,30,60,30,120]);
+  if(!pendingPup)return;
+  const p=pendingPup; pendingPup=null;
+  collected.add(p.id);save();
+  showBurst(p.id-1);spawnPaws();vibrate([60,30,60,30,120]);
   playCaptureSfx();
-  hideARDog(); activePupId=null;
+  hideARDog();activePupId=null;
   $('arScore').textContent=collected.size+'/'+TOTAL;
 
-  // Vérif débloquage UGOAT (item 22)
+  // Vérif débloquage UGOAT (item 22) — quand les 21 autres sont capturés
   const nonSecret=PUPS.filter(x=>!x.secret);
   const allNonSecret=nonSecret.every(x=>collected.has(x.id));
   if(allNonSecret&&!collected.has(22)){
