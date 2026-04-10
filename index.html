@@ -411,7 +411,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 4 </div>
+  <div id="tapToStart">🐾 START 5 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -1086,6 +1086,7 @@ function vibrate(pat){try{if(navigator.vibrate)navigator.vibrate(pat);}catch(e){
 
 /* ══ ALERTE ══ */
 function triggerAlert(){
+  return; // <--- ASUPPRESSION DE LA FONCTION
   const unc=PUPS.filter(p=>!collected.has(p.id));if(!unc.length)return;
   const p=unc[0];
   $('alertDogWrap').innerHTML=pokeballSVG(false);
