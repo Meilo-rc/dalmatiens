@@ -277,87 +277,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .burst-piece{position:absolute;font-size:22px;animation:piece linear forwards;}
 @keyframes piece{0%{transform:translate(0,0)scale(0);opacity:1}100%{transform:translate(var(--tx),var(--ty))scale(1);opacity:0}}
 
-/* ══ DETAIL UGODEX ══ */
-let detailId=null, detailShowQR=false;
-
-// On force l'attachement à window pour être sûr qu'elle est trouvée partout
-window.openDetail = function(id, fromCapture=false){
-  alert("Début de openDetail pour ID: " + id);
-  
-  // 1. On vérifie si la fonction est bien appelée
-  alert("Début de openDetail pour ID: " + id);
-  
-  const p = PUPS.find(x => x.id === id);
-  if(!p) {
-    alert("ERREUR: Le chiot n'existe pas dans la liste PUPS");
-    return;
-  }
-  
-  // 2. On vérifie si l'élément "sDetail" existe dans ton HTML
-  const screen = document.getElementById('sDetail');
-  if(!screen) {
-    alert("ERREUR: Impossible de trouver l'écran avec l'ID 'sDetail' dans ton HTML !");
-    return;
-  }
-  
-  alert("Tout semble OK, on tente l'affichage maintenant...");
-  
-  // 3. On exécute l'affichage
-  detailId = id; 
-  detailShowQR = false;
-  
-  $('detailName').textContent = p.name;
-  $('detailImg').src = 'pup' + id + '.webp';
-  $('detailImg').style.display = 'block';
-  $('detailQR').style.display = 'none';
-  $('detailSwipeHint').textContent = 'Swipe → pour le QR code';
-  
-  show('sDetail'); // C'est ici que l'écran devrait apparaître
-  
-  alert("Fin de fonction atteinte !");
-}
-
-function closeDetail(){
-  show('sColl');
-  buildGrid();
-}
-
-function setupDetailSwipe(){
-  const el=$('sDetail');
-  let sx=0;
-  el.ontouchstart=e=>sx=e.touches[0].clientX;
-  el.ontouchend=e=>{
-    const dx=e.changedTouches[0].clientX-sx;
-    if(Math.abs(dx)>50) toggleDetailView();
-  };
-}
-
-function toggleDetailView(){
-  detailShowQR=!detailShowQR;
-  if(detailShowQR){
-    const p=PUPS.find(x=>x.id===detailId);
-    const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(QR_PREFIX+detailId)+'&bgcolor=ffffff&color=000000&qzone=1';
-    $('detailQRImg').src=qrUrl;
-    $('detailQRName').textContent=p.name;
-    $('detailImg').style.display='none';
-    $('detailQR').style.display='flex';
-    $('detailSwipeHint').textContent='← Swipe pour l'image';
-    $('detailName').style.color='#111';
-  } else {
-    $('detailImg').style.display='block';
-    $('detailQR').style.display='none';
-    $('detailSwipeHint').textContent='Swipe → pour le QR code';
-    $('detailName').style.color='#fff';
-  }
-}
-
-function unlockUGOAT(){
-  collected.add(22);save();
-  buildGrid();
-  show('sColl');
-  flashMsg('🏆 UGOAT ajouté à l'Ugodex !',3000);
-}
-
 /* ══ ALERTE ══ */
 #alertBanner{
   position:fixed;top:-115px;left:0;right:0;z-index:300;
@@ -492,7 +411,7 @@ function unlockUGOAT(){
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 3 </div>
+  <div id="tapToStart">🐾 START 4 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -832,6 +751,87 @@ function buildGrid(){
     }
     grid.appendChild(div);
   });
+}
+
+/* ══ DETAIL UGODEX ══ */
+let detailId=null, detailShowQR=false;
+
+// On force l'attachement à window pour être sûr qu'elle est trouvée partout
+window.openDetail = function(id, fromCapture=false){
+  alert("Début de openDetail pour ID: " + id);
+  
+  // 1. On vérifie si la fonction est bien appelée
+  alert("Début de openDetail pour ID: " + id);
+  
+  const p = PUPS.find(x => x.id === id);
+  if(!p) {
+    alert("ERREUR: Le chiot n'existe pas dans la liste PUPS");
+    return;
+  }
+  
+  // 2. On vérifie si l'élément "sDetail" existe dans ton HTML
+  const screen = document.getElementById('sDetail');
+  if(!screen) {
+    alert("ERREUR: Impossible de trouver l'écran avec l'ID 'sDetail' dans ton HTML !");
+    return;
+  }
+  
+  alert("Tout semble OK, on tente l'affichage maintenant...");
+  
+  // 3. On exécute l'affichage
+  detailId = id; 
+  detailShowQR = false;
+  
+  $('detailName').textContent = p.name;
+  $('detailImg').src = 'pup' + id + '.webp';
+  $('detailImg').style.display = 'block';
+  $('detailQR').style.display = 'none';
+  $('detailSwipeHint').textContent = 'Swipe → pour le QR code';
+  
+  show('sDetail'); // C'est ici que l'écran devrait apparaître
+  
+  alert("Fin de fonction atteinte !");
+}
+
+function closeDetail(){
+  show('sColl');
+  buildGrid();
+}
+
+function setupDetailSwipe(){
+  const el=$('sDetail');
+  let sx=0;
+  el.ontouchstart=e=>sx=e.touches[0].clientX;
+  el.ontouchend=e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>50) toggleDetailView();
+  };
+}
+
+function toggleDetailView(){
+  detailShowQR=!detailShowQR;
+  if(detailShowQR){
+    const p=PUPS.find(x=>x.id===detailId);
+    const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(QR_PREFIX+detailId)+'&bgcolor=ffffff&color=000000&qzone=1';
+    $('detailQRImg').src=qrUrl;
+    $('detailQRName').textContent=p.name;
+    $('detailImg').style.display='none';
+    $('detailQR').style.display='flex';
+    $('detailSwipeHint').textContent='← Swipe pour l'image';
+    $('detailName').style.color='#111';
+  } else {
+    $('detailImg').style.display='block';
+    $('detailQR').style.display='none';
+    $('detailSwipeHint').textContent='Swipe → pour le QR code';
+    $('detailName').style.color='#fff';
+  }
+}
+
+function unlockUGOAT(){
+  collected.add(22);save();
+  buildGrid();
+  show('sColl');
+  flashMsg('🏆 UGOAT ajouté à l'Ugodex !',3000);
 }
 
 /* ══ QR À IMPRIMER ══ */
