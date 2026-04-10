@@ -281,15 +281,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 let detailId=null, detailShowQR=false;
 
 function openDetail(id, fromCapture=false){
-  const p=PUPS.find(x=>x.id===id);
-  if(!p)return;
-  detailId=id; detailShowQR=false;
-  $('detailName').textContent=p.name;
-  $('detailImg').src='pup'+id+'.webp';
-  $('detailImg').style.display='block';
-  $('detailQR').style.display='none';
-  $('detailSwipeHint').textContent='Swipe → pour le QR code';
-  show('sDetail');
+  console.log("Tentative d'ouverture du chiot :", id); // Ligne de test
+  const p = PUPS.find(x => x.id === id);
+  if(!p) {
+    console.error("Erreur : Chiot introuvable avec l'ID", id);
+    return;
+  }
+  
+  detailId = id; detailShowQR = false;
+  
+  // Testez chaque ligne une par une en ajoutant un log
+  console.log("Nom de l'élément :", $('detailName')); 
+  $('detailName').textContent = p.name;
+  
+  $('detailImg').src = 'pup' + id + '.webp';
+  $('detailImg').style.display = 'block';
+  
+  console.log("Tentative d'affichage de l'écran detail");
+  show('sDetail'); 
+  
   if(fromCapture) flashMsg('🎉 Capturé ! Cherche le suivant !',2500);
   // Swipe
   setupDetailSwipe();
