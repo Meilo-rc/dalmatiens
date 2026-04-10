@@ -390,28 +390,49 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   
 @keyframes mascotFloat {0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
 
-/* Animation de la Pokéball (trajectoire) */
-.throwing {
-  animation: throwBall 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  position: absolute; /* Assure que ça vole par-dessus */
+/* --- ÉTAPE 1 : Le Lancer de la Pokéball --- */
+@keyframes pokeballThrow {
+  0% {
+    /* Part du coin inférieur gauche, très grosse, invisible */
+    transform: translate(-50vw, 50vh) scale(3) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  100% {
+    /* Atterrit parfaitement au centre, taille normale, reste visible */
+    transform: translate(-50%, -50%) scale(1) rotate(720deg);
+    opacity: 1;
+  }
+}
+
+.pokeball-flying {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   z-index: 10;
+  /* Utilise cubic-bezier pour l'effet "cloche" */
+  animation: pokeballThrow 1s cubic-bezier(0.25, 0.1, 0.25, 1.4) forwards;
 }
 
-/* Animation du chiot (aspiration) */
-.shrinking-puppy {
-  animation: shrinkPup 0.8s ease-in forwards;
+/* --- ÉTAPE 2 : L'Aspiration Tourbillonnante du Chiot --- */
+@keyframes puppyAspiration {
+  0% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    /* Reste au centre, rétrécit et tourne jusqu'à 0 */
+    transform: translate(-50%, -50%) scale(0) rotate(1080deg);
+    opacity: 0;
+  }
 }
 
-@keyframes shrinkPup {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(0.5); opacity: 0.5; }
-  100% { transform: scale(0); opacity: 0; }
-}
-
-@keyframes throwBall {
-  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  50% { transform: translate(50px, -150px) scale(0.6) rotate(180deg); }
-  100% { transform: translate(150px, 0) scale(0.1) rotate(360deg); opacity: 0; }
+.puppy-aspiring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  animation: puppyAspiration 0.8s ease-in forwards;
 }
 
 @media print {
@@ -509,7 +530,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START GO </div>
+  <div id="tapToStart">🐾 START 1 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -1116,51 +1137,71 @@ function genQRDots(seed){
   const g=$('qrDots');g.innerHTML='';let r=seed*9301+49297;
   for(let i=0;i<35;i++){r=(r*9301+49297)%233280;const on=(r/233280)>0.42;const d=document.createElement('div');d.className='qd';d.style.background=on?'#111':'transparent';g.appendChild(d);}
 }
-function playCaptureAnimation() {
+async function playCaptureAnimation() {
   const container = $('catchPokeWrap');
   
-  // 1. On récupère l'image du chiot déjà présente
+  // 1. On récupère l'image du chiot existante
   const pupImg = container.querySelector('img');
   
-  // 2. On ajoute la Pokéball par-dessus
+  // 2. On injecte la Pokéball par-dessus
   container.insertAdjacentHTML('beforeend', pokeballSVG(true, 150));
   const ball = container.querySelector('svg');
   
-  // 3. On applique les classes d'animation
-  ball.classList.add('throwing');
-  if (pupImg) pupImg.classList.add('shrinking-puppy');
+  // 3. ÉTAPE 1 : Lancement de la Pokéball
+  ball.classList.add('pokeball-flying');
+  
+  // On attend 1000ms (la durée de l'animation de vol)
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // Retourne la promesse
-  return new Promise(resolve => setTimeout(resolve, 800));
+  // 4. ÉTAPE 2 : Aspiration du chiot
+  if (pupImg) {
+    pupImg.classList.add('puppy-aspiring');
+  }
+  
+  // On attend 800ms (la durée de l'aspiration)
+  await new Promise(resolve => setTimeout(resolve, 800));
 }
-  async function doCapture() {
-  if(!pendingPup) return;
+  
+async function doCapture() {
+  // 1. Protection contre les lancements multiples
+  if (!pendingPup) return;
 
-  // Lance l'animation, le son et la vibration AVANT de traiter la capture
-  playCaptureSfx();
-  vibrate([60,30,60,30,120]);
-  
-  // On attend que l'animation de 800ms se termine
+  // 2. Déclenchement de la séquence audiovisuelle (Animation + Son + Vibration)
+  // On attend que la Pokéball atterrisse et que le chiot soit aspiré
   await playCaptureAnimation();
-  const p=pendingPup; pendingPup=null;
-  collected.add(p.id);save();
-  showBurst(p.id-1);spawnPaws();vibrate([60,30,60,30,120]);
-  playCaptureSfx();
-  hideARDog();activePupId=null;
-  $('arScore').textContent=collected.size+'/'+TOTAL;
-// ICI : On change le texte du bouton d'annulation en "Retour"
-  if($('btnCancel')) $('btnCancel').textContent = "Retour";
+
+  // 3. Traitement de la capture (Logique métier)
+  const p = pendingPup;
+  pendingPup = null;
+  collected.add(p.id);
+  save();
+
+  // 4. Effets visuels de succès
+  showBurst(p.id - 1);
+  spawnPaws();
+  hideARDog();
+  activePupId = null;
+  $('arScore').textContent = collected.size + '/' + TOTAL;
+
+  // Mise à jour de l'interface
+  if ($('btnCancel')) $('btnCancel').textContent = "Retour";
+
+  // 5. Vérification des conditions de victoire ou récompense spéciale
+  const nonSecret = PUPS.filter(x => !x.secret);
+  const allNonSecret = nonSecret.every(x => collected.has(x.id));
   
-  // Vérif débloquage UGOAT (item 22) — quand les 21 autres sont capturés
-  const nonSecret=PUPS.filter(x=>!x.secret);
-  const allNonSecret=nonSecret.every(x=>collected.has(x.id));
-  if(allNonSecret&&!collected.has(22)){
-    setTimeout(()=>show('sReward'),600);
+  if (allNonSecret && !collected.has(22)) {
+    setTimeout(() => show('sReward'), 600);
     return;
   }
-  if(collected.size>=TOTAL){stopHuntClean();showWin();return;}
+  
+  if (collected.size >= TOTAL) {
+    stopHuntClean();
+    showWin();
+    return;
+  }
 
-  // Afficher l'image capturée en grand
+  // 6. Affichage du résultat final
   openDetail(p.id, true);
   updateHint();
 }
