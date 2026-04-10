@@ -847,9 +847,10 @@ async function rafraichirClassement() {
     rankingBody.innerHTML = "Chargement...";
 
     try {
-        // On récupère les scores triés par le plus haut
-        // Assure-toi que le champ de tri dans sort est aussi en majuscule
-        const records = await pb.collection('Classement').getList(1, 20);
+        // Le "-" devant "Score" signifie "Tri décroissant" (du plus grand au plus petit)
+        const records = await pb.collection('Classement').getList(1, 20, {
+            sort: '-Score', 
+        });
 
         console.log("Données reçues de PocketBase :", records);
         rankingBody.innerHTML = ""; // Nettoyer le texte "Chargement"
