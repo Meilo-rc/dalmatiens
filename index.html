@@ -228,9 +228,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 #arDog.on{display:flex;}
 #arDogSvg{animation:dogBob .5s ease-in-out infinite alternate;transform-origin:50% 85%;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5));transition:width .15s,height .15s;}
 @keyframes dogBob{from{transform:rotate(-8deg)translateY(0)}to{transform:rotate(8deg)translateY(-10px)}}
-.ar-dog-shadow{width:80px;height:16px;background:rgba(0,0,0,.35);border-radius:50%;filter:blur(5px);animation:shadowB .5s ease-in-out infinite alternate;}
+.ar-dog-shadow{width:80px;height:16px;background:rgba(0,0,0,.35);border-radius:50%;filter:blur(5px);animation:shadowB .5s ease-in-out infinite alternate;margin: 0 auto;}
 @keyframes shadowB{from{transform:scaleX(.7);opacity:.45}to{transform:scaleX(1.1);opacity:.2}}
-.ar-dog-ring{position:absolute;border:3px solid rgba(255,255,255,0.8);border-radius:50%;width:100px;height:100px;top:50%;left:50%;transform:translate(-50%,-50%);animation:ringOut 1.8s ease-out infinite;pointer-events:none;}
+.ar-dog-ring{position:absolute;border: 4px solid rgba(255,255,255,0.6);;border-radius:50%;width:200px;height:200px;top:50%;left:50%;transform:translate(-50%,-50%);animation:ringOut 1.8s ease-out infinite;pointer-events:none;}
 @keyframes ringOut{0%{transform:translate(-50%,-50%)scale(.6);opacity:.9}100%{transform:translate(-50%,-50%)scale(2.6);opacity:0}}
 
 #searchHint{position:absolute;bottom:165px;left:20px;right:20px;z-index:20;text-align:center;}
@@ -424,7 +424,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 7 </div>
+  <div id="tapToStart">🐾 START 8 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -498,7 +498,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 
   <!-- Chiot AR -->
   <div id="arDog">
-    <div id="arPokeball" style="width:180px;height:180px;display:flex;align-items:center;justify-content:center;animation:catchPulse 1.2s ease-in-out infinite;"></div>
+    <div id="arPokeball" style="width:180px;height:180px;display:flex;align-items:center;justify-content:center;margin:0 auto;animation:catchPulse 1.2s ease-in-out infinite;"></div>
     <div class="ar-dog-shadow"></div>
     <div class="ar-dog-ring"></div>
   </div>
