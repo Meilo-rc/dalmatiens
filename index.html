@@ -593,9 +593,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 3 </div>
+  <div id="tapToStart" onclick="initialiserApplication()">🐾 START 1🐾</div>
 </div>
 
+<!-- ════ LOGIN ════ -->
+<div class="screen" id="sLogin">
+    <h2>Enregistrement</h2>
+    <input type="text" id="playerPseudo" placeholder="Entre ton pseudo...">
+    <button onclick="savePseudo()">Valider</button>
+</div>
+  
 <!-- ════ HOME ════ -->
 <div class="screen" id="sHome">
   <div class="home-mascot">
@@ -1590,6 +1597,26 @@ const splashEl = $('sSplash');
   }, {once: true})
 );
 
+// PSEUDO A ENREGISTRER
+function initialiserApplication() {
+    const pseudo = localStorage.getItem('ugo_pseudo');
+    
+    // Si on a un pseudo, on affiche l'accueil, sinon on affiche le login
+    if (pseudo) {
+        show('sHome');
+    } else {
+        show('sLogin');
+    }
+}
+
+// PSEUDO A SAUVEGARDER
+function savePseudo() {
+    const pseudo = document.getElementById('playerPseudo').value;
+    if (pseudo) {
+        localStorage.setItem('ugo_pseudo', pseudo);
+        show('sHome');
+    }
+}
 // Retirer l'onclick inline pour éviter double déclenchement
 splashEl.removeAttribute('onclick');
 
