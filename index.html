@@ -390,7 +390,38 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   
 @keyframes mascotFloat {0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
 
-/* L'élément qui fera le flash */
+/* ══ SCREEN CLASSEMENT ══ */
+#sRanking .ranking-body {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 10px;
+}
+
+.ranking-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05); /* Légère transparence pour le mode sombre */
+  padding: 15px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+/* Effet pour le top 3 (pour le côté compétitif) */
+.ranking-row:nth-child(1) { background: rgba(255, 215, 0, 0.2); border-color: rgba(255, 215, 0, 0.4); }
+.ranking-row:nth-child(2) { background: rgba(192, 192, 192, 0.2); border-color: rgba(192, 192, 192, 0.4); }
+.ranking-row:nth-child(3) { background: rgba(205, 127, 50, 0.2); border-color: rgba(205, 127, 50, 0.4); }
+
+/* Style du texte */
+.ranking-row span {
+  font-size: 1.1em;
+}
+  
+/* ══ FLASH CAPTURE ══ */
 #captureFlash {
   position: absolute;
   top: 0;
@@ -597,6 +628,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <button class="btn btn-primary" onclick="goHunt()">📷 Partir à la chasse !</button>
   <button class="btn btn-secondary" onclick="goColl()">📖 Ugodex</button>
   <button class="btn btn-ghost" onclick="goPrint()">🖨️ QR codes à imprimer</button>
+  <button class="btn-ranking" onclick="show('#sRanking'); rafraichirClassement();"> 🏆 Voir le Classement</button>
 </div>
 
 <!-- ════ COLLECTION ════ -->
@@ -737,6 +769,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   </div>
 </div>
 
+<!-- ════ CLASSEMENT ════ -->
+<div class="screen" id="sRanking">
+  <div class="panel-head">
+    <button class="icon-btn" onclick="goHome()">←</button>
+    <span class="panel-title">Classement Mondial</span>
+  </div>
+  <div class="ranking-body" id="rankingBody">
+    </div>
+</div>
+  
 <!-- ════ WIN ════ -->
 <div class="screen" id="sWin">
   <div class="win-dogs-row" id="winDogsRow"></div>
@@ -765,6 +807,50 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <script>
 'use strict';
 
+/* ══ CONNEXION BASE DE DONNEES ══ */
+const pb = new PocketBase('http://127.0.0.1:8090');
+
+async function envoyerScore(pseudo, score) {
+    const data = {
+        "pseudo": pseudo,
+        "score": score
+    };
+
+    try {
+        const record = await pb.collection('Classement').create(data);
+        console.log("Score enregistré avec succès !", record);
+    } catch (error) {
+        console.error("Erreur lors de l'enregistrement du score :", error);
+    }
+}
+
+/* ══ AFFICHAGE DU CLASSEMENT ══ */
+async function rafraichirClassement() {
+    const rankingBody = document.getElementById('rankingBody');
+    rankingBody.innerHTML = "Chargement...";
+
+    try {
+        // On récupère les scores triés par le plus haut
+        const records = await pb.collection('Classement').getList(1, 20, {
+            sort: '-score',
+        });
+
+        rankingBody.innerHTML = ""; // Nettoyer le texte "Chargement"
+
+        records.items.forEach((item, index) => {
+            const row = document.createElement('div');
+            row.className = 'ranking-row';
+            row.innerHTML = `
+                <span>${index + 1}. ${item.pseudo}</span>
+                <strong>${item.score} pts</strong>
+            `;
+            rankingBody.appendChild(row);
+        });
+    } catch (error) {
+        rankingBody.innerHTML = "Impossible de charger le classement.";
+    }
+}
+  
 /* ══ DETAIL UGODEX ══ */
 let detailId=null, detailShowQR=false;
 
