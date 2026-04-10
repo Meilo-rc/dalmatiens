@@ -536,7 +536,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 4 </div>
+  <div id="tapToStart">🐾 START 5 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -1211,71 +1211,60 @@ async function doCapture() {
   // 1. Protection contre les lancements multiples
   if (!pendingPup) return;
 
-  // 2. Déclenchement de la séquence audiovisuelle (Animation + Son + Vibration)
-  // On attend que la Pokéball atterrisse et que le chiot soit aspiré
+  // 2. Séquence audiovisuelle : animation de la Pokéball + aspiration du chiot
   await playCaptureAnimation();
 
-  // 3. Traitement de la capture (Logique métier)
+  // 3. Traitement métier : ajout à la collection et sauvegarde
   const p = pendingPup;
-  pendingPup = null;
   collected.add(p.id);
   save();
 
-// 4. Lancement des effets visuels de succès (superposés à la Pokéball)
+  // 4. Effets visuels et sonores de succès
   showBurst(p.id - 1);
   spawnPaws();
-  playCaptureSfx(); // Ton son de succès ici
+  playCaptureSfx();
   vibrate([60, 30, 60, 30, 120]);
 
-  // 5. Interface : On remplace les boutons par le bouton UgoDex
-  // On cache les contrôles de capture
+  // 5. Interface : Masquer les contrôles de capture originaux
   const container = $('sCatch').querySelector('div[style*="background:#fff"]');
   container.querySelectorAll('button').forEach(b => b.style.display = 'none');
   
-  // On crée ou on affiche le bouton "Ajouter au UgoDex"
-  // (Ou utilise un élément caché que tu affiches)
+  // 6. Gestion du bouton "Ajouter au UgoDex"
   let dexBtn = document.getElementById('btnToDex');
   if (!dexBtn) {
+    // Si le bouton n'existe pas dans le DOM, on le crée (au cas où)
     dexBtn = document.createElement('button');
     dexBtn.id = 'btnToDex';
     dexBtn.className = 'btn-capture';
+    dexBtn.style.cssText = "width:100%; max-width:310px; background:#4CAF50; display:block;";
     dexBtn.textContent = '📖 Ajouter au UgoDex';
-    dexBtn.onclick = () => { 
-        hide('sCatch'); 
-        openDetail(p.id, true); 
-        pendingPup = null;
-    };
     container.appendChild(dexBtn);
   } else {
     dexBtn.style.display = 'block';
   }
 
-  // Nettoyage final
+// Action : Renvoie vers la vue d'ensemble du Dex
+  dexBtn.onclick = () => { 
+    closeCatch(); // Ferme proprement l'écran de capture
+    show('sViewer'); // Changé de 'sDex' à 'sViewer'
+    updateHint();
+  };
+
+  // 7. Nettoyage et mise à jour des scores
   hideARDog();
   activePupId = null;
   $('arScore').textContent = collected.size + '/' + TOTAL;
 
-  // Mise à jour de l'interface
-  if ($('btnCancel')) $('btnCancel').textContent = "Retour";
-
-  // 5. Vérification des conditions de victoire ou récompense spéciale
+  // 8. Vérification des conditions de victoire ou récompenses spéciales
   const nonSecret = PUPS.filter(x => !x.secret);
   const allNonSecret = nonSecret.every(x => collected.has(x.id));
   
   if (allNonSecret && !collected.has(22)) {
     setTimeout(() => show('sReward'), 600);
-    return;
-  }
-  
-  if (collected.size >= TOTAL) {
+  } else if (collected.size >= TOTAL) {
     stopHuntClean();
     showWin();
-    return;
   }
-
-  // 6. Affichage du résultat final
-  openDetail(p.id, true);
-  updateHint();
 }
 
 function unlockBonus(){
