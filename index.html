@@ -854,7 +854,22 @@ function save(){try{localStorage.setItem('dal7_c',JSON.stringify([...collected])
 function load(){try{const c=localStorage.getItem('dal7_c'),t=localStorage.getItem('dal7_t');if(c)collected=new Set(JSON.parse(c).map(Number));if(t)startTime=parseInt(t);}catch(e){}}
 
 const $=id=>document.getElementById(id);
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');}
+function show(id) {
+  // 1. On nettoie tout ce qui a la classe 'on'
+  const screens = document.querySelectorAll('.screen');
+  screens.forEach(s => s.classList.remove('on'));
+  
+  // 2. On récupère l'élément proprement (si tu as mis un # ou non)
+  const cleanId = id.replace('#', '');
+  const element = document.getElementById(cleanId);
+  
+  if (element) {
+    element.classList.add('on');
+    console.log("Écran " + cleanId + " activé.");
+  } else {
+    console.error("Impossible de trouver l'élément : " + cleanId);
+  }
+}
 function pokeballSVG(caught, size=54){
   const topColor = caught ? '#e00' : '#999';
   const bottomColor = caught ? '#fff' : '#ccc';
