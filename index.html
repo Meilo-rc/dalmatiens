@@ -411,7 +411,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 5 </div>
+  <div id="tapToStart">🐾 START 6 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -593,6 +593,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <button class="btn-replay" onclick="reset()">🔄 Nouvelle Chasse</button>
 </div>
 
+<!-- ════ VIEWER UGODEX ════ -->
+<div class="screen" id="sViewer">
+  <div class="viewer-head">
+    <button class="icon-btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff" onclick="closeViewer()">←</button>
+    <span class="viewer-name" id="viewerName"></span>
+    <div style="width:38px"></div>
+  </div>
+  <div class="viewer-body" id="viewerBody" style="flex-wrap:nowrap;transition:transform .3s ease;">
+    <!-- slides injectées dynamiquement -->
+  </div>
+  <div class="viewer-dots" id="viewerDots" style="margin:10px auto 6px;"></div>
+  <div class="viewer-hint">← Glisse pour voir le QR code →</div>
+  <div style="height:16px"></div>
+</div>
+  
 <script>
 'use strict';
 
@@ -1208,21 +1223,6 @@ splashEl.removeAttribute('onclick');
 setInterval(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},15000);
 setTimeout(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},5000);
 </script>
-
-<!-- ════ VIEWER UGODEX ════ -->
-<div class="screen" id="sViewer">
-  <div class="viewer-head">
-    <button class="icon-btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff" onclick="closeViewer()">←</button>
-    <span class="viewer-name" id="viewerName"></span>
-    <div style="width:38px"></div>
-  </div>
-  <div class="viewer-body" id="viewerBody" style="flex-wrap:nowrap;transition:transform .3s ease;">
-    <!-- slides injectées dynamiquement -->
-  </div>
-  <div class="viewer-dots" id="viewerDots" style="margin:10px auto 6px;"></div>
-  <div class="viewer-hint">← Glisse pour voir le QR code →</div>
-  <div style="height:16px"></div>
-</div>
 
 </body>
 </html>
