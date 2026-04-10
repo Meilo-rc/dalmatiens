@@ -669,7 +669,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     <div id="captureFlash"></div>
   </div>
   <div style="padding:20px 24px 36px;background:#fff;width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;">
-    <div id="catchPupName" style="font-family:'Fredoka One',cursive;font-size:26px;color:var(--rouge);text-align:center;"></div>
     <div id="catchPupNum" style="font-size:12px;color:#888;font-weight:800;letter-spacing:1px;"></div>
     
     <button class="btn-capture" onclick="doCapture()" style="width:100%;max-width:310px;">🐾 Capturer !</button>
@@ -1201,7 +1200,7 @@ function openCapture() {
   $('catchPokeWrap').innerHTML = `<img src="pup${p.id}.webp" style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 15px white);">`;
 
   // 4. Mise à jour des textes
-  $('catchPupName').textContent = p.name; // Tu peux le remettre, c'est mieux pour l'UX !
+  // $('catchPupName').textContent = p.name; // Tu peux le remettre, c'est mieux pour l'UX !
   $('catchPupNum').textContent = '#' + String(p.id).padStart(2, '0');
   
   show('sCatch');
