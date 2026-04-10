@@ -416,8 +416,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   top: 50%;
   left: 50%;
   z-index: 10;
-  /* Utilise cubic-bezier pour l'effet "cloche" */
-  animation: pokeballThrow 1s cubic-bezier(0.25, 0.1, 0.25, 1.4) forwards;
+  /* ease-in-out donne une accélération plus douce en début et fin de trajectoire */
+  animation: pokeballThrow 1.2s ease-in-out forwards;
 }
 
 /* --- ÉTAPE 2 : L'Aspiration Tourbillonnante du Chiot --- */
