@@ -277,6 +277,65 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .burst-piece{position:absolute;font-size:22px;animation:piece linear forwards;}
 @keyframes piece{0%{transform:translate(0,0)scale(0);opacity:1}100%{transform:translate(var(--tx),var(--ty))scale(1);opacity:0}}
 
+/* ══ DETAIL UGODEX ══ */
+let detailId=null, detailShowQR=false;
+
+function openDetail(id, fromCapture=false){
+  const p=PUPS.find(x=>x.id===id);
+  if(!p)return;
+  detailId=id; detailShowQR=false;
+  $('detailName').textContent=p.name;
+  $('detailImg').src='pup'+id+'.webp';
+  $('detailImg').style.display='block';
+  $('detailQR').style.display='none';
+  $('detailSwipeHint').textContent='Swipe → pour le QR code';
+  show('sDetail');
+  if(fromCapture) flashMsg('🎉 Capturé ! Cherche le suivant !',2500);
+  // Swipe
+  setupDetailSwipe();
+}
+
+function closeDetail(){
+  show('sColl');
+  buildGrid();
+}
+
+function setupDetailSwipe(){
+  const el=$('sDetail');
+  let sx=0;
+  el.ontouchstart=e=>sx=e.touches[0].clientX;
+  el.ontouchend=e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>50) toggleDetailView();
+  };
+}
+
+function toggleDetailView(){
+  detailShowQR=!detailShowQR;
+  if(detailShowQR){
+    const p=PUPS.find(x=>x.id===detailId);
+    const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(QR_PREFIX+detailId)+'&bgcolor=ffffff&color=000000&qzone=1';
+    $('detailQRImg').src=qrUrl;
+    $('detailQRName').textContent=p.name;
+    $('detailImg').style.display='none';
+    $('detailQR').style.display='flex';
+    $('detailSwipeHint').textContent='← Swipe pour l'image';
+    $('detailName').style.color='#111';
+  } else {
+    $('detailImg').style.display='block';
+    $('detailQR').style.display='none';
+    $('detailSwipeHint').textContent='Swipe → pour le QR code';
+    $('detailName').style.color='#fff';
+  }
+}
+
+function unlockUGOAT(){
+  collected.add(22);save();
+  buildGrid();
+  show('sColl');
+  flashMsg('🏆 UGOAT ajouté à l'Ugodex !',3000);
+}
+
 /* ══ ALERTE ══ */
 #alertBanner{
   position:fixed;top:-115px;left:0;right:0;z-index:300;
@@ -411,7 +470,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 6 </div>
+  <div id="tapToStart">🐾 START 1 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -593,21 +652,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <button class="btn-replay" onclick="reset()">🔄 Nouvelle Chasse</button>
 </div>
 
-<!-- ════ VIEWER UGODEX ════ -->
-<div class="screen" id="sViewer">
-  <div class="viewer-head">
-    <button class="icon-btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff" onclick="closeViewer()">←</button>
-    <span class="viewer-name" id="viewerName"></span>
-    <div style="width:38px"></div>
-  </div>
-  <div class="viewer-body" id="viewerBody" style="flex-wrap:nowrap;transition:transform .3s ease;">
-    <!-- slides injectées dynamiquement -->
-  </div>
-  <div class="viewer-dots" id="viewerDots" style="margin:10px auto 6px;"></div>
-  <div class="viewer-hint">← Glisse pour voir le QR code →</div>
-  <div style="height:16px"></div>
-</div>
-  
 <script>
 'use strict';
 
@@ -657,87 +701,6 @@ function pokeballSVG(caught, size=54){
   </svg>`;
 }
 function dalSVG(idx,w,h,style=''){return `<svg viewBox="0 0 120 100" width="${w}" height="${h}" style="${style}"><use href="#dal-body"/><use href="#sp${Math.min(18,idx)}"/></svg>`;}
-
-/* ══ DETAIL UGODEX ══ */
-let detailId=null, detailShowQR=false;
-
-// On force l'attachement à window pour être sûr qu'elle est trouvée partout
-window.openDetail = function(id, fromCapture=false){
-  alert("Début de openDetail pour ID: " + id);
-  
-  // 1. On vérifie si la fonction est bien appelée
-  alert("Début de openDetail pour ID: " + id);
-  
-  const p = PUPS.find(x => x.id === id);
-  if(!p) {
-    alert("ERREUR: Le chiot n'existe pas dans la liste PUPS");
-    return;
-  }
-  
-  // 2. On vérifie si l'élément "sDetail" existe dans ton HTML
-  const screen = document.getElementById('sDetail');
-  if(!screen) {
-    alert("ERREUR: Impossible de trouver l'écran avec l'ID 'sDetail' dans ton HTML !");
-    return;
-  }
-  
-  alert("Tout semble OK, on tente l'affichage maintenant...");
-  
-  // 3. On exécute l'affichage
-  detailId = id; 
-  detailShowQR = false;
-  
-  $('detailName').textContent = p.name;
-  $('detailImg').src = 'pup' + id + '.webp';
-  $('detailImg').style.display = 'block';
-  $('detailQR').style.display = 'none';
-  $('detailSwipeHint').textContent = 'Swipe → pour le QR code';
-  
-  show('sDetail'); // C'est ici que l'écran devrait apparaître
-  
-  alert("Fin de fonction atteinte !");
-}
-
-function closeDetail(){
-  show('sColl');
-  buildGrid();
-}
-
-function setupDetailSwipe(){
-  const el=$('sDetail');
-  let sx=0;
-  el.ontouchstart=e=>sx=e.touches[0].clientX;
-  el.ontouchend=e=>{
-    const dx=e.changedTouches[0].clientX-sx;
-    if(Math.abs(dx)>50) toggleDetailView();
-  };
-}
-
-function toggleDetailView(){
-  detailShowQR=!detailShowQR;
-  if(detailShowQR){
-    const p=PUPS.find(x=>x.id===detailId);
-    const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(QR_PREFIX+detailId)+'&bgcolor=ffffff&color=000000&qzone=1';
-    $('detailQRImg').src=qrUrl;
-    $('detailQRName').textContent=p.name;
-    $('detailImg').style.display='none';
-    $('detailQR').style.display='flex';
-    $('detailSwipeHint').textContent='← Swipe pour l'image';
-    $('detailName').style.color='#111';
-  } else {
-    $('detailImg').style.display='block';
-    $('detailQR').style.display='none';
-    $('detailSwipeHint').textContent='Swipe → pour le QR code';
-    $('detailName').style.color='#fff';
-  }
-}
-
-function unlockUGOAT(){
-  collected.add(22);save();
-  buildGrid();
-  show('sColl');
-  flashMsg('🏆 UGOAT ajouté à l'Ugodex !',3000);
-}
 
 /* ══ MUSIQUE (Web Audio — mélodie d'aventure) ══ */
 function startMusic(){
@@ -827,11 +790,7 @@ function buildGrid(){
       div.style.cursor = 'pointer';
       
       // On lie la fonction openDetail proprement
-      div.addEventListener('pointerup', (e) => {
-    e.stopPropagation();
-    alert("Test : Clic reçu sur le chiot " + p.id); // Ajoute ceci pour le test
-    openDetail(p.id);
-}, { passive: false });
+      div.onclick = () => openDetail(p.id);
       
       // On retire le onerror qui créait les symboles ' ">
       div.innerHTML = `<div class="card-dog"><img src="pup${p.id}.webp" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;"></div>
@@ -1223,6 +1182,21 @@ splashEl.removeAttribute('onclick');
 setInterval(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},15000);
 setTimeout(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},5000);
 </script>
+
+<!-- ════ VIEWER UGODEX ════ -->
+<div class="screen" id="sViewer">
+  <div class="viewer-head">
+    <button class="icon-btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff" onclick="closeViewer()">←</button>
+    <span class="viewer-name" id="viewerName"></span>
+    <div style="width:38px"></div>
+  </div>
+  <div class="viewer-body" id="viewerBody" style="flex-wrap:nowrap;transition:transform .3s ease;">
+    <!-- slides injectées dynamiquement -->
+  </div>
+  <div class="viewer-dots" id="viewerDots" style="margin:10px auto 6px;"></div>
+  <div class="viewer-hint">← Glisse pour voir le QR code →</div>
+  <div style="height:16px"></div>
+</div>
 
 </body>
 </html>
