@@ -411,7 +411,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 5 </div>
+  <div id="tapToStart">🐾 START 6 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -801,7 +801,8 @@ function buildGrid(){
     else if(ok){
       // Chiot capturé : ON ACTIVE LE CLIC ICI
       div.className = 'card caught';
-      div.style.border = "5px solid blue";
+      // Suppression de la bordure bleue
+      // div.style.border = "5px solid blue";
       div.style.cursor = 'pointer';
       
       // On lie la fonction openDetail proprement
