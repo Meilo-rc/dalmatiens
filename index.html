@@ -813,8 +813,8 @@ const pb = new PocketBase('http://127.0.0.1:8090');
 
 async function envoyerScore(pseudo, score) {
     const data = {
-        "pseudo": pseudo,
-        "score": score
+        "Pseudo": Pseudo,
+        "Score": Score
     };
 
     try {
@@ -832,23 +832,27 @@ async function rafraichirClassement() {
 
     try {
         // On récupère les scores triés par le plus haut
+        // Assure-toi que le champ de tri dans sort est aussi en majuscule
         const records = await pb.collection('Classement').getList(1, 20, {
-            sort: '-score',
+            sort: '-Score', 
         });
-//  AJOUTE CE LOG ICI POUR DÉBOGUER
+
         console.log("Données reçues de PocketBase :", records);
         rankingBody.innerHTML = ""; // Nettoyer le texte "Chargement"
 
         records.items.forEach((item, index) => {
             const row = document.createElement('div');
             row.className = 'ranking-row';
+            
+            // CORRECTION ICI : Utilisation de .Pseudo et .Score avec majuscules
             row.innerHTML = `
-                <span>${index + 1}. ${item.pseudo}</span>
-                <strong>${item.score} pts</strong>
+                <span>${index + 1}. ${item.Pseudo}</span>
+                <strong>${item.Score} pts</strong>
             `;
             rankingBody.appendChild(row);
         });
     } catch (error) {
+        console.error("Erreur lors de la récupération :", error);
         rankingBody.innerHTML = "Impossible de charger le classement.";
     }
 }
