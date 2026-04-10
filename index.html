@@ -386,8 +386,34 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .reward-img{width:80%;max-width:300px;border-radius:16px;box-shadow:0 0 40px rgba(255,220,68,.3);}
 .reward-sub{font-size:14px;color:rgba(255,255,255,.6);text-align:center;}
 
-@keyframes mascotFloat {0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
+#catchPokeWrap img {position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%); /* Centre parfaitement */max-width: 80%;}
   
+@keyframes mascotFloat {0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
+
+/* Animation de la Pokéball (trajectoire) */
+.throwing {
+  animation: throwBall 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  position: absolute; /* Assure que ça vole par-dessus */
+  z-index: 10;
+}
+
+/* Animation du chiot (aspiration) */
+.shrinking-puppy {
+  animation: shrinkPup 0.8s ease-in forwards;
+}
+
+@keyframes shrinkPup {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.5); opacity: 0.5; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+@keyframes throwBall {
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  50% { transform: translate(50px, -150px) scale(0.6) rotate(180deg); }
+  100% { transform: translate(150px, 0) scale(0.1) rotate(360deg); opacity: 0; }
+}
+
 @media print {
   /* 1. On cache tout sauf l'écran d'impression */
   body * {
@@ -483,7 +509,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 2 </div>
+  <div id="tapToStart">🐾 START GO </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -588,7 +614,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <div class="screen" id="sCatch">
   <div style="position:relative;width:100%;flex:1;overflow:hidden;background:#111;">
     <!-- Pokéball animée pendant la capture -->
-    <div id="catchPokeWrap" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"></div>
+    <div id="catchPokeWrap" style="width:100%; height:100%; position:relative; overflow:hidden;"></div>
   </div>
   <div style="padding:20px 24px 36px;background:#fff;width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;">
     <div id="catchPupName" style="font-family:'Fredoka One',cursive;font-size:26px;color:var(--rouge);text-align:center;"></div>
@@ -1090,8 +1116,32 @@ function genQRDots(seed){
   const g=$('qrDots');g.innerHTML='';let r=seed*9301+49297;
   for(let i=0;i<35;i++){r=(r*9301+49297)%233280;const on=(r/233280)>0.42;const d=document.createElement('div');d.className='qd';d.style.background=on?'#111':'transparent';g.appendChild(d);}
 }
-function doCapture(){
-  if(!pendingPup)return;
+function playCaptureAnimation() {
+  const container = $('catchPokeWrap');
+  
+  // 1. On récupère l'image du chiot déjà présente
+  const pupImg = container.querySelector('img');
+  
+  // 2. On ajoute la Pokéball par-dessus
+  container.insertAdjacentHTML('beforeend', pokeballSVG(true, 150));
+  const ball = container.querySelector('svg');
+  
+  // 3. On applique les classes d'animation
+  ball.classList.add('throwing');
+  if (pupImg) pupImg.classList.add('shrinking-puppy');
+
+  // Retourne la promesse
+  return new Promise(resolve => setTimeout(resolve, 800));
+}
+  async function doCapture() {
+  if(!pendingPup) return;
+
+  // Lance l'animation, le son et la vibration AVANT de traiter la capture
+  playCaptureSfx();
+  vibrate([60,30,60,30,120]);
+  
+  // On attend que l'animation de 800ms se termine
+  await playCaptureAnimation();
   const p=pendingPup; pendingPup=null;
   collected.add(p.id);save();
   showBurst(p.id-1);spawnPaws();vibrate([60,30,60,30,120]);
