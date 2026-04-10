@@ -1283,10 +1283,11 @@ async function doCapture() {
 
 // Action : Renvoie vers la vue d'ensemble du Dex
   dexBtn.onclick = () => { 
-    closeCatch(); // Ferme proprement l'écran de capture
-    show('sViewer'); // Changé de 'sDex' à 'sViewer'
-    updateHint();
-  };
+    console.log("Bouton cliqué !");
+    alert("Le clic fonctionne !"); // Si cette alerte s'affiche, le problème est ailleurs
+    closeCatch(); 
+    show('sViewer'); 
+};
 
   // 7. Nettoyage et mise à jour des scores
   hideARDog();
