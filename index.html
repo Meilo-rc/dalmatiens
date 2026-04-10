@@ -470,7 +470,7 @@ function unlockUGOAT(){
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 1 </div>
+  <div id="tapToStart">🐾 START 2 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -790,7 +790,10 @@ function buildGrid(){
       div.style.cursor = 'pointer';
       
       // On lie la fonction openDetail proprement
-      div.onclick = () => openDetail(p.id); 
+      div.addEventListener('pointerup', (e) => {
+    e.stopPropagation();
+    openDetail(p.id);
+}, { passive: false }); 
       
       // On retire le onerror qui créait les symboles ' ">
       div.innerHTML = `<div class="card-dog"><img src="pup${p.id}.webp" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;"></div>
