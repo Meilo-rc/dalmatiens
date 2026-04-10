@@ -424,7 +424,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 8 </div>
+  <div id="tapToStart">🐾 START 9 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -980,7 +980,14 @@ function handleQRDetected(id){
   if(activePupId===id)return;
   activePupId=id;
   const p=PUPS.find(x=>x.id===id);
+  // 1. On injecte le SVG
   $('arPokeball').innerHTML=pokeballSVG(true,180);
+  // 2. ON FORCE LE CENTRAGE DU SVG DANS LA BOITE (AJOUT ICI)
+  const svgInternal = $('arPokeball').querySelector('svg');
+  if(svgInternal){
+    svgInternal.style.display = 'block';
+    svgInternal.style.margin = '0 auto';
+  }
   $('arTitle').textContent='🐾 '+p.name+' trouvé !';
   showARDog();flashGreen();vibrate([60,40,120]);
   showScanResult('✓ '+p.name+' détecté !','#6ef');
@@ -991,10 +998,8 @@ function showARDog(){$('searchHint').style.display='none';$('arDog').classList.a
 function hideARDog(){
   const dogEl=$('arDog');
   dogEl.classList.remove('on');
-  const svgEl=$('arDogSvg');
-  if(svgEl){svgEl.style.display='';svgEl.style.width='140px';svgEl.style.height='114px';}
-  const pk=dogEl.querySelector('.ar-poke');
-  if(pk) pk.remove();
+  // On vide simplement la pokéball pour la prochaine fois
+  $('arPokeball').innerHTML = '';
   $('searchHint').style.display='';
   $('catchBtn').classList.remove('on');
   activePupId=null;
