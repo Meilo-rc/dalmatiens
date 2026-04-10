@@ -390,6 +390,31 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   
 @keyframes mascotFloat {0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
 
+/* L'élément qui fera le flash */
+#captureFlash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  opacity: 0; /* Invisible par défaut */
+  z-index: 20; /* Par-dessus la Pokéball et le chiot */
+  pointer-events: none; /* Ne bloque pas les clics */
+}
+
+/* L'animation du flash */
+@keyframes flashImpact {
+  0% { opacity: 0; }
+  10% { opacity: 0.8; } /* Flash très brillant très vite */
+  100% { opacity: 0; } /* Disparition douce */
+}
+
+/* La classe qui déclenche l'animation */
+.flash-on {
+  animation: flashImpact 0.4s ease-out forwards;
+}
+  
 /* --- ÉTAPE 1 : Le Lancer de la Pokéball --- */
 @keyframes pokeballThrow {
   0% {
@@ -536,7 +561,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 5 </div>
+  <div id="tapToStart">🐾 START 6 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -642,6 +667,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <div style="position:relative;width:100%;flex:1;overflow:hidden;background:#111;">
     <!-- Pokéball animée pendant la capture -->
     <div id="catchPokeWrap" style="width:100%; height:100%; position:relative; overflow:hidden;"></div>
+    <div id="captureFlash"></div>
   </div>
   <div style="padding:20px 24px 36px;background:#fff;width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;">
     <div id="catchPupName" style="font-family:'Fredoka One',cursive;font-size:26px;color:var(--rouge);text-align:center;"></div>
@@ -1185,26 +1211,38 @@ function genQRDots(seed){
 async function playCaptureAnimation() {
   const container = $('catchPokeWrap');
   
-  // 1. On récupère l'image du chiot existante
+  // 1. Récupérer l'image du chiot existante (celle qui est affichée)
   const pupImg = container.querySelector('img');
   
-  // 2. On injecte la Pokéball par-dessus
+  // 2. Injecter la Pokéball (elle part du coin via CSS)
   container.insertAdjacentHTML('beforeend', pokeballSVG(true, 150));
   const ball = container.querySelector('svg');
   
   // 3. ÉTAPE 1 : Lancement de la Pokéball
   ball.classList.add('pokeball-flying');
   
-  // On attend 1000ms (la durée de l'animation de vol)
+  // On attend la durée de l'animation de vol (1000ms)
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // 4. ÉTAPE 2 : Aspiration du chiot
+  // 4. ÉTAPE 2 : IMPACT & ASPIRATION
+  // Déclenchement du Flash Blanc
+  const flash = $('captureFlash');
+  if (flash) {
+    flash.classList.add('flash-on');
+    // On retire la classe après 400ms pour qu'elle puisse être réutilisée
+    setTimeout(() => flash.classList.remove('flash-on'), 400);
+  }
+
+  // Aspiration visuelle du chiot
   if (pupImg) {
     pupImg.classList.add('puppy-aspiring');
   }
   
-  // On attend 800ms (la durée de l'aspiration)
+  // On attend la fin de l'aspiration (800ms)
   await new Promise(resolve => setTimeout(resolve, 800));
+  
+  // Optionnel : On peut supprimer l'image du chiot après l'aspiration
+  if (pupImg) pupImg.style.display = 'none';
 }
   
 async function doCapture() {
@@ -1303,12 +1341,30 @@ function flashMsg(txt,ms=2000){
   el.textContent=txt;el.style.opacity='1';
   clearTimeout(flashT);flashT=setTimeout(()=>el.style.opacity='0',ms);
 }
-function showBurst(idx){
-  const b=$('burst');
-  b.innerHTML=`<div class="burst-dog" style="width:120px;height:120px">${pokeballSVG(true)}</div>`;
-  const pieces=['⭐','✨','💫','🌟','🐾','❤️','🍀'];
-  for(let i=0;i<14;i++){const angle=(i/14)*360,r=70+Math.random()*70;const tx=Math.cos(angle*Math.PI/180)*r,ty=Math.sin(angle*Math.PI/180)*r;const el=document.createElement('div');el.className='burst-piece';el.style.cssText=`--tx:${tx}px;--ty:${ty}px;animation-duration:${.5+Math.random()*.4}s`;el.textContent=pieces[Math.floor(Math.random()*pieces.length)];b.appendChild(el);}
-  b.classList.add('on');setTimeout(()=>{b.classList.remove('on');b.innerHTML=''},900);
+function showBurst(idx) {
+  const b = $('burst');
+  
+  // 1. On vide le burst de toute Pokéball (on garde seulement les confettis)
+  b.innerHTML = ''; 
+
+  // 2. Création des confettis (tes pièces)
+  const pieces = ['⭐', '✨', '💫', '🌟', '🐾', '❤️', '🍀'];
+  for (let i = 0; i < 14; i++) {
+    const angle = (i / 14) * 360, r = 70 + Math.random() * 70;
+    const tx = Math.cos(angle * Math.PI / 180) * r, ty = Math.sin(angle * Math.PI / 180) * r;
+    const el = document.createElement('div');
+    el.className = 'burst-piece';
+    el.style.cssText = `--tx:${tx}px;--ty:${ty}px;animation-duration:${.5 + Math.random() * .4}s`;
+    el.textContent = pieces[Math.floor(Math.random() * pieces.length)];
+    b.appendChild(el);
+  }
+  
+  // 3. Déclenchement de l'animation
+  b.classList.add('on');
+  setTimeout(() => {
+    b.classList.remove('on');
+    b.innerHTML = '';
+  }, 900);
 }
 function spawnPaws(){for(let i=0;i<6;i++)setTimeout(()=>{const p=document.createElement('div');p.className='paw-fx';p.textContent='🐾';p.style.cssText=`left:${15+Math.random()*70}%;top:${25+Math.random()*50}%;transform:rotate(${Math.random()*60-30}deg)`;document.body.appendChild(p);setTimeout(()=>p.remove(),1000);},i*140);}
 function vibrate(pat){try{if(navigator.vibrate)navigator.vibrate(pat);}catch(e){}}
