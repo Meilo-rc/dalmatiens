@@ -835,7 +835,8 @@ async function rafraichirClassement() {
         const records = await pb.collection('Classement').getList(1, 20, {
             sort: '-score',
         });
-
+//  AJOUTE CE LOG ICI POUR DÉBOGUER
+        console.log("Données reçues de PocketBase :", records);
         rankingBody.innerHTML = ""; // Nettoyer le texte "Chargement"
 
         records.items.forEach((item, index) => {
