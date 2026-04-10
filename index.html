@@ -277,65 +277,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .burst-piece{position:absolute;font-size:22px;animation:piece linear forwards;}
 @keyframes piece{0%{transform:translate(0,0)scale(0);opacity:1}100%{transform:translate(var(--tx),var(--ty))scale(1);opacity:0}}
 
-/* ══ DETAIL UGODEX ══ */
-let detailId=null, detailShowQR=false;
-
-function openDetail(id, fromCapture=false){
-  const p=PUPS.find(x=>x.id===id);
-  if(!p)return;
-  detailId=id; detailShowQR=false;
-  $('detailName').textContent=p.name;
-  $('detailImg').src='pup'+id+'.webp';
-  $('detailImg').style.display='block';
-  $('detailQR').style.display='none';
-  $('detailSwipeHint').textContent='Swipe → pour le QR code';
-  show('sDetail');
-  if(fromCapture) flashMsg('🎉 Capturé ! Cherche le suivant !',2500);
-  // Swipe
-  setupDetailSwipe();
-}
-
-function closeDetail(){
-  show('sColl');
-  buildGrid();
-}
-
-function setupDetailSwipe(){
-  const el=$('sDetail');
-  let sx=0;
-  el.ontouchstart=e=>sx=e.touches[0].clientX;
-  el.ontouchend=e=>{
-    const dx=e.changedTouches[0].clientX-sx;
-    if(Math.abs(dx)>50) toggleDetailView();
-  };
-}
-
-function toggleDetailView(){
-  detailShowQR=!detailShowQR;
-  if(detailShowQR){
-    const p=PUPS.find(x=>x.id===detailId);
-    const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(QR_PREFIX+detailId)+'&bgcolor=ffffff&color=000000&qzone=1';
-    $('detailQRImg').src=qrUrl;
-    $('detailQRName').textContent=p.name;
-    $('detailImg').style.display='none';
-    $('detailQR').style.display='flex';
-    $('detailSwipeHint').textContent='← Swipe pour l'image';
-    $('detailName').style.color='#111';
-  } else {
-    $('detailImg').style.display='block';
-    $('detailQR').style.display='none';
-    $('detailSwipeHint').textContent='Swipe → pour le QR code';
-    $('detailName').style.color='#fff';
-  }
-}
-
-function unlockUGOAT(){
-  collected.add(22);save();
-  buildGrid();
-  show('sColl');
-  flashMsg('🏆 UGOAT ajouté à l'Ugodex !',3000);
-}
-
 /* ══ ALERTE ══ */
 #alertBanner{
   position:fixed;top:-115px;left:0;right:0;z-index:300;
@@ -470,7 +411,7 @@ function unlockUGOAT(){
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 1 </div>
+  <div id="tapToStart">🐾 START 2 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -655,6 +596,65 @@ function unlockUGOAT(){
 <script>
 'use strict';
 
+/* ══ DETAIL UGODEX ══ */
+let detailId=null, detailShowQR=false;
+
+function openDetail(id, fromCapture=false){
+  const p=PUPS.find(x=>x.id===id);
+  if(!p)return;
+  detailId=id; detailShowQR=false;
+  $('detailName').textContent=p.name;
+  $('detailImg').src='pup'+id+'.webp';
+  $('detailImg').style.display='block';
+  $('detailQR').style.display='none';
+  $('detailSwipeHint').textContent='Swipe → pour le QR code';
+  show('sDetail');
+  if(fromCapture) flashMsg('🎉 Capturé ! Cherche le suivant !',2500);
+  // Swipe
+  setupDetailSwipe();
+}
+
+function closeDetail(){
+  show('sColl');
+  buildGrid();
+}
+
+function setupDetailSwipe(){
+  const el=$('sDetail');
+  let sx=0;
+  el.ontouchstart=e=>sx=e.touches[0].clientX;
+  el.ontouchend=e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>50) toggleDetailView();
+  };
+}
+
+function toggleDetailView(){
+  detailShowQR=!detailShowQR;
+  if(detailShowQR){
+    const p=PUPS.find(x=>x.id===detailId);
+    const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(QR_PREFIX+detailId)+'&bgcolor=ffffff&color=000000&qzone=1';
+    $('detailQRImg').src=qrUrl;
+    $('detailQRName').textContent=p.name;
+    $('detailImg').style.display='none';
+    $('detailQR').style.display='flex';
+    $('detailSwipeHint').textContent='← Swipe pour l'image';
+    $('detailName').style.color='#111';
+  } else {
+    $('detailImg').style.display='block';
+    $('detailQR').style.display='none';
+    $('detailSwipeHint').textContent='Swipe → pour le QR code';
+    $('detailName').style.color='#fff';
+  }
+}
+
+function unlockUGOAT(){
+  collected.add(22);save();
+  buildGrid();
+  show('sColl');
+  flashMsg('🏆 UGOAT ajouté à l'Ugodex !',3000);
+}
+  
 /* ══ DONNÉES ══ */
 const PUPS=[
   {id:1, name:"Ugo Belin"},   {id:2, name:"Ugo Boss"},
