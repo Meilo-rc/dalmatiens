@@ -281,28 +281,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 let detailId=null, detailShowQR=false;
 
 function openDetail(id, fromCapture=false){
-  console.log("Tentative d'ouverture du chiot :", id); // Ligne de test
+  alert("1. Entrée dans openDetail pour le chiot : " + id);
+  
   const p = PUPS.find(x => x.id === id);
   if(!p) {
-    console.error("Erreur : Chiot introuvable avec l'ID", id);
+    alert("2. ERREUR : Chiot introuvable dans la liste PUPS !");
     return;
   }
   
-  detailId = id; detailShowQR = false;
+  detailId = id; 
+  detailShowQR = false;
   
-  // Testez chaque ligne une par une en ajoutant un log
-  console.log("Nom de l'élément :", $('detailName')); 
+  alert("3. Tentative d'accès à detailName : " + $('detailName'));
   $('detailName').textContent = p.name;
   
+  alert("4. Tentative d'accès à detailImg : " + $('detailImg'));
   $('detailImg').src = 'pup' + id + '.webp';
   $('detailImg').style.display = 'block';
   
-  console.log("Tentative d'affichage de l'écran detail");
-  show('sDetail'); 
+  alert("5. Tentative de show('sDetail')");
+  show('sDetail');
   
-  if(fromCapture) flashMsg('🎉 Capturé ! Cherche le suivant !',2500);
-  // Swipe
+  if(fromCapture) flashMsg('🎉 Capturé !', 2500);
   setupDetailSwipe();
+  alert("6. Fonction terminée avec succès !");
 }
 
 function closeDetail(){
@@ -480,7 +482,7 @@ function unlockUGOAT(){
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 3 </div>
+  <div id="tapToStart">🐾 START 9 </div>
 </div>
 
 <!-- ════ HOME ════ -->
