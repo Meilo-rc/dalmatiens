@@ -597,10 +597,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 </div>
 
 <!-- ════ LOGIN ════ -->
-<div class="screen" id="sLogin">
-    <h2>Enregistrement</h2>
-    <input type="text" id="playerPseudo" placeholder="Entre ton pseudo...">
-    <button onclick="savePseudo()">Valider</button>
+<div class="screen" id="sLogin" style="background:var(--noir); color:white; justify-content:center; align-items:center; text-align:center; flex-direction:column;">
+    <div style="background:var(--blanc); padding:30px; border-radius:20px; width:85%; max-width:400px;">
+        <h2 style="font-family:'Fredoka One'; color:var(--rouge); margin-bottom:20px;">BIENVENUE ! 🐾</h2>
+        <p style="color:var(--noir); font-family:'Nunito'; font-weight:800; margin-bottom:15px;">Choisis un pseudo pour enregistrer tes scores :</p>
+        
+        <input type="text" id="playerPseudo" placeholder="Ton pseudo..." 
+               style="width:100%; padding:15px; border-radius:10px; border:3px solid var(--noir); font-family:'Nunito'; font-weight:900; font-size:1.1em; margin-bottom:20px;">
+        
+        <button class="btn btn-primary" onclick="savePseudo()" style="width:100%; font-size:1.2em;">C'EST PARTI !</button>
+    </div>
 </div>
   
 <!-- ════ HOME ════ -->
@@ -1589,34 +1595,43 @@ function reset(){collected=new Set();startTime=Date.now();save();pendingPup=null
 load();
 
 // Splash : écoute tap ET click pour Android
+// On remplace l'ancien écouteur du Splash par celui-ci
 const splashEl = $('sSplash');
 ['click','touchstart'].forEach(evt =>
   splashEl.addEventListener(evt, function(e){
     e.preventDefault();
-    startFromSplash();
+    
+    // On appelle ta fonction qui vérifie si le pseudo existe
+    initialiserApplication(); 
+    
   }, {once: true})
 );
 
-// PSEUDO A ENREGISTRER
+// PSEUDO A ENREGISTRER (Décide où aller après le Splash)
 function initialiserApplication() {
     const pseudo = localStorage.getItem('ugo_pseudo');
     
-    // Si on a un pseudo, on affiche l'accueil, sinon on affiche le login
     if (pseudo) {
-        show('sHome');
+        show('sHome'); // Le joueur a déjà un nom -> Menu principal
     } else {
-        show('sLogin');
+        show('sLogin'); // Nouveau joueur -> On demande le nom
     }
 }
 
 // PSEUDO A SAUVEGARDER
 function savePseudo() {
-    const pseudo = document.getElementById('playerPseudo').value;
-    if (pseudo) {
+    // Utilisation de $('playerPseudo') pour être raccord avec ton code
+    const pseudoInput = $('playerPseudo'); 
+    const pseudo = pseudoInput.value.trim();
+
+    if (pseudo.length >= 2) {
         localStorage.setItem('ugo_pseudo', pseudo);
         show('sHome');
+    } else {
+        alert("Choisis un pseudo d'au moins 2 lettres !");
     }
 }
+  
 // Retirer l'onclick inline pour éviter double déclenchement
 splashEl.removeAttribute('onclick');
 
