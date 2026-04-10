@@ -944,7 +944,21 @@ function startFromSplash(){
 function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=collected.size+' / '+TOTAL;}
 
 /* ══ COLLECTION ══ */
-function goColl(){buildGrid();show('sColl');}
+function goColl(scrollToId=null){
+  buildGrid();
+  show('sColl');
+  if(scrollToId){
+    setTimeout(()=>{
+      const card = document.querySelector('#collGrid .card:nth-child('+scrollToId+')');
+      // Cherche la carte par position dans la grille
+      const cards = document.querySelectorAll('#collGrid .card');
+      const idx = [...document.querySelectorAll('#collGrid .card')].findIndex(
+        c => c.querySelector('.card-num')?.textContent === '#'+String(scrollToId).padStart(2,'0')
+      );
+      if(idx >= 0) cards[idx].scrollIntoView({block:'center', behavior:'smooth'});
+    }, 100);
+  }
+}
 function buildGrid(){
   const nonSecret = PUPS.filter(p => !p.secret);
   const nCaught = nonSecret.filter(p => collected.has(p.id)).length;
