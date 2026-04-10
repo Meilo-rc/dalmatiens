@@ -1036,7 +1036,7 @@ function goPrint(){
 function nextUncaught(){return PUPS.find(p=>!collected.has(p.id))||null;}
 function updateHint(){
   const p=nextUncaught();
-  if(p){$('hintName').textContent=p.name+' #'+String(p.id).padStart(2,'0');$('arTitle').textContent='🐾 Cherche le QR code !';}
+  if(p){$('arTitle').textContent='🐾 Cherche le QR code !';}
 }
 
 async function goHunt(){
