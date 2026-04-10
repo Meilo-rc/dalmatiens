@@ -280,7 +280,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 /* ══ DETAIL UGODEX ══ */
 let detailId=null, detailShowQR=false;
 
-function openDetail(id, fromCapture=false){
+// On force l'attachement à window pour être sûr qu'elle est trouvée partout
+window.openDetail = function(id, fromCapture=false){
+  alert("Début de openDetail pour ID: " + id);
+  
   // 1. On vérifie si la fonction est bien appelée
   alert("Début de openDetail pour ID: " + id);
   
@@ -489,7 +492,7 @@ function unlockUGOAT(){
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 2 </div>
+  <div id="tapToStart">🐾 START 3 </div>
 </div>
 
 <!-- ════ HOME ════ -->
