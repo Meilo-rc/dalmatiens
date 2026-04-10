@@ -536,7 +536,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 2 </div>
+  <div id="tapToStart">🐾 START 3 </div>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -646,9 +646,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <div style="padding:20px 24px 36px;background:#fff;width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;">
     <div id="catchPupName" style="font-family:'Fredoka One',cursive;font-size:26px;color:var(--rouge);text-align:center;"></div>
     <div id="catchPupNum" style="font-size:12px;color:#888;font-weight:800;letter-spacing:1px;"></div>
+    
     <button class="btn-capture" onclick="doCapture()" style="width:100%;max-width:310px;">🐾 Capturer !</button>
     <button id="btnCancel" onclick="closeCatch()" style="background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;padding:4px;">Laisser filer l'animal</button>
-  </div>
+    
+    <button id="btnToDex" class="btn-capture" 
+            style="width:100%;max-width:310px; background:#4CAF50; display:none;">
+      📖 Ajouter au UgoDex
+    </button>
+</div>
 </div>
 
 <!-- ════ SCREEN DETAIL Ugodex (image grande + swipe QR) ════ -->
@@ -1134,11 +1140,32 @@ function openCapture(){
   $('catchPupNum').textContent='#'+String(p.id).padStart(2,'0');
   show('sCatch');
 }
-function closeCatch(){
-  if(pendingPup) activePupId=pendingPup.id;
-  pendingPup=null;
-  show('sAR');
+
+function closeCatch() {
+  // 1. Masquer l'écran de capture
+  hide('sCatch');
+  
+  // 2. Réinitialiser les boutons :
+  // On affiche à nouveau les boutons "Capturer" et "Laisser filer"
+  const captureBtn = document.querySelector('.btn-capture:not(#btnToDex)');
+  const cancelBtn = $('btnCancel');
+  const dexBtn = $('btnToDex');
+
+  if (captureBtn) captureBtn.style.display = 'block';
+  if (cancelBtn) cancelBtn.style.display = 'block';
+  
+  // On masque le bouton "Ajouter au UgoDex" pour la prochaine fois
+  if (dexBtn) dexBtn.style.display = 'none';
+
+  // 3. Nettoyer le contenu de #catchPokeWrap pour éviter les résidus d'animation
+  const container = $('catchPokeWrap');
+  container.innerHTML = ''; 
+
+  // 4. Reset global si nécessaire
+  pendingPup = null;
+  activePupId = null;
 }
+  
 function genQRDots(seed){
   const g=$('qrDots');g.innerHTML='';let r=seed*9301+49297;
   for(let i=0;i<35;i++){r=(r*9301+49297)%233280;const on=(r/233280)>0.42;const d=document.createElement('div');d.className='qd';d.style.background=on?'#111':'transparent';g.appendChild(d);}
@@ -1182,9 +1209,36 @@ async function doCapture() {
   collected.add(p.id);
   save();
 
-  // 4. Effets visuels de succès
+// 4. Lancement des effets visuels de succès (superposés à la Pokéball)
   showBurst(p.id - 1);
   spawnPaws();
+  playCaptureSfx(); // Ton son de succès ici
+  vibrate([60, 30, 60, 30, 120]);
+
+  // 5. Interface : On remplace les boutons par le bouton UgoDex
+  // On cache les contrôles de capture
+  const container = $('sCatch').querySelector('div[style*="background:#fff"]');
+  container.querySelectorAll('button').forEach(b => b.style.display = 'none');
+  
+  // On crée ou on affiche le bouton "Ajouter au UgoDex"
+  // (Ou utilise un élément caché que tu affiches)
+  let dexBtn = document.getElementById('btnToDex');
+  if (!dexBtn) {
+    dexBtn = document.createElement('button');
+    dexBtn.id = 'btnToDex';
+    dexBtn.className = 'btn-capture';
+    dexBtn.textContent = '📖 Ajouter au UgoDex';
+    dexBtn.onclick = () => { 
+        hide('sCatch'); 
+        openDetail(p.id, true); 
+        pendingPup = null;
+    };
+    container.appendChild(dexBtn);
+  } else {
+    dexBtn.style.display = 'block';
+  }
+
+  // Nettoyage final
   hideARDog();
   activePupId = null;
   $('arScore').textContent = collected.size + '/' + TOTAL;
