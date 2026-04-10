@@ -281,30 +281,37 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 let detailId=null, detailShowQR=false;
 
 function openDetail(id, fromCapture=false){
-  alert("1. Entrée dans openDetail pour le chiot : " + id);
+  // 1. On vérifie si la fonction est bien appelée
+  alert("Début de openDetail pour ID: " + id);
   
   const p = PUPS.find(x => x.id === id);
   if(!p) {
-    alert("2. ERREUR : Chiot introuvable dans la liste PUPS !");
+    alert("ERREUR: Le chiot n'existe pas dans la liste PUPS");
     return;
   }
   
+  // 2. On vérifie si l'élément "sDetail" existe dans ton HTML
+  const screen = document.getElementById('sDetail');
+  if(!screen) {
+    alert("ERREUR: Impossible de trouver l'écran avec l'ID 'sDetail' dans ton HTML !");
+    return;
+  }
+  
+  alert("Tout semble OK, on tente l'affichage maintenant...");
+  
+  // 3. On exécute l'affichage
   detailId = id; 
   detailShowQR = false;
   
-  alert("3. Tentative d'accès à detailName : " + $('detailName'));
   $('detailName').textContent = p.name;
-  
-  alert("4. Tentative d'accès à detailImg : " + $('detailImg'));
   $('detailImg').src = 'pup' + id + '.webp';
   $('detailImg').style.display = 'block';
+  $('detailQR').style.display = 'none';
+  $('detailSwipeHint').textContent = 'Swipe → pour le QR code';
   
-  alert("5. Tentative de show('sDetail')");
-  show('sDetail');
+  show('sDetail'); // C'est ici que l'écran devrait apparaître
   
-  if(fromCapture) flashMsg('🎉 Capturé !', 2500);
-  setupDetailSwipe();
-  alert("6. Fonction terminée avec succès !");
+  alert("Fin de fonction atteinte !");
 }
 
 function closeDetail(){
@@ -482,7 +489,7 @@ function unlockUGOAT(){
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 9 </div>
+  <div id="tapToStart">🐾 START 2 </div>
 </div>
 
 <!-- ════ HOME ════ -->
