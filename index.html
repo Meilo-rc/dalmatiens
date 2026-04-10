@@ -1297,10 +1297,28 @@ async function doCapture() {
   }
 
 // Action : Renvoie vers la vue d'ensemble du Dex
-  dexBtn.onclick = () => { 
-      closeCatch(); 
-      show('#sViewer');
-  };
+dexBtn.onclick = () => { 
+    console.log("Clic détecté !");
+    
+    // 1. Fermer l'écran de capture
+    closeCatch(); 
+    
+    // 2. Masquer tous les écrans (s'assurer qu'ils ne sont plus 'on')
+    document.querySelectorAll('.screen').forEach(s => {
+        s.classList.remove('on');
+        s.style.display = 'none'; // Sécurité CSS
+    });
+    
+    // 3. Afficher sViewer
+    const viewer = document.getElementById('sViewer');
+    if (viewer) {
+        viewer.classList.add('on');
+        viewer.style.display = 'flex'; // Forçage CSS
+        console.log("sViewer activé avec succès");
+    } else {
+        console.error("ERREUR CRITIQUE : #sViewer introuvable dans le DOM !");
+    }
+};
 
   // 7. Nettoyage et mise à jour des scores
   hideARDog();
