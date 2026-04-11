@@ -851,21 +851,22 @@ const pb = new PocketBase('http://192.168.1.37:8090');
 
 async function envoyerScore(pseudo, score) {
   try {
-    // Cherche un enregistrement existant pour ce pseudo
     const result = await pb.collection('Classement').getList(1, 1, {
       filter: `Pseudo = "${pseudo}"`
     });
-
+    dbg('Recherche "' + pseudo + '" → ' + result.items.length + ' résultat(s)');
     if (result.items.length > 0) {
-      // Le joueur existe → on met à jour son score
       const id = result.items[0].id;
+      dbg('Mise à jour id=' + id + ' score=' + score);
       await pb.collection('Classement').update(id, { Score: score });
+      dbg('✓ Mise à jour OK');
     } else {
-      // Nouveau joueur → on crée un enregistrement
+      dbg('Création nouveau joueur score=' + score);
       await pb.collection('Classement').create({ Pseudo: pseudo, Score: score });
+      dbg('✓ Création OK');
     }
   } catch (error) {
-    console.error("Erreur PocketBase :", error);
+    dbg('ERREUR: ' + error.message);
   }
 }
   
@@ -1427,6 +1428,7 @@ async function doCapture() {
 
   // Mise à jour du score PocketBase
 const pseudo = localStorage.getItem('ugo_pseudo');
+dbg('Pseudo: ' + pseudo + ' | Score: ' + collected.size);
 if (pseudo) envoyerScore(pseudo, collected.size);
   
   // 4. Effets visuels et sonores de succès
@@ -1688,6 +1690,9 @@ async function savePseudo() {
         }
     }
 }
+
+// Fonction debug
+function dbg(msg){ const d=$('debugLog'); if(d) d.innerHTML += msg + '<br>'; } 
   
 // Retirer l'onclick inline pour éviter double déclenchement
 splashEl.removeAttribute('onclick');
@@ -1696,6 +1701,6 @@ splashEl.removeAttribute('onclick');
 // setInterval(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},15000);
 // setTimeout(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},5000);
 </script>
-
+<div id="debugLog" style="position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);color:#0f0;font-size:11px;padding:8px;z-index:9999;max-height:150px;overflow-y:auto;"></div>
 </body>
 </html>
