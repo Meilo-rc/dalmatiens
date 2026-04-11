@@ -830,7 +830,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 'use strict';
 
 /* ══ CONNEXION BASE DE DONNEES ══ */
-const pb = new PocketBase('http://127.0.0.1:8090');
+// Remplace ceci :
+// const pb = new PocketBase('http://127.0.0.1:8090');
+// Par cela (en utilisant l'IP trouvée à l'étape 1) :
+const pb = new PocketBase('http://192.168.1.37:8090');
 
 async function envoyerScore(pseudo, score) {
   try {
