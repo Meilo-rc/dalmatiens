@@ -851,22 +851,20 @@ const pb = new PocketBase('http://192.168.1.37:8090');
 
 async function envoyerScore(pseudo, score) {
   try {
+    // Cherche un enregistrement existant pour ce pseudo
     const result = await pb.collection('Classement').getList(1, 1, {
-      filter: `Pseudo = "${pseudo}"`
+      filter: Pseudo = "${pseudo}"
     });
-    dbg('Recherche "' + pseudo + '" → ' + result.items.length + ' résultat(s)');
     if (result.items.length > 0) {
+      // Le joueur existe → on met à jour son score
       const id = result.items[0].id;
-      dbg('Mise à jour id=' + id + ' score=' + score);
       await pb.collection('Classement').update(id, { Score: score });
-      dbg('✓ Mise à jour OK');
     } else {
-      dbg('Création nouveau joueur score=' + score);
+      // Nouveau joueur → on crée un enregistrement
       await pb.collection('Classement').create({ Pseudo: pseudo, Score: score });
-      dbg('✓ Création OK');
     }
   } catch (error) {
-    dbg('ERREUR: ' + error.message);
+    console.error("Erreur PocketBase :", error);
   }
 }
   
