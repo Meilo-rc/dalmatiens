@@ -1428,7 +1428,7 @@ async function doCapture() {
 
   // Mise à jour du score PocketBase
 const pseudo = localStorage.getItem('ugo_pseudo');
-dbg('Pseudo: ' + pseudo + ' | Score: ' + collected.size);
+// dbg('Pseudo: ' + pseudo + ' | Score: ' + collected.size);
 if (pseudo) envoyerScore(pseudo, collected.size);
   
   // 4. Effets visuels et sonores de succès
