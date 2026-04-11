@@ -843,23 +843,23 @@ async function envoyerScore(pseudo, score) {
 
 /* ══ AFFICHAGE DU CLASSEMENT ══ */
 async function rafraichirClassement() {
-    const rankingBody = document.getElementById('rankingBody');
+    const rankingBody = $('rankingBody');
     rankingBody.innerHTML = "Chargement...";
 
     try {
-        // Le "-" devant "Score" signifie "Tri décroissant" (du plus grand au plus petit)
+        // PocketBase renvoie déjà les données triées ici
         const records = await pb.collection('Classement').getList(1, 20, {
-            sort: '-Score', 
+            sort: '-Score', // Tri par Score décroissant
         });
 
-        console.log("Données reçues de PocketBase :", records);
-        rankingBody.innerHTML = ""; // Nettoyer le texte "Chargement"
+        rankingBody.innerHTML = ""; // On nettoie
 
+        // On boucle sur records.items (qui contient tes 4 éléments)
         records.items.forEach((item, index) => {
             const row = document.createElement('div');
             row.className = 'ranking-row';
             
-            // CORRECTION ICI : Utilisation de .Pseudo et .Score avec majuscules
+            // Assure-toi d'utiliser les majuscules comme dans ta DB
             row.innerHTML = `
                 <span>${index + 1}. ${item.Pseudo}</span>
                 <strong>${item.Score} pts</strong>
@@ -867,8 +867,7 @@ async function rafraichirClassement() {
             rankingBody.appendChild(row);
         });
     } catch (error) {
-        console.error("Erreur lors de la récupération :", error);
-        rankingBody.innerHTML = "Impossible de charger le classement.";
+        console.error("Erreur :", error);
     }
 }
   
