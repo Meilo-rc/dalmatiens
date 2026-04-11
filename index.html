@@ -1390,6 +1390,10 @@ async function doCapture() {
   collected.add(p.id);
   save();
 
+  // Mise à jour du score PocketBase
+const pseudo = localStorage.getItem('ugo_pseudo');
+if (pseudo) envoyerScore(pseudo, collected.size);
+  
   // 4. Effets visuels et sonores de succès
   showBurst(p.id - 1);
   spawnPaws();
