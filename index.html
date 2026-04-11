@@ -885,10 +885,10 @@ async function rafraichirClassement() {
             
             // On utilise des classes spécifiques pour le CSS
             row.innerHTML = `
-              <span class="rank-number">${index + 1}.</span>
-              <span class="pseudo-display">${item.Pseudo}</span> : 
-              <strong class="score-display">${item.Score} pts</strong>
-            `;
+    <span class="rank-number">${index + 1} / </span>
+    <span class="pseudo-display">${item.Pseudo}</span> : 
+    <strong class="score-display">${item.Score} pts</strong>
+`;
             
             rankingBody.appendChild(row);
         });
