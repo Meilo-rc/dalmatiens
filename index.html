@@ -394,14 +394,26 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 /* ══ PAGE DE LOGIN ══ */
 #sLogin.on {display: flex !important;}
   
-/* ══ SCREEN CLASSEMENT ══ */
-#sRanking .ranking-body {
+/* ══ CONFIGURATION DU CONTENEUR ══ */
+#sRanking {
+  height: 100vh;           /* Hauteur totale de l'écran */
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  gap: 10px;
+  overflow: hidden;        /* Empêche le scroll sur toute la page */
 }
 
+/* ══ CORPS DU CLASSEMENT (Le scroll est ici) ══ */
+.ranking-body {
+  flex: 1;                 /* Occupe tout l'espace disponible */
+  overflow-y: auto;        /* Active le scroll vertical */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  -webkit-overflow-scrolling: touch; /* Défilement fluide iOS */
+}
+
+/* ══ LIGNE DE CLASSEMENT ══ */
 .ranking-row {
   display: flex;
   justify-content: space-between;
@@ -413,26 +425,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   color: #fff;
   font-weight: 600;
   transition: transform 0.2s;
+  flex-shrink: 0;          /* Empêche les lignes de s'écraser */
 }
 
-/* Alternative : si tu veux forcer la casse uniquement en CSS */
-.ranking-row span::first-letter {
-    text-transform: uppercase;
-}
-
-/* Effet pour le top 3 (pour le côté compétitif) */
-.ranking-row:nth-child(1) { background: rgba(255, 215, 0, 0.2); border-color: rgba(255, 215, 0, 0.4); }
-.ranking-row:nth-child(2) { background: rgba(192, 192, 192, 0.2); border-color: rgba(192, 192, 192, 0.4); }
-.ranking-row:nth-child(3) { background: rgba(205, 127, 50, 0.2); border-color: rgba(205, 127, 50, 0.4); }
-
-/* Style du texte */
+/* ══ STYLING ET EFFETS ══ */
 .ranking-row span {
   font-size: 1.1em;
 }
 
-  /* Majuscule au pseudo */
 .pseudo-display::first-letter {
-    text-transform: uppercase;
+  text-transform: uppercase;
+}
+
+/* Effet pour le top 3 */
+.ranking-row:nth-child(1) { background: rgba(255, 215, 0, 0.2); border-color: rgba(255, 215, 0, 0.4); }
+.ranking-row:nth-child(2) { background: rgba(192, 192, 192, 0.2); border-color: rgba(192, 192, 192, 0.4); }
+.ranking-row:nth-child(3) { background: rgba(205, 127, 50, 0.2); border-color: rgba(255, 127, 50, 0.4); }
+
+.score-display {
+  font-weight: bold;
 }
   
 /* ══ FLASH CAPTURE ══ */
