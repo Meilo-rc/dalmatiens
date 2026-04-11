@@ -883,12 +883,11 @@ async function rafraichirClassement() {
             const row = document.createElement('div');
             row.className = 'ranking-row';
             
-            // On utilise des classes spécifiques pour le CSS
-            row.innerHTML = `
-    <span class="rank-number">${index + 1} / </span>
-    <span class="pseudo-display">${item.Pseudo}</span> : 
-    <strong class="score-display">${item.Score} pts</strong>
-`;
+            // On construit la ligne sans espaces inutiles dans le HTML
+    row.innerHTML = `<span class="rank-number">${index + 1} / </span>` +
+                    `<span class="pseudo-display">${item.Pseudo}</span>` +
+                    ` : ` +
+                    `<strong class="score-display">${item.Score} pts</strong>`;
             
             rankingBody.appendChild(row);
         });
