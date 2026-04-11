@@ -836,16 +836,16 @@ async function envoyerScore(pseudo, score) {
   try {
     // Cherche un enregistrement existant pour ce pseudo
     const result = await pb.collection('Classement').getList(1, 1, {
-      filter: `pseudo = "${pseudo}"`
+      filter: `Pseudo = "${pseudo}"`
     });
 
     if (result.items.length > 0) {
       // Le joueur existe → on met à jour son score
       const id = result.items[0].id;
-      await pb.collection('Classement').update(id, { score: score });
+      await pb.collection('Classement').update(id, { Score: score });
     } else {
       // Nouveau joueur → on crée un enregistrement
-      await pb.collection('Classement').create({ pseudo, score });
+      await pb.collection('Classement').create({ Pseudo: pseudo, Score: score });
     }
   } catch (error) {
     console.error("Erreur PocketBase :", error);
