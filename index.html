@@ -1032,7 +1032,8 @@ function dalSVG(idx,w,h,style=''){return `<svg viewBox="0 0 120 100" width="${w}
 function startMusic(){
   try{
     audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    playAdventureLoop();
+    // playAdventureLoop();
+    playPokemonOpening();
   }catch(e){}
 }
 function stopMusic(){
@@ -1073,6 +1074,31 @@ function playAdventureLoop(){
   bgMusic=setTimeout(()=>{if(audioCtx)playAdventureLoop();},6.8*1000);
 }
 
+ function playPokemonOpening() {
+  if (!audioCtx) return;
+
+  // Mélodie principale (le célèbre "tada-dam" et la suite)
+  const M = [
+    [523, 0, 0.2], [587, 0.25, 0.2], [659, 0.5, 0.6], // La montée
+    [783, 1.2, 0.3], [880, 1.5, 0.3], [987, 1.8, 0.6], // Le refrain
+    [659, 2.5, 0.2], [783, 2.7, 0.2], [880, 2.9, 0.2], [1046, 3.1, 0.6] // La résolution
+  ];
+
+  // Les basses rapides (très typiques du chip-tune 8-bit)
+  const basse = [
+    [130, 0, 0.2], [130, 0.3, 0.2], [164, 0.6, 0.2], [164, 0.9, 0.2],
+    [196, 1.2, 0.2], [196, 1.5, 0.2], [220, 1.8, 0.2], [220, 2.1, 0.2]
+  ];
+
+  M.forEach(([f, s, d]) => note(f, s, d, 0.2));
+  basse.forEach(([f, s, d]) => note(f, s, d, 0.1));
+
+  // Le tempo est assez soutenu sur l'original
+  bgMusic = setTimeout(() => {
+    if (audioCtx) playPokemonOpening();
+  }, 4000);
+} 
+  
 /* ══ SPLASH ══ */
 function startFromSplash(){
   try { startMusic(); } catch(e) {}
