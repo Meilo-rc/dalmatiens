@@ -429,6 +429,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .ranking-row span {
   font-size: 1.1em;
 }
+
+  /* Majuscule au pseudo */
+.pseudo-display::first-letter {
+    text-transform: uppercase;
+}
   
 /* ══ FLASH CAPTURE ══ */
 #captureFlash {
@@ -857,31 +862,39 @@ async function envoyerScore(pseudo, score) {
   
 /* ══ AFFICHAGE DU CLASSEMENT ══ */
 async function rafraichirClassement() {
-    const rankingBody = $('rankingBody');
+    const rankingBody = document.getElementById('rankingBody');
     rankingBody.innerHTML = "Chargement...";
 
     try {
-        // PocketBase renvoie déjà les données triées ici
+        // PocketBase récupère les 20 meilleurs scores triés par ordre décroissant
         const records = await pb.collection('Classement').getList(1, 20, {
-            sort: '-Score', // Tri par Score décroissant
+            sort: '-Score', 
         });
 
-        rankingBody.innerHTML = ""; // On nettoie
+        rankingBody.innerHTML = ""; // Nettoyage de l'affichage
 
-        // On boucle sur records.items (qui contient tes 4 éléments)
+        if (records.items.length === 0) {
+            rankingBody.innerHTML = "<p>Aucun joueur pour le moment.</p>";
+            return;
+        }
+
+        // On génère chaque ligne du classement
         records.items.forEach((item, index) => {
             const row = document.createElement('div');
             row.className = 'ranking-row';
             
-            // Assure-toi d'utiliser les majuscules comme dans ta DB
+            // On utilise des classes spécifiques pour le CSS
             row.innerHTML = `
-                <span>${index + 1}. ${item.Pseudo}</span>
-                <strong>${item.Score} pts</strong>
+                <span class="rank-number">${index + 1}.</span>
+                <span class="pseudo-display">${item.Pseudo}</span>
+                <strong class="score-display">${item.Score} pts</strong>
             `;
+            
             rankingBody.appendChild(row);
         });
     } catch (error) {
-        console.error("Erreur :", error);
+        console.error("Erreur de chargement du classement :", error);
+        rankingBody.innerHTML = "Erreur de connexion au classement.";
     }
 }
   
