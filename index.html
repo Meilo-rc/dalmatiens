@@ -714,12 +714,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     <div class="ar-dog-ring"></div>
   </div>
 
-  <!-- Hint recherche -->
+ <!-- Hint recherche 
   <div id="searchHint">
     <div class="hint-box">
       Cadre le QR code et appuie sur le bouton 👇
     </div>
-  </div>
+  </div>-->
 
   <!-- Résultat scan -->
   <div id="scanResult" style="display:none;position:absolute;bottom:160px;left:20px;right:20px;z-index:22;text-align:center;">
@@ -1126,7 +1126,6 @@ function pokeballSVG(caught, size=54){
 function dalSVG(idx,w,h,style=''){return `<svg viewBox="0 0 120 100" width="${w}" height="${h}" style="${style}"><use href="#dal-body"/><use href="#sp${Math.min(18,idx)}"/></svg>`;}
 
 /* ══ MUSIQUE (Web Audio — mélodie d'aventure) ══ */
-  
 let audioCtx = null;
 let currentMusicLoop = null;
 
@@ -1301,6 +1300,8 @@ function goPrint(){
 }
 
 /* ══ CHASSE AR ══ */
+let scanLoop = null;
+  
 function nextUncaught(){return PUPS.find(p=>!collected.has(p.id))||null;}
 function updateHint(){
   const p=nextUncaught();
@@ -1334,18 +1335,25 @@ async function goHunt(){
   try{await v.play();}catch(e){v.oncanplay=()=>{v.play().catch(()=>{});v.oncanplay=null;};}
 
   scheduleAlert();
+  // Sécurité : on nettoie une boucle existante avant d'en lancer une autre
+  if (scanLoop) clearInterval(scanLoop);
+  // Lance le scan auto toutes les 1.5 secondes
+    scanLoop = setInterval(takeSnap, 1500); 
 }
 
 // Prend une photo et analyse le QR
-async function takeSnap(){
-  const v=$('arVideo');
-  if(!camStream||v.readyState<2){showScanResult('⚠️ Caméra pas prête','#e88');return;}
+async function takeSnap(isManual = false) { // Ajout d'un flag pour savoir si c'est un clic manuel
+  const v = $('arVideo');
+  if (!camStream || v.readyState < 2) return;
 
-  const btn=$('snapBtn');
+  const btn = $('snapBtn');
+  
+  // On n'affiche le mode "Analyse" que si c'est un clic manuel ou si on veut feedback visuel
   btn.classList.add('scanning');
-  btn.textContent='⏳ Analyse...';
+  btn.textContent = '⏳ Analyse...';
 
-  const canvas=$('arCanvas');
+  const canvas = $('arCanvas');
+  let found = false;
 
   // ── Essai 1 : BarcodeDetector natif (le plus fiable) ──
   if('BarcodeDetector' in window){
@@ -1437,18 +1445,45 @@ function handleQRDetected(id){
   $('catchBtn').classList.add('on');
 }
 
-function showARDog(){$('searchHint').style.display='none';$('arDog').classList.add('on');}
+function showARDog(){
+  // $('searchHint').style.display='none';
+  $('arDog').classList.add('on');
+}
 function hideARDog(){
   const dogEl=$('arDog');
   dogEl.classList.remove('on');
-  // On vide simplement la pokéball pour la prochaine fois
   $('arPokeball').innerHTML = '';
-  $('searchHint').style.display='';
+  // SUPPRIME CETTE LIGNE :
+  // $('searchHint').style.display=''; 
   $('catchBtn').classList.remove('on');
   activePupId=null;
 }
+  
 function flashGreen(){const f=$('scanFlash');f.classList.add('on');setTimeout(()=>f.classList.remove('on'),300);}
-function stopHuntClean(){if(scanLoop){cancelAnimationFrame(scanLoop);scanLoop=null;}if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}hideARDog();try{$('arVideo').srcObject=null;}catch(e){}try{$('scanResult').style.display='none';}catch(e){}}
+function stopHuntClean() {
+  // 1. Arrêter la boucle de scan automatique (nouveau)
+  if (scanLoop) {
+    clearInterval(scanLoop);
+    scanLoop = null;
+  }
+
+  // 2. Arrêter la caméra
+  if (camStream) {
+    camStream.getTracks().forEach(t => t.stop());
+    camStream = null;
+  }
+
+  // 3. Masquer les éléments visuels
+  hideARDog();
+  
+  try {
+    $('arVideo').srcObject = null;
+  } catch (e) {}
+
+  try {
+    $('scanResult').style.display = 'none';
+  } catch (e) {}
+}
 function stopHunt(){stopHuntClean();goHome();}
 
 /* ══ CAPTURE ══ */
