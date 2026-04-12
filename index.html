@@ -1341,34 +1341,57 @@ async function goHunt(){
 }
 
 // Prend une photo et analyse le QR
-async function takeSnap(isManual = false) { // Ajout d'un flag pour savoir si c'est un clic manuel
+async function takeSnap(isManual = false) { 
   const v = $('arVideo');
   if (!camStream || v.readyState < 2) return;
 
   const btn = $('snapBtn');
-  
-  // On n'affiche le mode "Analyse" que si c'est un clic manuel ou si on veut feedback visuel
   btn.classList.add('scanning');
   btn.textContent = '⏳ Analyse...';
 
   const canvas = $('arCanvas');
   let found = false;
 
-  // ── Essai 1 : BarcodeDetector natif (le plus fiable) ──
+  // ── LOGIQUE DE DETECTION ──
+  // (Utilise 'found = true' quand tu trouves le QR)
+  
   if('BarcodeDetector' in window){
     try{
       const det=new BarcodeDetector({formats:['qr_code']});
       const codes=await det.detect(v);
-      btn.classList.remove('scanning');
-      btn.textContent='📸 Scanner le QR code';
-      if(codes.length>0){processQRData(codes[0].rawValue);return;}
-      // Pas trouvé avec le flux — essaie sur photo haute res
-      const codes2=await det.detect(await captureFrame(v,canvas,1280));
-      if(codes2.length>0){processQRData(codes2[0].rawValue);return;}
-      showScanResult('❌ Pas de QR détecté — Rapproche-toi','#e88');
-      return;
+      if(codes.length>0){ processQRData(codes[0].rawValue); found=true; }
+      else {
+        const codes2=await det.detect(await captureFrame(v,canvas,1280));
+        if(codes2.length>0){ processQRData(codes2[0].rawValue); found=true; }
+      }
     }catch(e){}
   }
+
+  if (!found) { // Si toujours pas trouvé, essaie jsQR
+    try{
+      const img=captureImageData(v,canvas,600);
+      const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'attemptBoth'});
+      if(code&&code.data){ processQRData(code.data); found=true; }
+      else {
+        const img2=captureImageData(v,canvas,v.videoWidth);
+        const code2=jsQR(img2.data,img2.width,img2.height,{inversionAttempts:'attemptBoth'});
+        if(code2&&code2.data){ processQRData(code2.data); found=true; }
+      }
+    }catch(e){}
+  }
+
+  // ── NETTOYAGE FINAL (Important pour le scan automatique) ──
+  if (found) {
+    // Si trouvé, on laisse le bouton tranquille car processQRData va tout arrêter
+  } else {
+    // Si pas trouvé :
+    btn.classList.remove('scanning');
+    btn.textContent = '📸 Scanner le QR code';
+    
+    // N'affiche l'erreur que si c'est manuel
+    if (isManual) showScanResult('❌ Pas de QR détecté — Rapproche-toi','#e88');
+  }
+}
 
   // ── Essai 2 : jsQR sur photo ──
   try{
