@@ -1029,102 +1029,71 @@ function pokeballSVG(caught, size=54){
 function dalSVG(idx,w,h,style=''){return `<svg viewBox="0 0 120 100" width="${w}" height="${h}" style="${style}"><use href="#dal-body"/><use href="#sp${Math.min(18,idx)}"/></svg>`;}
 
 /* ══ MUSIQUE (Web Audio — mélodie d'aventure) ══ */
-function startMusic(){
-  try{
-    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    // playAdventureLoop();
-    // playPokemonOpening();
-    playWildBattle();
-  }catch(e){}
-}
-function stopMusic(){
-  try{if(audioCtx){audioCtx.close();audioCtx=null;}}catch(e){}
+  
+let audioCtx = null;
+let currentMusicLoop = null;
+
+// Convertit note MIDI -> Fréquence (Hz)
+function midiToFreq(midi) {
+    return 440 * Math.pow(2, (midi - 69) / 12);
 }
 
-function note(freq,start,dur,vol=0.15){
-  if(!audioCtx)return;
-  const o=audioCtx.createOscillator();
-  const g=audioCtx.createGain();
-  o.connect(g);g.connect(audioCtx.destination);
-  o.type='triangle';
-  o.frequency.setValueAtTime(freq,audioCtx.currentTime+start);
-  g.gain.setValueAtTime(0,audioCtx.currentTime+start);
-  g.gain.linearRampToValueAtTime(vol,audioCtx.currentTime+start+0.02);
-  g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+start+dur-0.02);
-  o.start(audioCtx.currentTime+start);
-  o.stop(audioCtx.currentTime+start+dur);
+// Joue une note unique
+function playNote(midi, time, duration, vol, now) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = 'square'; // Son 8-bit
+    osc.frequency.setValueAtTime(midiToFreq(midi), now + time);
+    
+    gain.gain.setValueAtTime(0, now + time);
+    gain.gain.linearRampToValueAtTime(vol, now + time + 0.01);
+    gain.gain.linearRampToValueAtTime(0, now + time + duration - 0.01);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start(now + time);
+    osc.stop(now + time + duration);
 }
 
-function playAdventureLoop(){
-  if(!audioCtx)return;
-  // Mélodie façon 101 Dalmatiens — légère et espiègle
-  const M=[
-    [523,0,.25],[659,.28,.25],[784,.56,.25],[659,.84,.25],
-    [523,1.12,.5],[392,1.65,.25],[440,1.9,.25],[523,2.15,.5],
-    [784,2.68,.25],[880,2.96,.25],[1047,3.24,.5],
-    [880,3.77,.25],[784,4.02,.25],[659,4.27,.25],[523,4.52,.5],
-    [392,5.05,.25],[440,5.3,.25],[523,5.55,.25],[659,5.8,.25],[784,6.05,.6]
-  ];
-  const basse=[
-    [131,0,.5],[165,.56,.5],[196,1.12,.5],[131,1.65,.5],
-    [165,2.15,.5],[196,2.68,.5],[131,3.24,.5],[165,3.77,.5],
-    [196,4.27,.5],[131,4.8,.5],[165,5.3,.5],[196,5.8,.5]
-  ];
-  M.forEach(([f,s,d])=>note(f,s,d,0.1));
-  basse.forEach(([f,s,d])=>note(f,s,d,0.05));
-  bgMusic=setTimeout(()=>{if(audioCtx)playAdventureLoop();},6.8*1000);
+// Fonction pour jouer tout le JSON
+function playNotesFromData(musicData) {
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    
+    musicData.tracks.forEach(track => {
+        if (!track.notes) return;
+        track.notes.forEach(note => {
+            // Note: velocity / 2 pour un volume équilibré
+            playNote(note.midi, note.time, note.duration, note.velocity / 2, now);
+        });
+    });
 }
 
- function playPokemonOpening() {
-  if (!audioCtx) return;
-
-  // Mélodie principale (le célèbre "tada-dam" et la suite)
-  const M = [
-    [523, 0, 0.2], [587, 0.25, 0.2], [659, 0.5, 0.6], // La montée
-    [783, 1.2, 0.3], [880, 1.5, 0.3], [987, 1.8, 0.6], // Le refrain
-    [659, 2.5, 0.2], [783, 2.7, 0.2], [880, 2.9, 0.2], [1046, 3.1, 0.6] // La résolution
-  ];
-
-  // Les basses rapides (très typiques du chip-tune 8-bit)
-  const basse = [
-    [130, 0, 0.2], [130, 0.3, 0.2], [164, 0.6, 0.2], [164, 0.9, 0.2],
-    [196, 1.2, 0.2], [196, 1.5, 0.2], [220, 1.8, 0.2], [220, 2.1, 0.2]
-  ];
-
-  M.forEach(([f, s, d]) => note(f, s, d, 0.2));
-  basse.forEach(([f, s, d]) => note(f, s, d, 0.1));
-
-  // Le tempo est assez soutenu sur l'original
-  bgMusic = setTimeout(() => {
-    if (audioCtx) playPokemonOpening();
-  }, 4000);
-} 
-
-function playWildBattle() {
-  if (!audioCtx) return;
-
-  // Motif agressif rapide (Staccato)
-  const M = [
-    // Intro très rapide
-    [587, 0, 0.1], [587, 0.1, 0.1], [587, 0.2, 0.1], [554, 0.3, 0.1],
-    [523, 0.4, 0.1], [494, 0.5, 0.1], [466, 0.6, 0.1], [440, 0.7, 0.1],
-    // La montée iconique
-    [392, 0.9, 0.2], [494, 1.1, 0.2], [587, 1.3, 0.2], [784, 1.5, 0.4]
-  ];
-
-  // Basse galopante (pour donner le sentiment d'urgence)
-  const basse = [
-    [146, 0, 0.1], [146, 0.2, 0.1], [146, 0.4, 0.1], [146, 0.6, 0.1],
-    [196, 0.8, 0.1], [196, 1.0, 0.1], [196, 1.2, 0.1], [196, 1.4, 0.1]
-  ];
-
-  M.forEach(([f, s, d]) => note(f, s, d, 0.05));
-  basse.forEach(([f, s, d]) => note(f, s, d, 0.05));
-
-  // Boucle très courte pour garder l'aspect "battle" intense
-  bgMusic = setTimeout(() => {
-    if (audioCtx) playWildBattle();
-  }, 1600); // Temps plus court pour plus d'intensité
+// Fonction principale pour charger et lancer une musique
+async function playMusic(jsonUrl) {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    
+    // Arrête la musique précédente
+    if (currentMusicLoop) clearTimeout(currentMusicLoop);
+    
+    try {
+        const response = await fetch(jsonUrl);
+        const musicData = await response.json();
+        
+        playNotesFromData(musicData);
+        
+        // Boucle automatique
+        currentMusicLoop = setTimeout(() => {
+            playMusic(jsonUrl);
+        }, musicData.duration * 1000 + 100);
+    } catch (e) {
+        console.error("Erreur chargement musique :", e);
+    }
 }
   
 /* ══ SPLASH ══ */
@@ -1345,6 +1314,9 @@ function showScanResult(msg,color='#fff'){
 function handleQRDetected(id){
   if(collected.has(id)){showScanResult('✓ '+PUPS.find(x=>x.id===id).name+' déjà capturé !','#ffaa44');return;}
   if(activePupId===id)return;
+  // --- NOUVEAU : Changement de musique ---
+  playMusic('wildpokemon.json');
+  // ---------------------------------
   activePupId=id;
   const p=PUPS.find(x=>x.id===id);
   // 1. On injecte le SVG
@@ -1490,6 +1462,9 @@ if (pseudo) envoyerScore(pseudo, collected.size);
   spawnPaws();
   playCaptureSfx();
   vibrate([60, 30, 60, 30, 120]);
+  // --- NOUVEAU : On repasse à la musique du menu ---
+  playMusic('mainmusic.json');
+  // --------------------------------------------------
 
   // 5. Interface : Masquer les contrôles de capture originaux
   const container = $('sCatch').querySelector('div[style*="background:#fff"]');
@@ -1699,7 +1674,7 @@ const splashEl = $('sSplash');
   splashEl.addEventListener(evt, function(e){
     e.preventDefault();
     // 1. On lance la musique ici (c'est l'interaction utilisateur débloquante)
-    startMusic();
+    playMusic('mainmusic.json')
     // 2. On appelle ta fonction qui vérifie si le pseudo existe
     initialiserApplication(); 
     // On cache le splash après le clic
