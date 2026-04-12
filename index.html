@@ -174,20 +174,51 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 /* ══ ÉCRAN CAPTURE ══ */
 #sCatch{background:#fff;justify-content:flex-start;}
 
-/* ══ VIEWER UGODEX (image + QR swipe) ══ */
-#sViewer{background:#111;justify-content:flex-start;}
-.viewer-head{width:100%;display:flex;align-items:center;padding:14px 16px;background:#111;flex-shrink:0;}
-.viewer-name{font-family:'Fredoka One',cursive;font-size:18px;color:#fff;flex:1;text-align:center;}
-.viewer-body{flex:1;width:100%;position:relative;overflow:hidden;display:flex;}
-.viewer-slide{min-width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;}
-.viewer-img{max-width:100%;max-height:75vh;object-fit:contain;border-radius:12px;}
-.viewer-qr-box{background:#fff;border-radius:16px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;}
-.viewer-qr-box img{width:200px;height:200px;}
-.viewer-qr-label{font-family:'Fredoka One',cursive;font-size:16px;color:#333;text-align:center;}
-.viewer-dots{display:flex;gap:8px;margin-top:8px;}
-.viewer-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);}
-.viewer-dot.active{background:#fff;}
-.viewer-hint{font-size:11px;color:rgba(255,255,255,0.45);margin-top:6px;letter-spacing:1px;}
+/* ══ VIEWER UGODEX (Fond blanc, sans nom en haut) ══ */
+#sViewer { 
+  background: #fff; /* Fond propre */
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* On supprime ou cache la tête */
+.viewer-head { display: none; }
+
+.viewer-body { 
+  flex: 1; /* Remplit l'espace */
+  width: 100%; 
+  position: relative; 
+  display: flex; 
+  overflow: hidden; 
+}
+
+.viewer-slide { 
+  min-width: 100%; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 16px; 
+}
+
+.viewer-img { 
+  max-width: 90%; 
+  max-height: 70vh; /* Laisse de la place pour le bandeau */
+  object-fit: contain; 
+  border-radius: 12px; 
+}
+
+/* Le nouveau bandeau noir en bas */
+.viewer-footer-hint {
+  background: #000;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  padding: 15px 0;
+  font-size: 14px;
+  font-family: 'Fredoka One', cursive;
+}
   
 /* ══ BONUS ITEM ══ */
 .card.bonus{border-color:var(--rouge);background:linear-gradient(135deg,#fff8f8,#fff);position:relative;}
@@ -621,7 +652,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 0🐾</div>
+  <div id="tapToStart">🐾 START 1🐾</div>
 </div>
 
 <!-- ════ LOGIN ════ -->
@@ -853,18 +884,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 </div>
 
 <!-- ════ VIEWER UGODEX ════ -->
-<div class="screen" id="sViewer">
-  <div class="viewer-head">
-    <button class="icon-btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff" onclick="closeViewer()">←</button>
-    <span class="viewer-name" id="viewerName"></span>
-    <div style="width:38px"></div>
+<div class="screen" id="sViewer" style="background:#fff;">
+  <button class="icon-btn" style="position:absolute; top:15px; left:15px; z-index:10; background:rgba(0,0,0,.3); color:#fff;" onclick="closeViewer()">←</button>
+  <div class="viewer-body" id="viewerBody" style="flex-wrap:nowrap; transition:transform .3s ease; flex:1;">
+    </div>
+  <div class="viewer-dots" id="viewerDots" style="margin:10px auto;"></div>
+  <div class="viewer-hint" style="background:#000; color:#fff; padding:15px; text-align:center; font-size:14px; width:100%;">
+    ← Glisse pour voir le QR code →
   </div>
-  <div class="viewer-body" id="viewerBody" style="flex-wrap:nowrap;transition:transform .3s ease;">
-    <!-- slides injectées dynamiquement -->
-  </div>
-  <div class="viewer-dots" id="viewerDots" style="margin:10px auto 6px;"></div>
-  <div class="viewer-hint">← Glisse pour voir le QR code →</div>
-  <div style="height:16px"></div>
 </div>
   
 <script>
@@ -1737,7 +1764,7 @@ function openViewer(id){
   viewerPupId=id;
   viewerSlide=0;
   const p=PUPS.find(x=>x.id===id);
-  $('viewerName').textContent=p.name;
+ // $('viewerName').textContent=p.name;
 
   // Slide 0 : image du chiot
   // Slide 1 : QR code
