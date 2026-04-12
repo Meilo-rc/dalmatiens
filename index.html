@@ -177,7 +177,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 /* ══ VIEWER UGODEX — NATIVE FEEL ══ */
 #sViewer { 
   background: #fff;
-  display: flex;
+  display: none;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
@@ -949,14 +949,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 </div>
 
 <!-- ════ VIEWER UGODEX ════ -->
-<div class="screen" id="sViewer" style="background:#fff;">
+<div class="screen" id="sViewer">
   <button class="icon-btn" style="position:absolute; top:15px; left:15px; z-index:10; background:rgba(0,0,0,.3); color:#fff;" onclick="closeViewer()">←</button>
   <div class="viewer-body" id="viewerBody" style="flex-wrap:nowrap; transition:transform .3s ease; flex:1;">
-    </div>
-  <div class="viewer-dots" id="viewerDots" style="margin:10px auto;"></div>
-  <div class="viewer-hint" style="background:#000; color:#fff; padding:15px; text-align:center; font-size:14px; width:100%;">
-    ← Glisse pour voir le QR code →
   </div>
+  <div class="viewer-dots" id="viewerDots" style="margin:10px auto;"></div>
 </div>
   
 <script>
@@ -1199,6 +1196,7 @@ function show(id) {
     console.error("Impossible de trouver l'élément : " + cleanId);
   }
 }
+  
 function pokeballSVG(caught, size=54){
   const topColor = caught ? '#e00' : '#999';
   const bottomColor = caught ? '#fff' : '#ccc';
