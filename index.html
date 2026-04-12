@@ -1106,13 +1106,6 @@ if (audioCtx) {
         console.error("Erreur chargement musique :", e);
     }
 }
-  
-/* ══ SPLASH ══ */
-function startFromSplash(){
-  playMusic('mainmusic.json');
-  show('sHome');
-  $('homeScore').textContent = collected.size + ' / ' + TOTAL;
-}
 
 /* ══ HOME ══ */
 function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=collected.size+' / '+TOTAL;}
@@ -1680,7 +1673,8 @@ function initialiserApplication() {
     const pseudo = localStorage.getItem('ugo_pseudo');
     
     if (pseudo) {
-        show('sHome'); // Le joueur a déjà un nom -> Menu principal
+        show('sHome');
+        $('homeScore').textContent = collected.size + ' / ' + TOTAL; // Le joueur a déjà un nom -> Menu principal
     } else {
         show('sLogin'); // Nouveau joueur -> On demande le nom
     }
@@ -1720,30 +1714,30 @@ function dbg(msg){ const d=$('debugLog'); if(d) d.innerHTML += msg + '<br>'; }
 
 // On attend que la page soit entièrement chargée avant d'attacher les événements
 window.addEventListener('load', () => {
-    // 1. Initialisation de base
     load();
     
-    // 2. Configuration du Splash
-    const splashEl = $('sSplash');
+    // On affecte la valeur à la variable globale ici
+    splashEl = document.getElementById('sSplash'); 
+    
     if (splashEl) {
         ['click', 'touchstart'].forEach(evt => {
-            splashEl.addEventListener(evt, function(e) {
+            splashEl.addEventListener(evt, async function(e) {
                 e.preventDefault();
                 
-                // Lancement de la musique
+                // On s'assure que tout est prêt pour l'audio
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
+                
                 playMusic('mainmusic.json');
-                
-                // Appel sécurisé de la fonction
                 initialiserApplication();
-                
-                // Masquage du splash
                 splashEl.style.display = 'none';
             }, { once: true });
         });
     }
 });
 // Retirer l'onclick inline pour éviter double déclenchement
-splashEl.removeAttribute('onclick');
+// splashEl.removeAttribute('onclick');
 
 // RETIRER LE BANDEAU D'ALERTE
 // setInterval(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},15000);
