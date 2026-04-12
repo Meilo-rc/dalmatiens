@@ -511,6 +511,34 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   }
 }
 
+
+.detail-zoom-fade{
+  position:fixed;
+  inset:0;
+  background:#fff;
+  opacity:0;
+  pointer-events:none;
+  z-index:998;
+  transition:opacity .28s ease;
+}
+
+.detail-zoom-clone{
+  position:fixed;
+  z-index:999;
+  object-fit:contain;
+  pointer-events:none;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 18px 40px rgba(0,0,0,0.18);
+  transition:
+    top .28s cubic-bezier(.22,.8,.2,1),
+    left .28s cubic-bezier(.22,.8,.2,1),
+    width .28s cubic-bezier(.22,.8,.2,1),
+    height .28s cubic-bezier(.22,.8,.2,1),
+    border-radius .28s cubic-bezier(.22,.8,.2,1),
+    opacity .2s ease;
+}
+
 /* ══ MODAL CAPTURE (remplace dog SVG par pokeball) ══ */
 #modalQR{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:28px;}
 #modalQR.on{display:flex;}
@@ -896,10 +924,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <div id="detailBody"
        style="display:flex;width:100%;height:100%;transition:transform .3s ease;">
     <!-- SLIDE 1 : IMAGE -->
-    <div style="min-width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:#fff;">
+    <div style="min-width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:#fff;padding:24px 24px 96px;">
       <img id="detailImg"
            src=""
-           style="max-width:100%;max-height:100%;object-fit:contain;transition:transform .2s ease;">
+           style="max-width:100%;max-height:72vh;object-fit:contain;transition:transform .2s ease;">
     </div>
 
     <!-- SLIDE 2 : QR -->
@@ -1202,6 +1230,43 @@ function openDetail(id, fromCapture=false){
   }
 }
 
+function openDetailFromThumb(imgEl, id, fromCapture=false){
+  if(!imgEl){
+    openDetail(id, fromCapture);
+    return;
+  }
+
+  const rect = imgEl.getBoundingClientRect();
+  const clone = imgEl.cloneNode(true);
+  const fade = document.createElement('div');
+
+  fade.className = 'detail-zoom-fade';
+  clone.className = 'detail-zoom-clone';
+
+  clone.style.top = rect.top + 'px';
+  clone.style.left = rect.left + 'px';
+  clone.style.width = rect.width + 'px';
+  clone.style.height = rect.height + 'px';
+
+  document.body.appendChild(fade);
+  document.body.appendChild(clone);
+
+  requestAnimationFrame(() => {
+    fade.style.opacity = '1';
+    clone.style.top = '0px';
+    clone.style.left = '0px';
+    clone.style.width = window.innerWidth + 'px';
+    clone.style.height = window.innerHeight + 'px';
+    clone.style.borderRadius = '0px';
+  });
+
+  setTimeout(() => {
+    openDetail(id, fromCapture);
+    clone.remove();
+    fade.remove();
+  }, 280);
+}
+
 function closeDetail(){
   detailSlide = 0;
   show('sColl');
@@ -1429,13 +1494,13 @@ function buildGrid(){
       // div.style.border = "5px solid blue";
       div.style.cursor = 'pointer';
       
-      // On lie la fonction openDetail proprement
-      div.onclick = () => openDetail(p.id);
-      
       // On retire le onerror qui créait les symboles ' ">
       div.innerHTML = `<div class="card-dog"><img src="pup${p.id}.webp" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;"></div>
                        <div class="card-name">${p.name}</div>
                        <div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
+      
+      // On lie la fonction openDetail avec animation de zoom
+      div.onclick = () => openDetailFromThumb(div.querySelector('img'), p.id);
     } 
     else {
       // Chiot normal verrouillé
