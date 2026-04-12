@@ -1393,25 +1393,6 @@ async function takeSnap(isManual = false) {
   }
 }
 
-  // ── Essai 2 : jsQR sur photo ──
-  try{
-    const img=captureImageData(v,canvas,600);
-    const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'attemptBoth'});
-    btn.classList.remove('scanning');
-    btn.textContent='📸 Scanner le QR code';
-    if(code&&code.data){processQRData(code.data);return;}
-    // Essai en haute résolution
-    const img2=captureImageData(v,canvas,v.videoWidth);
-    const code2=jsQR(img2.data,img2.width,img2.height,{inversionAttempts:'attemptBoth'});
-    if(code2&&code2.data){processQRData(code2.data);return;}
-    showScanResult('❌ Pas de QR détecté — Rapproche-toi','#e88');
-  }catch(e){
-    btn.classList.remove('scanning');
-    btn.textContent='📸 Scanner le QR code';
-    showScanResult('⚠️ Erreur : '+e.message,'#e88');
-  }
-}
-
 function captureFrame(video,canvas,size){
   canvas.width=size; canvas.height=size;
   const ctx=canvas.getContext('2d',{willReadFrequently:true});
