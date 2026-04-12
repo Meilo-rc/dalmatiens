@@ -1159,16 +1159,14 @@ function calculerBonus(created, updated) {
   
 /* ══ AFFICHE BONUS TEMPS ══ */
 function afficherRecompense(record) {
-    // 1. Calcul du bonus
     const bonus = calculerBonus(record.created, record.updated);
-    
-    // 2. Mise à jour du message
+    pendingTimeBonus = bonus.points;
+
     const msgEl = document.getElementById('bonusMsg');
     if (msgEl) {
-        msgEl.innerHTML = `Bonus en moins de ${bonus.label} : <span style="color:#ffdd44">+${bonus.points} pts !!</span>`;
+        msgEl.innerHTML = `⏱️ Bonus temporel en moins de ${bonus.label} : <span style="color:#ffdd44">+${bonus.points} pts</span>`;
     }
-    
-    // 3. Affichage
+
     show('sReward');
 }
   
@@ -1251,12 +1249,25 @@ function openDetailFromThumb(imgEl, id, fromCapture=false){
   document.body.appendChild(fade);
   document.body.appendChild(clone);
 
+  const naturalW = imgEl.naturalWidth || rect.width || 1;
+  const naturalH = imgEl.naturalHeight || rect.height || 1;
+  const sidePad = 24 * 2;
+  const topPad = 24;
+  const bottomPad = 96;
+  const maxW = Math.max(1, window.innerWidth - sidePad);
+  const maxH = Math.max(1, Math.min(window.innerHeight - topPad - bottomPad, window.innerHeight * 0.72));
+  const ratio = Math.min(maxW / naturalW, maxH / naturalH);
+  const targetW = Math.round(naturalW * ratio);
+  const targetH = Math.round(naturalH * ratio);
+  const targetLeft = Math.round((window.innerWidth - targetW) / 2);
+  const targetTop = Math.round(topPad + (maxH - targetH) / 2);
+
   requestAnimationFrame(() => {
     fade.style.opacity = '1';
-    clone.style.top = '0px';
-    clone.style.left = '0px';
-    clone.style.width = window.innerWidth + 'px';
-    clone.style.height = window.innerHeight + 'px';
+    clone.style.top = targetTop + 'px';
+    clone.style.left = targetLeft + 'px';
+    clone.style.width = targetW + 'px';
+    clone.style.height = targetH + 'px';
     clone.style.borderRadius = '0px';
   });
 
@@ -1293,7 +1304,8 @@ function setupDetailSwipe(){
 function unlockUGOAT(){
   collected.add(22);save();
   const pseudo = localStorage.getItem('ugo_pseudo');
-  if (pseudo) envoyerScore(pseudo, collected.size + 15);
+  const finalScore = collected.size + 15 + pendingTimeBonus;
+  if (pseudo) envoyerScore(pseudo, finalScore);
   buildGrid();
   show('sColl');
   setTimeout(()=>show('sCredits'), 2000);
@@ -1322,6 +1334,7 @@ const QR_PREFIX='DAL_';
 let collected=new Set(),startTime=Date.now(),pendingPup=null,alertTimer=null;
 let camStream=null,scanLoop=null,scanPaused=false,activePupId=null;
 let bgMusic=null;
+let pendingTimeBonus = 0;
 
 /* ══ PERSIST ══ */
 function save(){try{localStorage.setItem('dal7_c',JSON.stringify([...collected]));localStorage.setItem('dal7_t',''+startTime);}catch(e){}}
@@ -2039,6 +2052,7 @@ async function unlockBonus() {
   const p = PUPS.find(x => x.id === BONUS_ID);
   collected.add(BONUS_ID);
   save();
+  pendingTimeBonus = 0;
   
   // Feedback immédiat
   flashMsg('🏆 ' + p.name + ' débloqué ! Félicitations GG !', 5000);
@@ -2053,13 +2067,18 @@ async function unlockBonus() {
 
     if (result.items.length > 0) {
       const userRecord = result.items[0];
-      // On passe le record à la fonction d'affichage
       afficherRecompense(userRecord);
     } else {
+      const msgEl = document.getElementById('bonusMsg');
+      if (msgEl) msgEl.innerHTML = `⏱️ Bonus temporel : <span style="color:#ffdd44">+0 pt</span>`;
+      pendingTimeBonus = 0;
       show('sReward');
     }
   } catch (err) {
     console.error("Erreur calcul bonus:", err);
+    const msgEl = document.getElementById('bonusMsg');
+    if (msgEl) msgEl.innerHTML = `⏱️ Bonus temporel : <span style="color:#ffdd44">+0 pt</span>`;
+    pendingTimeBonus = 0;
     show('sReward');
   }
 }
