@@ -2028,13 +2028,27 @@ function initialiserApplication() {
 }
 
 // PSEUDO A SAUVEGARDER
+let isSavingPseudo = false;
+
 async function savePseudo() {
-    const rawPseudo = $('playerPseudo').value.trim();
+    if (isSavingPseudo) return;
+
+    const input = $('playerPseudo');
+    const submitBtn = document.querySelector('#sLogin .btn-primary');
+    const rawPseudo = input.value.trim();
     const pseudo = rawPseudo.toLowerCase();
 
     if (pseudo.length < 2) {
         alert("Ton pseudo est trop court !");
         return;
+    }
+
+    isSavingPseudo = true;
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
+        submitBtn.textContent = 'ENREGISTREMENT...';
     }
 
     try {
@@ -2053,19 +2067,37 @@ async function savePseudo() {
 
         const fieldErrors = error?.response?.data || {};
         const pseudoError = fieldErrors?.Pseudo?.message || "";
+        const normalizedMsg = String(msg).toLowerCase();
+        const normalizedPseudoError = String(pseudoError).toLowerCase();
+
+        const looksLikeAutoCancelled =
+            normalizedMsg.includes("autocancelled") ||
+            normalizedMsg.includes("auto cancelled") ||
+            normalizedMsg.includes("request auto-cancelled") ||
+            normalizedMsg.includes("request was autocancelled");
 
         const looksLikeDuplicate =
-            pseudoError.toLowerCase().includes("unique") ||
-            pseudoError.toLowerCase().includes("already") ||
-            pseudoError.toLowerCase().includes("déjà") ||
-            msg.toLowerCase().includes("unique") ||
-            msg.toLowerCase().includes("already") ||
-            msg.toLowerCase().includes("déjà");
+            normalizedPseudoError.includes("unique") ||
+            normalizedPseudoError.includes("already") ||
+            normalizedPseudoError.includes("déjà") ||
+            normalizedMsg.includes("unique") ||
+            normalizedMsg.includes("already") ||
+            normalizedMsg.includes("déjà");
 
-        if (looksLikeDuplicate) {
+        if (looksLikeAutoCancelled) {
+            alert("La requête a été annulée automatiquement. Réessaie une seule fois.");
+        } else if (looksLikeDuplicate) {
             alert("Ce pseudo est déjà utilisé (même avec des majuscules différentes). Choisis-en un autre !");
         } else {
             alert("Erreur d'enregistrement : " + (pseudoError || msg || "cause inconnue"));
+        }
+    } finally {
+        isSavingPseudo = false;
+
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.textContent = "C'EST PARTI !";
         }
     }
 }
