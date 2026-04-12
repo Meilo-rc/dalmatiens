@@ -1337,7 +1337,7 @@ async function goHunt(){
   // Sécurité : on nettoie une boucle existante avant d'en lancer une autre
   if (scanLoop) clearInterval(scanLoop);
   // Lance le scan auto toutes les 1.5 secondes
-    scanLoop = setInterval(takeSnap, 1500); 
+   scanLoop = setInterval(() => takeSnap(false), 1500);
 }
 
 // Prend une photo et analyse le QR
