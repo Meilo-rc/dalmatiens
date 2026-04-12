@@ -1072,25 +1072,29 @@ function playNotesFromData(musicData) {
     });
 }
 
-// Fonction principale pour charger et lancer une musique
 async function playMusic(jsonUrl) {
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // 1. ARRÊT TOTAL : on nettoie tout ce qui pourrait tourner
+    if (currentMusicLoop) {
+        clearTimeout(currentMusicLoop);
+        currentMusicLoop = null;
     }
     
-    // Arrête la musique précédente
-    if (currentMusicLoop) clearTimeout(currentMusicLoop);
+    // 2. On s'assure que le contexte audio est actif
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
     
+    // 3. Chargement et lecture
     try {
         const response = await fetch(jsonUrl);
         const musicData = await response.json();
         
         playNotesFromData(musicData);
         
-        // Boucle automatique
+        // 4. On stocke la nouvelle boucle pour pouvoir l'arrêter au prochain changement
         currentMusicLoop = setTimeout(() => {
             playMusic(jsonUrl);
         }, musicData.duration * 1000 + 100);
+        
     } catch (e) {
         console.error("Erreur chargement musique :", e);
     }
