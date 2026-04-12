@@ -902,35 +902,51 @@ async function envoyerScore(pseudo, score) {
 async function rafraichirClassement() {
     const rankingBody = document.getElementById('rankingBody');
     rankingBody.innerHTML = "Chargement...";
+    const myPseudo = localStorage.getItem('ugo_pseudo');
 
     try {
-        // PocketBase récupère les 20 meilleurs scores triés par ordre décroissant
-        const records = await pb.collection('Classement').getList(1, 20, {
-            sort: '-Score', 
-        });
-
-        rankingBody.innerHTML = ""; // Nettoyage de l'affichage
+        const records = await pb.collection('Classement').getList(1, 20, { sort: '-Score' });
+        rankingBody.innerHTML = "";
 
         if (records.items.length === 0) {
             rankingBody.innerHTML = "<p>Aucun joueur pour le moment.</p>";
             return;
         }
 
-        // On génère chaque ligne du classement
+        let myInTop20 = false;
+
         records.items.forEach((item, index) => {
             const row = document.createElement('div');
+            const isMe = myPseudo && item.Pseudo.toLowerCase() === myPseudo.toLowerCase();
+            if(isMe) myInTop20 = true;
             row.className = 'ranking-row';
-            
-            // On construit la ligne sans espaces inutiles dans le HTML
-    row.innerHTML = `<span class="rank-number">${index + 1} / </span>` +
-                    `<span class="pseudo-display">${item.Pseudo}</span>` +
-                    ` : ` +
-                    `<strong class="score-display">${item.Score} pts</strong>`;
-            
+            if(isMe) row.style.cssText = 'background:rgba(0,200,80,0.25);border-color:rgba(0,200,80,0.6);';
+            row.innerHTML = `<span class="rank-number">${index + 1}. </span>` +
+                            `<span class="pseudo-display">${item.Pseudo}</span>` +
+                            ` : <strong class="score-display">${item.Score} pts</strong>`;
             rankingBody.appendChild(row);
         });
+
+        // Si le joueur n'est pas dans le top 20, on le cherche et on l'affiche en bas
+        if(!myInTop20 && myPseudo){
+            const myResult = await pb.collection('Classement').getList(1, 1, {
+                filter: `Pseudo = "${myPseudo}"`
+            });
+            if(myResult.items.length > 0){
+                const item = myResult.items[0];
+                const sep = document.createElement('div');
+                sep.style.cssText = 'text-align:center;color:rgba(255,255,255,0.3);font-size:12px;padding:8px;';
+                sep.textContent = '— hors top 20 —';
+                rankingBody.appendChild(sep);
+                const row = document.createElement('div');
+                row.className = 'ranking-row';
+                row.style.cssText = 'background:rgba(0,200,80,0.25);border-color:rgba(0,200,80,0.6);';
+                row.innerHTML = `<span class="pseudo-display">${item.Pseudo}</span>` +
+                                ` : <strong class="score-display">${item.Score} pts</strong>`;
+                rankingBody.appendChild(row);
+            }
+        }
     } catch (error) {
-        console.error("Erreur de chargement du classement :", error);
         rankingBody.innerHTML = "Erreur de connexion au classement.";
     }
 }
@@ -972,11 +988,19 @@ function toggleDetailView(){
   detailShowQR=!detailShowQR;
   if(detailShowQR){
     const p=PUPS.find(x=>x.id===detailId);
-    const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(QR_PREFIX+detailId)+'&bgcolor=ffffff&color=000000&qzone=1';
-    $('detailQRImg').src=qrUrl;
-    $('detailQRName').textContent=p.name;
     $('detailImg').style.display='none';
     $('detailQR').style.display='flex';
+    if(p.secret){
+      $('detailQRImg').style.display='none';
+      $('detailQRName').textContent="Un UGOAT ça ne s'échange pas !";
+      $('detailQRName').style.fontSize='20px';
+    } else {
+      $('detailQRImg').style.display='block';
+      const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(QR_PREFIX+detailId)+'&bgcolor=ffffff&color=000000&qzone=1';
+      $('detailQRImg').src=qrUrl;
+      $('detailQRName').textContent=p.name;
+      $('detailQRName').style.fontSize='';
+    }
     $('detailSwipeHint').textContent="← Swipe pour l'image";
     $('detailName').style.color='#111';
   } else {
@@ -1136,7 +1160,10 @@ if (audioCtx) {
 }
 
 /* ══ HOME ══ */
-function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=collected.size+' / '+TOTAL;}
+function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=if(collected.size >= TOTAL){
+  document.querySelector('.home-mascot').innerHTML = 
+    '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;">🏆</div>';
+}
 
 /* ══ COLLECTION ══ */
 function goColl(scrollToId=null){
@@ -1702,7 +1729,9 @@ function initialiserApplication() {
     
     if (pseudo) {
         show('sHome');
-        $('homeScore').textContent = collected.size + ' / ' + TOTAL; // Le joueur a déjà un nom -> Menu principal
+        $('homeScore').textContent = if(collected.size >= TOTAL){
+  document.querySelector('.home-mascot').innerHTML = 
+    '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;">🏆</div>';
     } else {
         show('sLogin'); // Nouveau joueur -> On demande le nom
     }
