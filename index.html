@@ -615,7 +615,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart" onclick="initialiserApplication()">🐾 START 1🐾</div>
+  <div id="tapToStart">🐾 START 🐾</div>
 </div>
 
 <!-- ════ LOGIN ════ -->
@@ -1664,24 +1664,6 @@ function showWin(){
 }
 function reset(){collected=new Set();startTime=Date.now();save();pendingPup=null;activePupId=null;show('sSplash');}
 
-/* ══ INIT ══ */
-load();
-
-// Splash : écoute tap ET click pour Android
-// On remplace l'ancien écouteur du Splash par celui-ci
-const splashEl = $('sSplash');
-['click','touchstart'].forEach(evt =>
-  splashEl.addEventListener(evt, function(e){
-    e.preventDefault();
-    // 1. On lance la musique ici (c'est l'interaction utilisateur débloquante)
-    playMusic('mainmusic.json')
-    // 2. On appelle ta fonction qui vérifie si le pseudo existe
-    initialiserApplication(); 
-    // On cache le splash après le clic
-    splashEl.style.display = 'none'; 
-  }, { once: true })
-);
-
 // PSEUDO A ENREGISTRER (Décide où aller après le Splash)
 function initialiserApplication() {
     const pseudo = localStorage.getItem('ugo_pseudo');
@@ -1724,7 +1706,31 @@ async function savePseudo() {
 
 // Fonction debug
 function dbg(msg){ const d=$('debugLog'); if(d) d.innerHTML += msg + '<br>'; } 
-  
+
+// On attend que la page soit entièrement chargée avant d'attacher les événements
+window.addEventListener('load', () => {
+    // 1. Initialisation de base
+    load();
+    
+    // 2. Configuration du Splash
+    const splashEl = $('sSplash');
+    if (splashEl) {
+        ['click', 'touchstart'].forEach(evt => {
+            splashEl.addEventListener(evt, function(e) {
+                e.preventDefault();
+                
+                // Lancement de la musique
+                playMusic('mainmusic.json');
+                
+                // Appel sécurisé de la fonction
+                initialiserApplication();
+                
+                // Masquage du splash
+                splashEl.style.display = 'none';
+            }, { once: true });
+        });
+    }
+});
 // Retirer l'onclick inline pour éviter double déclenchement
 splashEl.removeAttribute('onclick');
 
