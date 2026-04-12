@@ -717,7 +717,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START AI🐾</div>
+  <div id="tapToStart">🐾 START 1🐾</div>
 </div>
 
 <!-- ════ LOGIN ════ -->
@@ -853,18 +853,37 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 
 <!-- ════ SCREEN DETAIL Ugodex (image grande + swipe QR) ════ -->
 <div class="screen" id="sDetail">
-  <img id="detailImg" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#111;">
-  <div id="detailQR" style="position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:#fff;gap:16px;">
-    <img id="detailQRImg" src="" alt="" style="width:200px;height:200px;border-radius:8px;">
-    <div id="detailQRName" style="font-family:'Fredoka One',cursive;font-size:22px;color:#111;text-align:center;"></div>
-    <div style="font-size:13px;color:#888;">QR code pour partager cet item</div>
-    <div style="font-size:11px;color:rgba(0,0,0,0.3);font-weight:800;">← Swipe pour revenir</div>
+  <!-- SLIDER WRAPPER -->
+  <div id="detailBody"
+       style="display:flex;width:200%;height:100%;transition:transform .3s ease;">
+    <!-- SLIDE 1 : IMAGE -->
+    <div style="min-width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:#fff;">
+      <img id="detailImg"
+           src=""
+           style="max-width:100%;max-height:100%;object-fit:contain;transition:transform .2s ease;">
+    </div>
+    <!-- SLIDE 2 : QR -->
+    <div style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;gap:16px;">
+      <img id="detailQRImg"
+           src=""
+           style="width:220px;height:220px;background:#fff;padding:10px;border-radius:12px;">
+    </div>
   </div>
-  <div style="position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;align-items:center;gap:10px;z-index:10;background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);">
-    <button class="icon-btn" style="background:rgba(0,0,0,.5)" onclick="closeDetail()">←</button>
-    <span id="detailName" style="font-family:'Fredoka One',cursive;font-size:18px;color:#fff;flex:1;text-shadow:0 2px 6px rgba(0,0,0,.8);"></span>
+
+  <!-- BACK BUTTON -->
+  <button class="icon-btn"
+          style="position:absolute;top:15px;left:15px;z-index:10;background:rgba(0,0,0,.4);color:#fff;"
+          onclick="closeDetail()">←</button>
+
+  <!-- HINT -->
+  <div id="detailSwipeHint"
+       style="position:absolute;bottom:25px;left:50%;transform:translateX(-50%);
+              background:rgba(0,0,0,.75);color:#fff;
+              padding:8px 14px;border-radius:20px;
+              font-size:12px;backdrop-filter:blur(6px);">
+    Swipe → QR code
   </div>
-  <div id="detailSwipeHint" style="position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(255,255,255,0.4);font-weight:800;pointer-events:none;white-space:nowrap;">Swipe → pour le QR code</div>
+
 </div>
 
 <!-- ════ SCREEN RÉCOMPENSE UGOAT ════ -->
@@ -1084,23 +1103,69 @@ function afficherRecompense(record) {
   
 /* ══ DETAIL UGODEX ══ */
 let detailId=null, detailShowQR=false;
+let detailSlide = 0;
+let startX = 0;
 
+document.addEventListener('touchstart', e => {
+  startX = e.touches[0].clientX;
+});
+
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - startX;
+
+  if (Math.abs(dx) > 50 && document.getElementById('sDetail').classList.contains('on')) {
+    if (dx < 0) swipeDetail(1);
+    else swipeDetail(-1);
+  }
+});
+  
+function swipeDetail(dir){
+  const body = document.getElementById('detailBody');
+  detailSlide = Math.max(0, Math.min(1, detailSlide + dir));
+
+  body.style.transform = `translateX(-${detailSlide * 50}%)`;
+}
+  
 function openDetail(id, fromCapture=false){
-  const p=PUPS.find(x=>x.id===id);
-  if(!p)return;
-  detailId=id; detailShowQR=false;
-  $('detailName').textContent=p.name;
-  $('detailImg').src='pup'+id+'.webp';
-  $('detailImg').style.display='block';
-  $('detailQR').style.display='none';
-  $('detailSwipeHint').textContent='Swipe → pour le QR code';
+  const p = PUPS.find(x => x.id === id);
+  if(!p) return;
+
+  detailId = id;
+  detailSlide = 0; // 🔥 reset swipe
+
+  // IMAGE
+  $('detailImg').src = 'pup' + id + '.webp';
+
+  // QR
+  const qrUrl =
+    'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' +
+    encodeURIComponent('DAL_' + id) +
+    '&bgcolor=ffffff&color=000000&qzone=2';
+
+  $('detailQRImg').src = qrUrl;
+
+  // RESET SLIDER POSITION
+  const body = $('detailBody');
+  if(body) body.style.transform = 'translateX(0%)';
+
+  // HINT
+  const hint = $('detailSwipeHint');
+  if(hint) hint.textContent = 'Swipe → QR code';
+
+  // SHOW SCREEN
   show('sDetail');
-  if(fromCapture) flashMsg('🎉 Capturé ! Cherche le suivant !',2500);
-  // Swipe
+
+  // MESSAGE CAPTURE
+  if(fromCapture) {
+    flashMsg('🎉 Capturé ! Cherche le suivant !', 2500);
+  }
+
+  // swipe init (si tu en as un spécifique)
   setupDetailSwipe();
 }
 
 function closeDetail(){
+  detailSlide = 0;
   show('sColl');
   buildGrid();
 }
