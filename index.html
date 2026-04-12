@@ -1120,10 +1120,14 @@ document.addEventListener('touchend', e => {
 });
   
 function swipeDetail(dir){
-  const body = document.getElementById('detailBody');
   detailSlide = Math.max(0, Math.min(1, detailSlide + dir));
+  const body = $('detailBody');
+  if(body) body.style.transform = `translateX(-${detailSlide * 50}%)`;
 
-  body.style.transform = `translateX(-${detailSlide * 50}%)`;
+  const hint = $('detailSwipeHint');
+  if(hint){
+    hint.textContent = detailSlide === 0 ? 'Swipe → QR code' : '← Swipe pour revenir';
+  }
 }
   
 function openDetail(id, fromCapture=false){
@@ -1131,37 +1135,28 @@ function openDetail(id, fromCapture=false){
   if(!p) return;
 
   detailId = id;
-  detailSlide = 0; // 🔥 reset swipe
+  detailSlide = 0;
 
-  // IMAGE
   $('detailImg').src = 'pup' + id + '.webp';
 
-  // QR
   const qrUrl =
     'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' +
-    encodeURIComponent('DAL_' + id) +
+    encodeURIComponent(QR_PREFIX + id) +
     '&bgcolor=ffffff&color=000000&qzone=2';
 
   $('detailQRImg').src = qrUrl;
 
-  // RESET SLIDER POSITION
   const body = $('detailBody');
   if(body) body.style.transform = 'translateX(0%)';
 
-  // HINT
   const hint = $('detailSwipeHint');
   if(hint) hint.textContent = 'Swipe → QR code';
 
-  // SHOW SCREEN
   show('sDetail');
 
-  // MESSAGE CAPTURE
   if(fromCapture) {
     flashMsg('🎉 Capturé ! Cherche le suivant !', 2500);
   }
-
-  // swipe init (si tu en as un spécifique)
-  setupDetailSwipe();
 }
 
 function closeDetail(){
@@ -1171,40 +1166,20 @@ function closeDetail(){
 }
 
 function setupDetailSwipe(){
-  const el=$('sDetail');
-  let sx=0;
-  el.ontouchstart=e=>sx=e.touches[0].clientX;
-  el.ontouchend=e=>{
-    const dx=e.changedTouches[0].clientX-sx;
-    if(Math.abs(dx)>50) toggleDetailView();
-  };
-}
+  const el = $('sDetail');
+  let sx = 0;
 
-function toggleDetailView(){
-  detailShowQR=!detailShowQR;
-  if(detailShowQR){
-    const p=PUPS.find(x=>x.id===detailId);
-    $('detailImg').style.display='none';
-    $('detailQR').style.display='flex';
-    if(p.secret){
-      $('detailQRImg').style.display='none';
-      $('detailQRName').textContent="Un UGOAT ça ne s'échange pas !";
-      $('detailQRName').style.fontSize='20px';
-    } else {
-      $('detailQRImg').style.display='block';
-      const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(QR_PREFIX+detailId)+'&bgcolor=ffffff&color=000000&qzone=1';
-      $('detailQRImg').src=qrUrl;
-      $('detailQRName').textContent=p.name;
-      $('detailQRName').style.fontSize='';
-    }
-    $('detailSwipeHint').textContent="← Swipe pour l'image";
-    $('detailName').style.color='#111';
-  } else {
-    $('detailImg').style.display='block';
-    $('detailQR').style.display='none';
-    $('detailSwipeHint').textContent='Swipe → pour le QR code';
-    $('detailName').style.color='#fff';
-  }
+  el.ontouchstart = e => {
+    sx = e.touches[0].clientX;
+  };
+
+  el.ontouchend = e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) < 50) return;
+
+    if (dx < 0) swipeDetail(1);
+    else swipeDetail(-1);
+  };
 }
 
 function unlockUGOAT(){
