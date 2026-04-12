@@ -834,6 +834,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <button class="btn btn-secondary" onclick="goColl()">📖 Ugodex</button>
   <button class="btn btn-primary" onclick="show('#sRanking'); rafraichirClassement();"> 🏆 Voir le Classement</button>
   <button class="btn ranking" onclick="goPrint()">🖨️ QR codes à imprimer</button>
+  <button id="testEndgameBtn" onclick="activateTestEndgame()" aria-label="Mode test fin de jeu" title="Mode test fin de jeu" style="position:absolute;right:6px;bottom:6px;width:34px;height:34px;border:none;border-radius:50%;background:rgba(0,0,0,0.03);color:transparent;box-shadow:none;z-index:30;cursor:pointer;">•</button>
 </div>
 
 <!-- ════ COLLECTION ════ -->
@@ -2095,6 +2096,19 @@ function showWin(){
   show('sWin');
 }
 function reset(){collected=new Set();startTime=Date.now();save();pendingPup=null;activePupId=null;show('sSplash');}
+
+function activateTestEndgame(){
+  const existingPseudo = localStorage.getItem('ugo_pseudo');
+  if(!existingPseudo){
+    localStorage.setItem('ugo_pseudo','testeur');
+  }
+  collected = new Set(Array.from({length:20}, (_,i)=>i+1));
+  startTime = Date.now() - (20 * 60 * 1000);
+  save();
+  buildGrid();
+  goHome();
+  flashMsg('🧪 Mode test activé : 20 Ugos déjà collectés', 2500);
+}
 
 // PSEUDO A ENREGISTRER (Décide où aller après le Splash)
 function initialiserApplication() {
