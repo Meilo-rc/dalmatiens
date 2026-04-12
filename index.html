@@ -850,7 +850,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 // const pb = new PocketBase('http://192.168.1.37:8090');
 // Remplace ton ancienne ligne (ex: http://127.0.0.1:8090) par celle-ci :
 const pb = new PocketBase('https://psyco.fly.dev');
-
+let splashEl = null;
+  
 async function envoyerScore(pseudo, score) {
   try {
     const result = await pb.collection('Classement').getList(1, 1, {
