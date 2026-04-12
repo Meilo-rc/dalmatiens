@@ -174,7 +174,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 /* ══ ÉCRAN CAPTURE ══ */
 #sCatch{background:#fff;justify-content:flex-start;}
 
-<style id="viewer-native-upgrade">
 /* ══ VIEWER UGODEX — NATIVE FEEL ══ */
 #sViewer { 
   background: #fff;
@@ -285,8 +284,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   80% { opacity: 1; }
   100% { opacity: 0; }
 }
-</style>
-<style>  
+ 
 /* ══ BONUS ITEM ══ */
 .card.bonus{border-color:var(--rouge);background:linear-gradient(135deg,#fff8f8,#fff);position:relative;}
 .card.bonus::before{content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:28px;z-index:2;}
@@ -1827,7 +1825,6 @@ function scheduleAlert(){clearTimeout(alertTimer);alertTimer=setTimeout(triggerA
 /* ══ VIEWER UGODEX ══ */
 let viewerPupId=null, viewerSlide=0;
 
-<script id="viewer-native-js">
 function openViewer(id){
   viewerPupId=id;
   viewerSlide=0;
@@ -1867,9 +1864,7 @@ function openViewer(id){
   setupViewerSwipe(body,2);
   show('sViewer');
 }
-</script>
-  
-<script>
+
 function setupViewerSwipe(el,total){
   let startX=0,dragging=false;
   el.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;dragging=true;},{passive:true});
@@ -1985,7 +1980,9 @@ function dbg(msg){ const d=$('debugLog'); if(d) d.innerHTML += msg + '<br>'; }
 
 // On attend que la page soit entièrement chargée avant d'attacher les événements
 window.addEventListener('load', () => {
-    load();
+    if (typeof load === "function") {
+        load();
+    }
     const splashEl = $('sSplash');
     
     if (splashEl) {
