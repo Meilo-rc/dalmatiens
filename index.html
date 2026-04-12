@@ -857,19 +857,19 @@ async function envoyerScore(pseudo, score) {
     const result = await pb.collection('Classement').getList(1, 1, {
       filter: `Pseudo = "${pseudo}"`
     });
-    dbg('Recherche "' + pseudo + '" → ' + result.items.length + ' résultat(s)');
+    // dbg('Recherche "' + pseudo + '" → ' + result.items.length + ' résultat(s)');
     if (result.items.length > 0) {
       const id = result.items[0].id;
-      dbg('Mise à jour id=' + id + ' score=' + score);
+      // dbg('Mise à jour id=' + id + ' score=' + score);
       await pb.collection('Classement').update(id, { Score: score });
-      dbg('✓ Mise à jour OK');
+      // dbg('✓ Mise à jour OK');
     } else {
-      dbg('Création nouveau joueur score=' + score);
+      // dbg('Création nouveau joueur score=' + score);
       await pb.collection('Classement').create({ Pseudo: pseudo, Score: score });
-      dbg('✓ Création OK');
+      // dbg('✓ Création OK');
     }
   } catch (error) {
-    dbg('ERREUR: ' + error.message);
+    // dbg('ERREUR: ' + error.message);
   }
 }
   
