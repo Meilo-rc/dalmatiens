@@ -174,52 +174,119 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 /* ══ ÉCRAN CAPTURE ══ */
 #sCatch{background:#fff;justify-content:flex-start;}
 
-/* ══ VIEWER UGODEX (Fond blanc, sans nom en haut) ══ */
+<style id="viewer-native-upgrade">
+/* ══ VIEWER UGODEX — NATIVE FEEL ══ */
 #sViewer { 
-  background: #fff; /* Fond propre */
+  background: #fff;
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow: hidden;
 }
 
-/* On supprime ou cache la tête */
-.viewer-head { display: none; }
+/* on supprime complètement le header */
+.viewer-head { display: none !important; }
 
 .viewer-body { 
-  flex: 1; /* Remplit l'espace */
-  width: 100%; 
-  position: relative; 
-  display: flex; 
-  overflow: hidden; 
-}
-
-.viewer-slide { 
-  min-width: 100%; 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: center; 
-  padding: 16px; 
-}
-
-.viewer-img { 
-  max-width: 90%; 
-  max-height: 70vh; /* Laisse de la place pour le bandeau */
-  object-fit: contain; 
-  border-radius: 12px; 
-}
-
-/* Le nouveau bandeau noir en bas */
-.viewer-footer-hint {
-  background: #000;
-  color: #fff;
+  flex: 1;
   width: 100%;
-  text-align: center;
-  padding: 15px 0;
-  font-size: 14px;
-  font-family: 'Fredoka One', cursive;
+  display: flex;
+  overflow: hidden;
+  position: relative;
 }
-  
+
+/* slides */
+.viewer-slide { 
+  min-width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* image */
+.viewer-img { 
+  max-width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 16px;
+
+  transition: transform 0.2s ease;
+}
+
+.viewer-img:active {
+  transform: scale(0.97);
+}
+
+/* QR */
+.viewer-qr-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.viewer-qr-box img {
+  width: 200px;
+  height: 200px;
+}
+
+/* on cache le label sous QR */
+.viewer-qr-label {
+  display: none;
+}
+
+/* dots */
+.viewer-dots {
+  position: absolute;
+  bottom: 14px;
+  display: flex;
+  gap: 6px;
+}
+
+.viewer-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+}
+
+.viewer-dot.active {
+  background: #000;
+}
+
+/* HINT NATIVE */
+.viewer-hint {
+  position: absolute;
+  bottom: 40px;
+
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+
+  padding: 8px 14px;
+  border-radius: 20px;
+
+  font-size: 13px;
+  backdrop-filter: blur(6px);
+
+  animation: fadeHint 3s ease forwards;
+}
+
+@keyframes fadeHint {
+  0% { opacity: 0; transform: translateY(10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+</style>
+<style>  
 /* ══ BONUS ITEM ══ */
 .card.bonus{border-color:var(--rouge);background:linear-gradient(135deg,#fff8f8,#fff);position:relative;}
 .card.bonus::before{content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:28px;z-index:2;}
@@ -1760,39 +1827,49 @@ function scheduleAlert(){clearTimeout(alertTimer);alertTimer=setTimeout(triggerA
 /* ══ VIEWER UGODEX ══ */
 let viewerPupId=null, viewerSlide=0;
 
+<script id="viewer-native-js">
 function openViewer(id){
   viewerPupId=id;
   viewerSlide=0;
   const p=PUPS.find(x=>x.id===id);
- // $('viewerName').textContent=p.name;
 
-  // Slide 0 : image du chiot
-  // Slide 1 : QR code
   const body=$('viewerBody');
   body.innerHTML='';
 
-  // Slide image
+  /* SLIDE IMAGE */
   const s0=document.createElement('div');
   s0.className='viewer-slide';
-  s0.innerHTML=`<img class="viewer-img" src="pup${id}.webp" alt="${p.name}">`;
+  s0.innerHTML=`
+    <img class="viewer-img" src="pup${id}.webp" alt="">
+    <div class="viewer-hint">← Glisse →</div>
+  `;
   body.appendChild(s0);
 
-  // Slide QR
+  /* SLIDE QR */
   const s1=document.createElement('div');
   s1.className='viewer-slide';
-  const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent('DAL_'+id)+'&bgcolor=ffffff&color=000000&qzone=2';
-  s1.innerHTML=`<div class="viewer-qr-box"><img src="${qrUrl}" alt="QR"><div class="viewer-qr-label">${p.name}<br><small>#${String(id).padStart(2,'0')}</small></div></div>`;
+
+  const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='
+    + encodeURIComponent('DAL_'+id)
+    + '&bgcolor=ffffff&color=000000&qzone=2';
+
+  s1.innerHTML=`
+    <div class="viewer-qr-box">
+      <img src="${qrUrl}" alt="QR">
+    </div>
+  `;
   body.appendChild(s1);
 
-  // Dots
+  /* DOTS */
   const dots=$('viewerDots');
   dots.innerHTML='<div class="viewer-dot active"></div><div class="viewer-dot"></div>';
 
-  // Swipe
   setupViewerSwipe(body,2);
   show('sViewer');
 }
-
+</script>
+  
+<script>
 function setupViewerSwipe(el,total){
   let startX=0,dragging=false;
   el.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;dragging=true;},{passive:true});
