@@ -987,7 +987,7 @@ const QR_PREFIX='DAL_';
 /* ══ STATE ══ */
 let collected=new Set(),startTime=Date.now(),pendingPup=null,alertTimer=null;
 let camStream=null,scanLoop=null,scanPaused=false,activePupId=null;
-let bgMusic=null,audioCtx=null;
+let bgMusic=null;
 
 /* ══ PERSIST ══ */
 function save(){try{localStorage.setItem('dal7_c',JSON.stringify([...collected]));localStorage.setItem('dal7_t',''+startTime);}catch(e){}}
