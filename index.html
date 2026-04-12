@@ -780,6 +780,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <div style="font-family:'Fredoka One',cursive;font-size:20px;color:#ffdd44;text-align:center;background:rgba(255,220,68,0.15);border:2px solid rgba(255,220,68,0.4);border-radius:12px;padding:12px 20px;">
   🏅 Bonus Finisher : +15 pts !
 </div>
+  <div id="bonusMsg" style="font-family:'Fredoka One',cursive;font-size:18px;color:#fff;text-align:center;margin-top:10px;">
+  </div>
   <button class="btn btn-primary" onclick="unlockUGOAT()">🐾 Ajouter à l'Ugodex</button>
 </div>
 
@@ -949,6 +951,46 @@ async function rafraichirClassement() {
     } catch (error) {
         rankingBody.innerHTML = "Erreur de connexion au classement.";
     }
+}
+
+/* ══ CALCUL BONUS HORAIRE ══ */
+function calculerBonus(created, updated) {
+    const start = new Date(created).getTime();
+    const end = new Date(updated).getTime();
+    const dureeMinutes = (end - start) / (1000 * 60); // Durée en minutes
+
+    // Moins d'une heure (60 min) = 100 points
+    if (dureeMinutes < 60) {
+        return { points: 100, label: "moins d'1h" };
+    }
+    
+    // On retire 10 points par tranche de 30 min supplémentaire
+    // Calcul : 1h = 100, 1h30 = 90, 2h = 80, etc.
+    const tranches30min = Math.floor((dureeMinutes - 60) / 30);
+    let points = 100 - (tranches30min * 10);
+    
+    // On bloque à 0 au minimum
+    points = Math.max(0, points);
+    
+    // Calcul de l'heure ronde supérieure pour l'affichage
+    const heureRonde = Math.ceil(dureeMinutes / 60);
+    
+    return { points: points, label: `${heureRonde}h` };
+}
+  
+/* ══ AFFICHE BONUS TEMPS ══ */
+function afficherRecompense(record) {
+    // 1. Calcul du bonus
+    const bonus = calculerBonus(record.created, record.updated);
+    
+    // 2. Mise à jour du message
+    const msgEl = document.getElementById('bonusMsg');
+    if (msgEl) {
+        msgEl.innerHTML = `Bonus en moins de ${bonus.label} : <span style="color:#ffdd44">+${bonus.points} pts !!</span>`;
+    }
+    
+    // 3. Affichage
+    show('sReward');
 }
   
 /* ══ DETAIL UGODEX ══ */
@@ -1566,13 +1608,6 @@ dexBtn.onclick = () => { closeCatch(); goColl(p.id); };
   }
 }
 
-function unlockBonus(){
-  const p=PUPS.find(x=>x.id===BONUS_ID);
-  collected.add(BONUS_ID); save();
-  flashMsg('🏆 UGOAT débloqué ! Tu as tout trouvé !', 4000);
-  vibrate([100,50,100,50,300]);
-}
-
 /* ══ SFX CAPTURE ══ */
 function playCaptureSfx(){
   try{
@@ -1705,12 +1740,34 @@ function setViewerSlide(n){
 
 function closeViewer(){goColl();}
 
-/* ══ BONUS ══ */
-function unlockBonus(){
-  const p=PUPS.find(x=>x.id===BONUS_ID);
-  collected.add(BONUS_ID);save();
-  flashMsg('🏆 '+p.name+' débloqué ! Félicitations !',5000);
-  vibrate([100,50,100,50,300]);
+/* ══ BONUS (Version Finale & Unique) ══ */
+async function unlockBonus() {
+  const p = PUPS.find(x => x.id === BONUS_ID);
+  collected.add(BONUS_ID);
+  save();
+  
+  // Feedback immédiat
+  flashMsg('🏆 ' + p.name + ' débloqué ! Félicitations GG !', 5000);
+  vibrate([100, 50, 100, 50, 300]);
+
+  // Logique de calcul du bonus temporel et affichage récompense
+  try {
+    const pseudo = localStorage.getItem('ugo_pseudo');
+    const result = await pb.collection('Classement').getList(1, 1, {
+      filter: `Pseudo = "${pseudo}"`
+    });
+
+    if (result.items.length > 0) {
+      const userRecord = result.items[0];
+      // On passe le record à la fonction d'affichage
+      afficherRecompense(userRecord);
+    } else {
+      show('sReward');
+    }
+  } catch (err) {
+    console.error("Erreur calcul bonus:", err);
+    show('sReward');
+  }
 }
 
 function showWin(){
