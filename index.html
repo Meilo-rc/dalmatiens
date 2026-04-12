@@ -824,7 +824,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 2 🐾</div>
+  <div id="tapToStart">🐾 START 3 🐾</div>
 </div>
 
 <!-- ════ LOGIN ════ -->
@@ -960,17 +960,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 
 <!-- ════ SCREEN DETAIL Ugodex (image grande + swipe QR) ════ -->
 <div class="screen" id="sDetail">
-  <!-- SLIDER WRAPPER -->
   <div id="detailBody"
        style="display:flex;width:100%;height:100%;transition:transform .3s ease;">
-    <!-- SLIDE 1 : IMAGE -->
-    <div style="min-width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:#fff;">
+    <!-- PAGE IMAGE -->
+    <div style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;padding:24px;gap:18px;">
       <img id="detailImg"
            src=""
-           style="max-width:100%;max-height:100%;object-fit:contain;transition:transform .2s ease;">
+           style="max-width:100%;max-height:72vh;object-fit:contain;transition:transform .2s ease;">
+
+      <button id="detailTradeBtn" class="btn btn-primary" style="max-width:260px;margin-bottom:0;" onclick="showTradeQR()">
+        🔁 Échanger
+      </button>
     </div>
 
-    <!-- SLIDE 2 : QR -->
+    <!-- PAGE QR -->
     <div style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;gap:16px;padding:24px;">
       <img id="detailQRImg"
            class="qr-pulse"
@@ -979,22 +982,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
       <div class="detail-qr-note">
         A utiliser pour échanger vos Ugos entre dresseurs !
       </div>
+      <button class="btn btn-secondary" style="max-width:260px;margin-bottom:0;" onclick="showDetailImage()">
+        ← Revenir à l'image
+      </button>
     </div>
   </div>
 
-  <!-- BACK BUTTON -->
   <button class="icon-btn"
           style="position:absolute;top:15px;left:15px;z-index:10;background:rgba(0,0,0,.4);color:#fff;"
           onclick="closeDetail()">←</button>
-
-  <!-- HINT -->
-  <div id="detailSwipeHint"
-       style="position:absolute;bottom:25px;left:50%;transform:translateX(-50%);
-              background:rgba(0,0,0,.75);color:#fff;
-              padding:8px 14px;border-radius:20px;
-              font-size:12px;backdrop-filter:blur(6px);">
-    Swipe → QR code
-  </div>
 </div>
 
 <!-- ════ SCREEN RÉCOMPENSE UGOAT ════ -->
@@ -1213,40 +1209,21 @@ function afficherRecompense(record) {
 }
   
 /* ══ DETAIL UGODEX ══ */
-let detailId=null, detailShowQR=false;
+let detailId=null;
 let detailSlide = 0;
-let startX = 0;
 
-document.addEventListener('touchstart', e => {
-  startX = e.touches[0].clientX;
-});
-
-document.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - startX;
-
-  if (Math.abs(dx) > 50 && document.getElementById('sDetail').classList.contains('on')) {
-    if (dx < 0) swipeDetail(1);
-    else swipeDetail(-1);
-  }
-});
-  
-function swipeDetail(dir){
-  detailSlide = Math.max(0, Math.min(1, detailSlide + dir));
+function setDetailSlide(n){
+  detailSlide = Math.max(0, Math.min(1, n));
   const body = $('detailBody');
   if(body) body.style.transform = `translateX(-${detailSlide * 100}%)`;
-
-  const hint = $('detailSwipeHint');
-  if(hint){
-    hint.textContent = detailSlide === 0 ? 'Swipe → QR code' : '← Swipe pour revenir';
-  }
 }
-  
+
 function openDetail(id, fromCapture=false){
   const p = PUPS.find(x => x.id === id);
   if(!p) return;
 
   detailId = id;
-  detailSlide = 0;
+  setDetailSlide(0);
 
   $('detailImg').src = 'pup' + id + '.webp';
 
@@ -1257,12 +1234,6 @@ function openDetail(id, fromCapture=false){
 
   $('detailQRImg').src = qrUrl;
 
-  const body = $('detailBody');
-  if(body) body.style.transform = 'translateX(0%)';
-
-  const hint = $('detailSwipeHint');
-  if(hint) hint.textContent = 'Swipe → QR code';
-
   show('sDetail');
 
   if(fromCapture) {
@@ -1270,47 +1241,19 @@ function openDetail(id, fromCapture=false){
   }
 }
 
+function showTradeQR(){
+  setDetailSlide(1);
+  playTradeAnimation();
+}
+
+function showDetailImage(){
+  setDetailSlide(0);
+}
+
 function closeDetail(){
   detailSlide = 0;
   show('sColl');
   buildGrid();
-}
-
-function setupDetailSwipe(){
-  const el = $('sDetail');
-  let sx = 0;
-
-  el.ontouchstart = e => {
-    sx = e.touches[0].clientX;
-  };
-
-  el.ontouchend = e => {
-    const dx = e.changedTouches[0].clientX - sx;
-    if (Math.abs(dx) < 50) return;
-
-    if (dx < 0) swipeDetail(1);
-    else swipeDetail(-1);
-  };
-}
-
-function playTradeAnimation(){
-  const wrap = document.getElementById('tradeAnim');
-  const orbs = document.getElementById('tradeOrbs');
-  const textEl = document.getElementById('tradeText');
-  if(!wrap || !orbs || !textEl) return;
-
-  wrap.style.display = 'flex';
-  orbs.classList.remove('on');
-  textEl.classList.remove('on');
-  void orbs.offsetWidth;
-  orbs.classList.add('on');
-  textEl.classList.add('on');
-
-  setTimeout(()=>{
-    wrap.style.display = 'none';
-    orbs.classList.remove('on');
-    textEl.classList.remove('on');
-  }, 1800);
 }
 
 function unlockUGOAT(){
