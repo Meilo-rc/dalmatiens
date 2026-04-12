@@ -472,6 +472,113 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .swipe-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-size:12px;color:rgba(255,255,255,0.5);font-weight:800;pointer-events:none;white-space:nowrap;}
 #detailQR .swipe-hint{color:rgba(0,0,0,0.35);}
 
+.detail-qr-note{
+  font-size:13px;
+  color:#777;
+  text-align:center;
+  max-width:240px;
+  line-height:1.5;
+  opacity:0;
+  animation:qrNoteIn .6s ease-out .15s forwards, qrNoteFloat 2.4s ease-in-out 1s infinite;
+}
+
+.qr-pulse{
+  animation: qrPulse 2.2s ease-in-out infinite;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+@keyframes qrNoteIn{
+  from{opacity:0; transform:translateY(8px);}
+  to{opacity:.95; transform:translateY(0);}
+}
+
+@keyframes qrNoteFloat{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-2px); }
+}
+
+@keyframes qrPulse{
+  0%{
+    transform: scale(1);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  }
+  50%{
+    transform: scale(1.04);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+  }
+  100%{
+    transform: scale(1);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  }
+}
+
+/* ══ TRADE ANIMATION ══ */
+#tradeAnim{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+  flex-direction:column;
+  gap:20px;
+}
+
+.trade-orbs{
+  position:relative;
+  width:220px;
+  height:100px;
+}
+
+.orb{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  position:absolute;
+  top:20px;
+  background:radial-gradient(circle,#6ef,#39f);
+  box-shadow:0 0 20px rgba(100,200,255,0.6);
+}
+
+.trade-orbs.on .orb.left{
+  left:0;
+  animation:orbLeft 1s ease forwards;
+}
+
+.trade-orbs.on .orb.right{
+  right:0;
+  animation:orbRight 1s ease forwards;
+}
+
+@keyframes orbLeft{
+  0%{transform:translateX(0) scale(1);}
+  50%{transform:translateX(60px) scale(1.08);}
+  100%{transform:translateX(120px) scale(1);}
+}
+
+@keyframes orbRight{
+  0%{transform:translateX(0) scale(1);}
+  50%{transform:translateX(-60px) scale(1.08);}
+  100%{transform:translateX(-120px) scale(1);}
+}
+
+.trade-text{
+  color:#fff;
+  font-family:'Fredoka One',cursive;
+  font-size:20px;
+  opacity:0;
+}
+
+.trade-text.on{
+  animation:tradeText .5s ease .8s forwards;
+}
+
+@keyframes tradeText{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
 /* ══ MODAL CAPTURE (remplace dog SVG par pokeball) ══ */
 #modalQR{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:28px;}
 #modalQR.on{display:flex;}
@@ -717,7 +824,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!-- ════ SPLASH ════ -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 1🐾</div>
+  <div id="tapToStart">🐾 START 2 🐾</div>
 </div>
 
 <!-- ════ LOGIN ════ -->
@@ -864,10 +971,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     </div>
 
     <!-- SLIDE 2 : QR -->
-    <div style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;gap:16px;">
+    <div style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;gap:16px;padding:24px;">
       <img id="detailQRImg"
+           class="qr-pulse"
            src=""
            style="width:220px;height:220px;background:#fff;padding:10px;border-radius:12px;">
+      <div class="detail-qr-note">
+        A utiliser pour échanger vos Ugos entre dresseurs !
+      </div>
     </div>
   </div>
 
@@ -1180,6 +1291,26 @@ function setupDetailSwipe(){
     if (dx < 0) swipeDetail(1);
     else swipeDetail(-1);
   };
+}
+
+function playTradeAnimation(){
+  const wrap = document.getElementById('tradeAnim');
+  const orbs = document.getElementById('tradeOrbs');
+  const textEl = document.getElementById('tradeText');
+  if(!wrap || !orbs || !textEl) return;
+
+  wrap.style.display = 'flex';
+  orbs.classList.remove('on');
+  textEl.classList.remove('on');
+  void orbs.offsetWidth;
+  orbs.classList.add('on');
+  textEl.classList.add('on');
+
+  setTimeout(()=>{
+    wrap.style.display = 'none';
+    orbs.classList.remove('on');
+    textEl.classList.remove('on');
+  }, 1800);
 }
 
 function unlockUGOAT(){
@@ -2053,5 +2184,14 @@ window.addEventListener('load', () => {
 // setTimeout(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},5000);
 </script>
 <div id="debugLog" style="position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);color:#0f0;font-size:11px;padding:8px;z-index:9999;max-height:150px;overflow-y:auto;"></div>
+
+<div id="tradeAnim">
+  <div class="trade-orbs" id="tradeOrbs">
+    <div class="orb left"></div>
+    <div class="orb right"></div>
+  </div>
+  <div class="trade-text" id="tradeText">Échange réussi !</div>
+</div>
+
 </body>
 </html>
