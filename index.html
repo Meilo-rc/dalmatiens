@@ -562,6 +562,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     box-shadow: none !important;      /* Pas d'ombre portée sur papier */
   }
 }
+
+#sCredits{background:#000;justify-content:center;overflow:hidden;}
+.credits-scroll{animation:creditsRoll 20s linear forwards;padding:100vh 30px;text-align:center;color:#fff;line-height:2.5;}
+@keyframes creditsRoll{from{transform:translateY(0)}to{transform:translateY(-100%)}}
+.credits-title{font-family:'Fredoka One',cursive;font-size:28px;color:#ffdd44;margin-bottom:8px;}
+.credits-name{font-size:16px;color:rgba(255,255,255,0.8);}
   
 </style>
 </head>
@@ -769,11 +775,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <div class="screen" id="sReward" style="background:linear-gradient(135deg,#111,#1a1a2e);justify-content:center;align-items:center;padding:30px;gap:20px;">
   <div style="font-size:48px;">🏆</div>
   <div style="font-family:'Fredoka One',cursive;font-size:32px;color:var(--gold2,#ffdd44);text-align:center;text-shadow:0 0 20px rgba(255,220,68,.5);">UGOAT débloqué !</div>
-  <img src="pup22.webp" alt="UGOAT" style="width:80%;max-width:300px;border-radius:16px;box-shadow:0 0 40px rgba(255,220,68,.3);" onerror="this.style.display='none'">
+  <img src="pup22.webp" alt="UGOAT" style="width:80%;max-width:300px;max-height:40vh;object-fit:contain;border-radius:16px;box-shadow:0 0 40px rgba(255,220,68,.3);" onerror="this.style.display='none'">
   <div style="font-size:14px;color:rgba(255,255,255,.6);text-align:center;">Tu as tout collecté.<br>Le légendaire UGOAT est à toi !</div>
+  <div style="font-family:'Fredoka One',cursive;font-size:20px;color:#ffdd44;text-align:center;background:rgba(255,220,68,0.15);border:2px solid rgba(255,220,68,0.4);border-radius:12px;padding:12px 20px;">
+  🏅 Bonus Finisher : +15 pts !
+</div>
   <button class="btn btn-primary" onclick="unlockUGOAT()">🐾 Ajouter à l'Ugodex</button>
 </div>
 
+<!-- ════ SCREEN CREDITS ════ -->
+<div class="screen" id="sCredits">
+  <div class="credits-scroll">
+    <div class="credits-title">101 Dalmatiens</div>
+    <div class="credits-name">Un jeu créé par...</div>
+    <br><br>
+    <div class="credits-title">Merci aux joueurs</div>
+    <div class="credits-name">...tes noms ici...</div>
+    <br><br>
+    <div class="credits-title">🐾</div>
+  </div>
+  <button onclick="goColl()" style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:12px 28px;border-radius:20px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;">
+    Fermer
+  </button>
+</div>
+  
 <!-- ════ BURST ════ -->
 <div id="burst"></div>
 
@@ -964,8 +989,11 @@ function toggleDetailView(){
 
 function unlockUGOAT(){
   collected.add(22);save();
+  const pseudo = localStorage.getItem('ugo_pseudo');
+  if (pseudo) envoyerScore(pseudo, collected.size + 15);
   buildGrid();
   show('sColl');
+  setTimeout(()=>show('sCredits'), 2000);
   flashMsg("🏆 UGOAT ajouté à l'Ugodex !",3000);
 }
   
