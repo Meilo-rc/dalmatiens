@@ -1406,12 +1406,23 @@ function captureImageData(video,canvas,size){
 }
 
 function processQRData(data){
-  if(!data)return;
-  let id=null;
-  if(data.startsWith(QR_PREFIX)) id=parseInt(data.slice(QR_PREFIX.length));
-  else if(/^\d+$/.test(data.trim())) id=parseInt(data.trim());
-  if(id&&!isNaN(id)&&id>=1&&id<=21) handleQRDetected(id); // 22 = secret, pas de QR
-  else showScanResult('❌ QR non reconnu','#e88');
+  if(!data) return;
+  
+  let id = null;
+  if(data.startsWith(QR_PREFIX)) id = parseInt(data.slice(QR_PREFIX.length));
+  else if(/^\d+$/.test(data.trim())) id = parseInt(data.trim());
+
+  if(id && !isNaN(id) && id >= 1 && id <= 21){
+    // --- ARRÊT DU SCAN DÈS LA DÉTECTION ---
+    if(scanLoop) {
+        clearInterval(scanLoop);
+        scanLoop = null;
+    }
+    // --------------------------------------
+    handleQRDetected(id);
+  } else {
+    showScanResult('❌ QR non reconnu','#e88');
+  }
 }
 
 function showScanResult(msg,color='#fff'){
