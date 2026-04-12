@@ -1727,9 +1727,9 @@ window.addEventListener('load', () => {
                 e.preventDefault();
                 
                 // Reprise du contexte audio si nécessaire
-                if (audioCtx && audioCtx.state === 'suspended') {
-                    await audioCtx.resume();
-                }
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                await audioCtx.resume();
+                playMusic('mainmusic.json');
                 
                 // Lancement de la musique et du jeu
                 playMusic('mainmusic.json');
