@@ -1160,10 +1160,13 @@ if (audioCtx) {
 }
 
 /* ══ HOME ══ */
-function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=if(collected.size >= TOTAL){
+function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=collected.size+' / '+TOTAL;
+  if(collected.size >= TOTAL){
   document.querySelector('.home-mascot').innerHTML = 
     '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;">🏆</div>';
-}
+    }
+  }
+
 
 /* ══ COLLECTION ══ */
 function goColl(scrollToId=null){
@@ -1729,10 +1732,11 @@ function initialiserApplication() {
     
     if (pseudo) {
         show('sHome');
-        $('homeScore').textContent = if(collected.size >= TOTAL){
-  document.querySelector('.home-mascot').innerHTML = 
-    '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;">🏆</div>';
-    } else {
+        $('homeScore').textContent = collected.size + ' / ' + TOTAL; // Le joueur a déjà un nom -> Menu principal
+        if(collected.size >= TOTAL){
+        document.querySelector('.home-mascot').innerHTML = '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;">🏆</div>';
+        }
+     } else {
         show('sLogin'); // Nouveau joueur -> On demande le nom
     }
 }
