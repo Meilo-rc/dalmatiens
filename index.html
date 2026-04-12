@@ -1715,29 +1715,32 @@ function dbg(msg){ const d=$('debugLog'); if(d) d.innerHTML += msg + '<br>'; }
 // On attend que la page soit entièrement chargée avant d'attacher les événements
 window.addEventListener('load', () => {
     load();
-    
-    // On affecte la valeur à la variable globale ici
-    splashEl = document.getElementById('sSplash'); 
+    const splashEl = $('sSplash');
     
     if (splashEl) {
+        // 1. Nettoyage du HTML
+        splashEl.removeAttribute('onclick');
+        
+        // 2. Écouteur unique
         ['click', 'touchstart'].forEach(evt => {
             splashEl.addEventListener(evt, async function(e) {
                 e.preventDefault();
                 
-                // On s'assure que tout est prêt pour l'audio
+                // Reprise du contexte audio si nécessaire
                 if (audioCtx && audioCtx.state === 'suspended') {
                     await audioCtx.resume();
                 }
                 
+                // Lancement de la musique et du jeu
                 playMusic('mainmusic.json');
                 initialiserApplication();
+                
+                // Masquage
                 splashEl.style.display = 'none';
             }, { once: true });
         });
     }
 });
-// Retirer l'onclick inline pour éviter double déclenchement
-// splashEl.removeAttribute('onclick');
 
 // RETIRER LE BANDEAU D'ALERTE
 // setInterval(()=>{if($('sHome').classList.contains('on')&&collected.size<TOTAL)triggerAlert();},15000);
