@@ -643,7 +643,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 }
 .detail-head{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;align-items:center;gap:10px;z-index:10;background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);}
 .detail-name{font-family:'Fredoka One',cursive;font-size:18px;color:#fff;flex:1;text-shadow:0 2px 6px rgba(0,0,0,.8);}
-#detailImg{width:100%;height:100%;object-fit:contain;position:absolute;inset:0;}
+#detailImg{
+  display:block;
+  width:auto;
+  height:auto;
+  max-width:min(82vw,340px);
+  max-height:72vh;
+  object-fit:contain;
+  position:static;
+  inset:auto;
+  margin:auto;
+}
 /* QR overlay dans le swipe */
 #detailQR{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:#fff;gap:16px;}
 #detailQR.on{display:flex;}
@@ -1952,10 +1962,36 @@ let pendingTimeLabel = "1h";
 let rewardSequenceRunning = false;
 let scanInFlight = false;
 let barcodeDetector = null;
+let defaultHomeMascotMarkup = '';
 
 /*  PERSIST  */
 function save(){try{localStorage.setItem('dal7_c',JSON.stringify([...collected]));localStorage.setItem('dal7_t',''+startTime);}catch(e){}}
-function load(){try{const c=localStorage.getItem('dal7_c'),t=localStorage.getItem('dal7_t');if(c)collected=new Set(JSON.parse(c).map(Number));if(t)startTime=parseInt(t);}catch(e){}}
+function hasAllNonSecretCaptured(){
+  return PUPS.filter(p => !p.secret).every(p => collected.has(p.id));
+}
+function syncBonusPersistence(){
+  if (hasAllNonSecretCaptured() && !collected.has(BONUS_ID)) {
+    collected.add(BONUS_ID);
+    save();
+  }
+}
+function updateHomeMascot(){
+  const el = document.querySelector('.home-mascot');
+  if (!el) return;
+  if (collected.size >= TOTAL) {
+    el.innerHTML = '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;">&#127942;</div>';
+  } else if (defaultHomeMascotMarkup) {
+    el.innerHTML = defaultHomeMascotMarkup;
+  }
+}
+function load(){
+  try{
+    const c=localStorage.getItem('dal7_c'),t=localStorage.getItem('dal7_t');
+    if(c) collected = new Set(JSON.parse(c).map(Number));
+    if(t) startTime = parseInt(t);
+  }catch(e){}
+  syncBonusPersistence();
+}
 
 const $=id=>document.getElementById(id);
 function show(id) {
@@ -2086,12 +2122,13 @@ async function playMusic(jsonUrl) {
 }
 
 /*  HOME  */
-function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=collected.size+' / '+TOTAL;
-  if(collected.size >= TOTAL){
-  document.querySelector('.home-mascot').innerHTML = 
-    '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;"></div>';
-    }
-  }
+function goHome(){
+  stopHuntClean();
+  syncBonusPersistence();
+  show('sHome');
+  $('homeScore').textContent=collected.size+' / '+TOTAL;
+  updateHomeMascot();
+}
 
 
 /*  COLLECTION  */
@@ -2951,11 +2988,10 @@ function initialiserApplication() {
     const pseudo = localStorage.getItem('ugo_pseudo');
     
     if (pseudo) {
+        syncBonusPersistence();
         show('sHome');
         $('homeScore').textContent = collected.size + ' / ' + TOTAL; // Le joueur a dj un nom -> Menu principal
-        if(collected.size >= TOTAL){
-        document.querySelector('.home-mascot').innerHTML = '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;"></div>';
-        }
+        updateHomeMascot();
      } else {
         show('sLogin'); // Nouveau joueur -> On demande le nom
     }
@@ -3041,6 +3077,7 @@ function dbg(msg){ const d=$('debugLog'); if(d) d.innerHTML += msg + '<br>'; }
 
 // On attend que la page soit entirement charge avant d'attacher les vnements
 window.addEventListener('load', () => {
+    defaultHomeMascotMarkup = document.querySelector('.home-mascot')?.innerHTML || '';
     if (typeof load === "function") {
         load();
     }
