@@ -875,6 +875,39 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .credits-title{font-family:'Fredoka One',cursive;font-size:28px;color:#ffdd44;margin-bottom:8px;}
 .credits-name{font-size:16px;color:rgba(255,255,255,0.8);}
   
+
+/* PREMIUM GOLD TITLE */
+.reward-title{
+  background: linear-gradient(180deg, #fff6b0, #ffd700, #d4af37);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family:'Fredoka One', cursive;
+  text-align:center;
+  text-shadow:0 4px 10px rgba(0,0,0,0.4);
+  animation: goldShine 2s ease-in-out infinite;
+}
+
+@keyframes goldShine{
+  0%{filter:brightness(1);}
+  50%{filter:brightness(1.3);}
+  100%{filter:brightness(1);}
+}
+
+/* CINEMATIC OVERLAY */
+.reward-overlay{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at center, rgba(255,215,0,0.15), transparent 60%);
+  pointer-events:none;
+  animation: rewardGlow 3s ease-in-out infinite;
+}
+
+@keyframes rewardGlow{
+  0%{opacity:.6;}
+  50%{opacity:1;}
+  100%{opacity:.6;}
+}
+
 </style>
 </head>
 <body>
@@ -1119,6 +1152,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 
 <!-- ════ SCREEN RÉCOMPENSE UGOAT ════ -->
 <div class="screen" id="sReward">
+<div class="reward-overlay"></div>>
   <div id="rewardConfetti" class="reward-confetti-layer"></div>
 
   <div class="reward-card">
@@ -1388,7 +1422,7 @@ function openDetail(id, fromCapture=false){
       qrImg.src = '';
     }
     if (qrNote) {
-      qrNote.textContent = "Un UGOAT ça ne s'échange pas !";
+      qrNote.textContent = "Un UGOAT, ça ne s'échange pas, ça se mérite";
       qrNote.style.fontFamily = "'Fredoka One', cursive";
       qrNote.style.fontSize = '28px';
       qrNote.style.lineHeight = '1.2';
