@@ -1459,7 +1459,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
       Tu as tout collect.<br>Le lgendaire UGOAT est  toi !
     </div>
 
-    <button class="btn btn-primary" onclick="unlockUGOAT()"> Ajouter au Ugodex</button>
+    <button class="btn btn-primary" onclick="finalizeUGOATUnlock()"> Ajouter au Ugodex</button>
   </div>
 </div>
 
@@ -1904,7 +1904,7 @@ function setupDetailSwipe(){
   };
 }
 
-function unlockUGOAT(){
+function finalizeUGOATUnlock(){
   collected.add(22);
   save();
   const pseudo = localStorage.getItem('ugo_pseudo');
@@ -2149,7 +2149,7 @@ function triggerRewardFromUgodex(){
   if(!rewardPending) return;
   rewardPending = false;
   teaserBonusCard();
-  setTimeout(() => lancerSequenceReward(), 2600);
+  setTimeout(() => startUGOATRewardFlow(), 2600);
 }
 
 function goColl(scrollToId=null){
@@ -2816,16 +2816,10 @@ function closeViewer(){afterAddToDex();}
 
 
 /*  BONUS (Version Finale & Unique)  */
-async function unlockBonus() {
-  const p = PUPS.find(x => x.id === BONUS_ID);
-  collected.add(BONUS_ID);
-  save();
+async function startUGOATRewardFlow() {
   const localBonus = calculerBonus(null, null);
   pendingTimeBonus = localBonus.points;
   pendingTimeLabel = localBonus.label;
-
-  flashMsg('\ud83c\udfc6 ' + p.name + ' d\u00e9bloqu\u00e9 ! F\u00e9licitations GG !', 5000);
-  vibrate([100, 50, 100, 50, 300]);
 
   try {
     const pseudo = localStorage.getItem('ugo_pseudo');
