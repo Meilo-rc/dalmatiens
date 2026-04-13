@@ -916,6 +916,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   transition: transform 0.2s;
   flex-shrink: 0;          /* Empche les lignes de s'craser */
 }
+.ranking-row.me{
+  background:rgba(0,200,80,0.25);
+  border-color:rgba(0,200,80,0.6);
+}
+.ranking-row.sticky-me{
+  position:sticky;
+  top:0;
+  z-index:3;
+  margin-bottom:6px;
+  box-shadow:0 6px 14px rgba(52,63,22,.22);
+}
 
 /*  STYLING ET EFFETS  */
 .ranking-row span {
@@ -966,7 +977,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 /* --- TAPE 1 : Le Lancer de la Pokball --- */
 @keyframes pokeballThrow {
   0% {
-    transform: translate(-50vw, 50vh) scale(3) rotate(0deg);
+    transform: translate(-95vw, 72vh) scale(.9) rotate(-30deg);
     opacity: 0;
   }
   10% { 
@@ -985,8 +996,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   position: absolute;
   top: 54%;
   left: 71%;
-  z-index: 11;
+  z-index: 14;
   animation: pokeballThrow 1.2s ease-in-out forwards;
+}
+.pokeball-captured{
+  animation:pokeballCatchBounce 1.2s ease-out forwards;
+}
+@keyframes pokeballCatchBounce{
+  0%{transform:translate(-50%,-50%) scale(.38) rotate(720deg);}
+  12%{transform:translate(-50%,-69%) scale(.39) rotate(728deg);}
+  22%{transform:translate(-50%,-50%) scale(.38) rotate(734deg);}
+  34%{transform:translate(-50%,-61%) scale(.385) rotate(739deg);}
+  46%{transform:translate(-50%,-50%) scale(.38) rotate(744deg);}
+  58%{transform:translate(-50%,-56%) scale(.382) rotate(748deg);}
+  72%{transform:translate(-50%,-50%) scale(.38) rotate(751deg);}
+  84%{transform:translate(-50%,-53%) scale(.381) rotate(753deg);}
+  100%{transform:translate(-50%,-50%) scale(.38) rotate(756deg);}
 }
 .pokeball-ground-shadow{
   position:absolute;
@@ -1001,10 +1026,24 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   z-index:9;
   animation:pokeballShadowDrop 1.2s ease-in-out forwards;
 }
+.pokeball-ground-shadow.bounce{
+  animation:pokeballShadowBounce 1.2s ease-out forwards;
+}
 @keyframes pokeballShadowDrop{
   0%{opacity:0;transform:translate(-50%,34px) scale(.1);}
   35%{opacity:.08;transform:translate(-50%,31px) scale(.3);}
   65%{opacity:.18;transform:translate(-50%,29px) scale(.75);}
+  100%{opacity:.3;transform:translate(-50%,28px) scale(1);}
+}
+@keyframes pokeballShadowBounce{
+  0%{opacity:.3;transform:translate(-50%,28px) scale(1);}
+  12%{opacity:.18;transform:translate(-50%,22px) scale(.72);}
+  22%{opacity:.3;transform:translate(-50%,28px) scale(1);}
+  34%{opacity:.22;transform:translate(-50%,24px) scale(.82);}
+  46%{opacity:.3;transform:translate(-50%,28px) scale(1.02);}
+  58%{opacity:.24;transform:translate(-50%,25px) scale(.88);}
+  72%{opacity:.3;transform:translate(-50%,28px) scale(1);}
+  84%{opacity:.26;transform:translate(-50%,26px) scale(.93);}
   100%{opacity:.3;transform:translate(-50%,28px) scale(1);}
 }
 
@@ -1025,7 +1064,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   top:50%;
   right:4%;
   left:auto;
-  z-index:5;
+  z-index:10;
   animation:puppyAspiration .8s ease-in forwards;
 }
 
@@ -1403,7 +1442,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
        style="display:flex;width:100%;height:100%;transition:transform .3s ease;">
     <!-- SLIDE 1 : IMAGE -->
     <div style="min-width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:linear-gradient(180deg,#d7e893,#a8bc69);padding:24px 24px 96px;">
-      <img id="detailImg"
+      <img id="detailImg" class="qr-pulse"
            src=""
            style="width:auto;max-width:min(82vw,340px);max-height:72vh;object-fit:contain;transition:transform .2s ease;background:#fff;padding:6px;border:4px solid #55662a;border-radius:12px;box-shadow:0 0 0 2px rgba(255,255,255,.16),4px 4px 0 rgba(52,63,22,.22);">
     </div>
@@ -1449,14 +1488,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
            onerror="this.style.display='none'">
 
       <div class="reward-overlay">
-        <div id="rewardBigScore" class="reward-big-score">22 pts</div>
         <div id="rewardBonus1" class="reward-bonus-line"> Bonus Finisher : +15 pts</div>
         <div id="rewardBonus2" class="reward-bonus-line"> Bonus Timer : +0 pt</div>
+        <div id="rewardBigScore" class="reward-big-score">22 pts</div>
       </div>
     </div>
 
     <div class="reward-sub" style="position:relative;z-index:2;">
-      Tu as tout collect.<br>Le lgendaire UGOAT est  toi !
+      Tu as tout collect&eacute;.<br>Le l&eacute;gendaire UGOAT est &agrave; toi !
     </div>
 
     <button class="btn btn-primary" onclick="finalizeUGOATUnlock()"> Ajouter au Ugodex</button>
@@ -1472,13 +1511,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
       <div class="credits-led">● POWER</div>
       <div class="credits-screen">
         <div class="credits-scroll">
-          <div class="credits-title">101 Dalmatiens</div>
-          <div class="credits-name">Un jeu créé par...</div>
+          <div class="credits-title">CONFIDENTIEL</div>
+          <div class="credits-title">OBJET : CONVOCATION</div>
+          <div class="credits-name">Monsieur,</div>
+          <br>
+          <div class="credits-name">Par note N&deg;25 100 DSNA/D en date du 13 octobre 2025, d&eacute;clin&eacute;e par note de service locale 25NS015 du 20 octobre 2025 puis note de service locale 25NS020 du 26 novembre 2025, les contr&ocirc;leurs a&eacute;riens d&eacute;tenteurs d&rsquo;une Mention d&rsquo;Unit&eacute; du CRNA Nord doivent r&eacute;aliser l&rsquo;enregistrement des empreintes digitales sur un badge biom&eacute;trique, dit &laquo; param&eacute;trage &raquo;, en application du d&eacute;cret n&deg; 2025-912 du 5 septembre 2025 autorisant la cr&eacute;ation d'un traitement automatis&eacute; de donn&eacute;es &agrave; caract&egrave;re personnel d&eacute;nomm&eacute; &laquo; SPS, syst&egrave;me de v&eacute;rification de la pr&eacute;sence sur site &raquo; des contr&ocirc;leurs a&eacute;riens pris en Conseil d&rsquo;Etat apr&egrave;s avis de la CNIL en date du 15 mai 2025.</div>
+          <br>
+          <div class="credits-name">Ces &eacute;l&eacute;ments ont &eacute;t&eacute; rappel&eacute;s par communiqu&eacute;s du DSNA des 25 novembre et 15 d&eacute;cembre 2025.</div>
+          <br>
+          <div class="credits-name">A ce jour, il est constat&eacute; que vous n&rsquo;avez pas rempli cette obligation de param&eacute;trage de votre badge.</div>
+          <br>
+          <div class="credits-name">Je vous rappelle que, conform&eacute;ment &agrave; l&rsquo;article L121-10 du code g&eacute;n&eacute;ral de la Fonction Publique, tout agent public doit se conformer aux instructions de son sup&eacute;rieur hi&eacute;rarchique, et donc aux consignes nationales et locales, et s&rsquo;expose, dans le cas contraire, &agrave; un constat de service non fait et &agrave; une sanction disciplinaire.</div>
+          <br>
+          <div class="credits-name">En cons&eacute;quence, je vous informe que vous &ecirc;tes convoqu&eacute; &agrave; un entretien hi&eacute;rarchique le :</div>
+          <div class="credits-title">Lundi 5 Janvier 2026 &agrave; 18h00</div>
+          <div class="credits-name">Lieu : salle Paris (service Exploitation)</div>
+          <br>
+          <div class="credits-name">Lors de cet entretien hi&eacute;rarchique, vous devrez &eacute;galement r&eacute;pondre &agrave; votre obligation de param&eacute;trage de votre badge selon les dispositions pr&eacute;cit&eacute;es. En application de la communication du DSNA en date du 25 novembre 2025, vous avez encore la possibilit&eacute; d&rsquo;effectuer cette d&eacute;marche avant cet entretien, et ne serez alors plus tenu de vous pr&eacute;senter &agrave; cette convocation.</div>
+          <br>
+          <div class="credits-name">Conform&eacute;ment &agrave; la note de service DSNA 25-024 du 5 mai 2025, la r&eacute;alisation de cet entretien hi&eacute;rarchique ne donnera pas lieu &agrave; r&eacute;cup&eacute;ration suppl&eacute;mentaire autre que la r&eacute;cup&eacute;ration forfaitaire pour activit&eacute;s d&eacute;j&agrave; attribu&eacute;e en d&eacute;but d&rsquo;ann&eacute;e.</div>
           <br><br>
-          <div class="credits-title">Merci aux joueurs</div>
-          <div class="credits-name">...tes noms ici...</div>
-          <br><br>
-          <div class="credits-title">Fin</div>
+          <div class="credits-title">Le Chef du CRNA Nord</div>
+          <div class="credits-name">Didier SERRANO</div>
         </div>
       </div>
     </div>
@@ -1661,16 +1715,25 @@ async function rafraichirClassement() {
         }
 
         let myInTop20 = false;
+        let myRow = null;
+        let myStickyRow = null;
 
         records.items.forEach((item, index) => {
             const row = document.createElement('div');
             const isMe = myPseudo && item.Pseudo.toLowerCase() === myPseudo.toLowerCase();
             if(isMe) myInTop20 = true;
             row.className = 'ranking-row';
-            if(isMe) row.style.cssText = 'background:rgba(0,200,80,0.25);border-color:rgba(0,200,80,0.6);';
+            if(isMe) {
+                row.classList.add('me');
+                myRow = row;
+            }
             row.innerHTML = `<span class="rank-number">${index + 1}. </span>` +
                             `<span class="pseudo-display">${item.Pseudo}</span>` +
                             ` : <strong class="score-display">${item.Score} pts</strong>`;
+            if (isMe) {
+                myStickyRow = row.cloneNode(true);
+                myStickyRow.classList.add('sticky-me');
+            }
             rankingBody.appendChild(row);
         });
 
@@ -1686,12 +1749,24 @@ async function rafraichirClassement() {
                 sep.textContent = ' hors top 20 ';
                 rankingBody.appendChild(sep);
                 const row = document.createElement('div');
-                row.className = 'ranking-row';
-                row.style.cssText = 'background:rgba(0,200,80,0.25);border-color:rgba(0,200,80,0.6);';
-                row.innerHTML = `<span class="pseudo-display">${item.Pseudo}</span>` +
+                row.className = 'ranking-row me';
+                row.innerHTML = `<span class="rank-number">#</span>` +
+                                `<span class="pseudo-display">${item.Pseudo}</span>` +
                                 ` : <strong class="score-display">${item.Score} pts</strong>`;
                 rankingBody.appendChild(row);
+                myRow = row;
+                myStickyRow = row.cloneNode(true);
+                myStickyRow.classList.add('sticky-me');
             }
+        }
+
+        if (myStickyRow) {
+            rankingBody.insertBefore(myStickyRow, rankingBody.firstChild);
+        }
+        if (myRow) {
+            setTimeout(() => {
+                myRow.scrollIntoView({ block:'center', behavior:'smooth' });
+            }, 80);
         }
     } catch (error) {
         rankingBody.innerHTML = "Erreur de connexion au classement.";
@@ -1918,6 +1993,12 @@ function finalizeUGOATUnlock(){
 
 async function goCredits(){
   show('sCredits');
+  const scroll = document.querySelector('#sCredits .credits-scroll');
+  if (scroll) {
+    scroll.style.animation = 'none';
+    void scroll.offsetWidth;
+    scroll.style.animation = '';
+  }
   try {
     await playMusic('tetris.json');
   } catch (e) {
@@ -2594,6 +2675,8 @@ async function playCaptureAnimation() {
 
   // Aspiration visuelle du chiot
   if (pupImg) {
+    pupImg.style.zIndex = '10';
+    if (ball) ball.style.zIndex = '14';
     pupImg.classList.add('puppy-aspiring');
   }
   
@@ -2602,6 +2685,19 @@ async function playCaptureAnimation() {
   
   // Optionnel : On peut supprimer l'image du chiot aprs l'aspiration
   if (pupImg) pupImg.style.display = 'none';
+
+  const ballShadow = container.querySelector('.pokeball-ground-shadow');
+  if (ball) {
+    ball.classList.remove('pokeball-flying');
+    ball.classList.add('pokeball-captured');
+  }
+  if (ballShadow) {
+    ballShadow.classList.remove('pokeball-ground-shadow');
+    void ballShadow.offsetWidth;
+    ballShadow.classList.add('pokeball-ground-shadow', 'bounce');
+  }
+
+  await new Promise(resolve => setTimeout(resolve, 1200));
 }
   
 async function doCapture() {
@@ -2930,14 +3026,10 @@ async function lancerSequenceReward(){
   lancerConfettisReward();
   await rewardWait(180);
 
-  if (big) big.classList.add('show');
-  await rewardWait(650);
-
   if (b1) {
     b1.classList.add('show');
     b1.classList.add('pulse');
   }
-  await animateRewardScore(baseScore, baseScore + finisherBonus, 900);
   await rewardWait(500);
 
   if (b2) {
@@ -2945,7 +3037,10 @@ async function lancerSequenceReward(){
     b2.classList.add('show');
     b2.classList.add('pulse');
   }
-  await animateRewardScore(baseScore + finisherBonus, baseScore + finisherBonus + timerBonus, 1100);
+  await rewardWait(500);
+
+  if (big) big.classList.add('show');
+  await animateRewardScore(baseScore, baseScore + finisherBonus + timerBonus, 1100);
 
   rewardSequenceRunning = false;
 }
