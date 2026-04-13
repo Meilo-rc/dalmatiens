@@ -1,38 +1,16 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#111111">
 <meta name="mobile-web-app-capable" content="yes">
-<title>101 Dalmatiens 🐾</title>
+<title>101 Dalmatiens ðŸ¾</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js">
-function activateTestMode(){
-  localStorage.setItem('dal7_c', JSON.stringify(
-    Array.from({length:20}, (_,i)=>i+1)
-  ));
-  localStorage.setItem('dal7_t', String(Date.now() - 20 * 60 * 1000));
-  localStorage.setItem('ugo_pseudo', 'testeur');
-  alert("Mode test activé 🚀");
-  location.reload();
-}
-
-</script>
-<script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js">
-function activateTestMode(){
-  localStorage.setItem('dal7_c', JSON.stringify(
-    Array.from({length:20}, (_,i)=>i+1)
-  ));
-  localStorage.setItem('dal7_t', String(Date.now() - 20 * 60 * 1000));
-  localStorage.setItem('ugo_pseudo', 'testeur');
-  alert("Mode test activé 🚀");
-  location.reload();
-}
-
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -46,7 +24,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;}
 .screen.on{display:flex;}
 
-/* ══ TACHES DECO ══ */
+/* â•â• TACHES DECO â•â• */
 /* Motif taches dalmatien en fond */
 .spots-bg{
   background-color:#fff;
@@ -64,7 +42,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   background-repeat:no-repeat;
 }
 
-/* ══ SPLASH ══ */
+/* â•â• SPLASH â•â• */
 #sSplash{background:#fff;justify-content:center;align-items:center;cursor:pointer;}
 #splashImg{width:100%;height:100%;object-fit:contain;position:absolute;inset:0;background:#fff;}
 #tapToStart{
@@ -79,7 +57,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 }
 @keyframes tapPulse{0%,100%{transform:translateX(-50%)scale(1)translateY(0)}50%{transform:translateX(-50%)scale(1.04)translateY(-3px)}}
 
-/* ══ HOME ══ */
+/* â•â• HOME â•â• */
 #sHome{background:#fff;justify-content:center;padding:20px 24px 30px;gap:0;position:relative;}
 /* Bande rouge en haut */
 #sHome::before{
@@ -157,7 +135,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .score-box big{font-family:'Fredoka One',cursive;font-size:42px;color:var(--rouge);display:block;line-height:1;}
 .score-box span{font-size:12px;color:#666;letter-spacing:1px;font-weight:800;}
 
-/* ══ COLLECTION ══ */
+/* â•â• COLLECTION â•â• */
 #sColl{justify-content:flex-start;background:var(--grisfond);}
 .panel-head{
   width:100%;background:var(--noir);
@@ -193,10 +171,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .card.caught .card-num{background:rgba(204,17,17,.1);color:var(--rouge);}
 
 
-/* ══ ÉCRAN CAPTURE ══ */
+/* â•â• Ã‰CRAN CAPTURE â•â• */
 #sCatch{background:#fff;justify-content:flex-start;}
 
-/* ══ VIEWER UGODEX — NATIVE FEEL ══ */
+/* â•â• VIEWER UGODEX â€” NATIVE FEEL â•â• */
 #sViewer { 
   background: #fff;
   display: none;
@@ -205,7 +183,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   overflow: hidden;
 }
 
-/* on supprime complètement le header */
+/* on supprime complÃ¨tement le header */
 .viewer-head { display: none !important; }
 
 .viewer-body { 
@@ -307,13 +285,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   100% { opacity: 0; }
 }
  
-/* ══ BONUS ITEM ══ */
+/* â•â• BONUS ITEM â•â• */
 .card.bonus{border-color:var(--rouge);background:linear-gradient(135deg,#fff8f8,#fff);position:relative;}
-.card.bonus::before{content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:28px;z-index:2;}
+.card.bonus::before{content:'ðŸ”’';position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:28px;z-index:2;}
 .card.bonus.caught::before{display:none;}
 .card.bonus-locked{opacity:0.5;}
 
-/* ══ AR ══ */
+/* â•â• AR â•â• */
 #sAR{background:#000;justify-content:flex-start;overflow:hidden;}
 #arVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 #arCanvas{position:absolute;inset:0;width:100%;height:100%;display:none;}
@@ -345,7 +323,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 
 #arDog{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:19;display:none;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
 #arDog.on{display:flex;}
-/* Le conteneur de la Pokéball */
+/* Le conteneur de la PokÃ©ball */
 .ar-pokeball-container {
  display: flex;
   justify-content: center;
@@ -354,7 +332,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   height: 180px;
 }
 
-/* Le SVG à l'intérieur */
+/* Le SVG Ã  l'intÃ©rieur */
 .ar-pokeball-container svg {
   animation: dogBob .5s ease-in-out infinite alternate;
   transform-origin: 50% 85%;
@@ -390,7 +368,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 @keyframes catchPulse{0%,100%{transform:translateX(-50%)scale(1)}50%{transform:translateX(-50%)scale(1.05)translateY(-2px)}}
 #arBackBtn{position:absolute;bottom:50px;left:16px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:2px solid rgba(255,255,255,.25);border-radius:12px;padding:12px 14px;font-size:20px;cursor:pointer;z-index:20;}
 
-/* ══ MODAL CAPTURE ══ */
+/* â•â• MODAL CAPTURE â•â• */
 #modalQR{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:28px;}
 #modalQR.on{display:flex;}
 .qr-dog-wrap{width:110px;height:90px;animation:qrPop .6s cubic-bezier(.34,1.56,.64,1);}
@@ -414,7 +392,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 }
 .btn-capture:active{transform:scale(.96)translateY(4px);box-shadow:0 1px 0 var(--rougefonce);}
 
-/* ══ BURST ══ */
+/* â•â• BURST â•â• */
 #burst{position:fixed;inset:0;z-index:200;display:none;pointer-events:none;align-items:center;justify-content:center;}
 #burst.on{display:flex;}
 .burst-dog{animation:burstGo .9s cubic-bezier(.34,1.56,.64,1) forwards;}
@@ -422,7 +400,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .burst-piece{position:absolute;font-size:22px;animation:piece linear forwards;}
 @keyframes piece{0%{transform:translate(0,0)scale(0);opacity:1}100%{transform:translate(var(--tx),var(--ty))scale(1);opacity:0}}
 
-/* ══ ALERTE ══ */
+/* â•â• ALERTE â•â• */
 #alertBanner{
   position:fixed;top:-115px;left:0;right:0;z-index:300;
   background:var(--noir);border-bottom:4px solid var(--rouge);
@@ -439,7 +417,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .alert-arr{font-size:22px;color:var(--rouge2);animation:arr .8s ease-in-out infinite;}
 @keyframes arr{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
 
-/* ══ IMPRIMER ══ */
+/* â•â• IMPRIMER â•â• */
 #sPrint{background:var(--grisfond);justify-content:flex-start;overflow-y:auto;}
 .print-body{padding:16px;width:100%;}
 .print-intro{font-size:13px;color:#444;margin-bottom:16px;line-height:1.6;background:#fff;border:2px solid #ddd;border-radius:12px;padding:12px;border-left:4px solid var(--rouge);}
@@ -450,7 +428,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .qr-print-name{font-size:9px;font-weight:900;color:var(--noir);text-align:center;}
 .btn-print{width:100%;margin-top:16px;padding:16px;border-radius:12px;border:3px solid var(--rougefonce);background:var(--rouge2);color:#fff;font-family:'Fredoka One',cursive;font-size:17px;cursor:pointer;box-shadow:0 4px 0 var(--rougefonce);}
 
-/* ══ WIN ══ */
+/* â•â• WIN â•â• */
 #sWin{
   justify-content:flex-start;padding:36px 24px 30px;gap:14px;overflow-y:auto;
   background:#fff;position:relative;
@@ -480,7 +458,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 .paw-fx{position:fixed;pointer-events:none;z-index:250;font-size:22px;animation:pawFly 1s ease forwards;}
 @keyframes pawFly{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(.5)translateY(-30px)}}
 
-/* ══ DETAIL / VIEWER ══ */
+/* â•â• DETAIL / VIEWER â•â• */
 #sDetail{background:#111;justify-content:flex-start;overflow:hidden;}
 .detail-head{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;align-items:center;gap:10px;z-index:10;background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);}
 .detail-name{font-family:'Fredoka One',cursive;font-size:18px;color:#fff;flex:1;text-shadow:0 2px 6px rgba(0,0,0,.8);}
@@ -561,12 +539,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     opacity .2s ease;
 }
 
-/* ══ MODAL CAPTURE (remplace dog SVG par pokeball) ══ */
+/* â•â• MODAL CAPTURE (remplace dog SVG par pokeball) â•â• */
 #modalQR{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:28px;}
 #modalQR.on{display:flex;}
 #capturePokeWrap{width:110px;height:110px;display:flex;align-items:center;justify-content:center;animation:qrPop .5s cubic-bezier(.34,1.56,.64,1);}
 
-/* ══ SCREEN RECOMPENSE (item 22) ══ */
+/* â•â• SCREEN RECOMPENSE (item 22) â•â• */
 #sReward{
   background:linear-gradient(135deg,#111,#1a1a2e);
   justify-content:center;
@@ -697,16 +675,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   
 @keyframes mascotFloat {0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
 
-/* ══ PAGE DE LOGIN ══ */
+/* â•â• PAGE DE LOGIN â•â• */
 #sLogin.on {display: flex !important;}
   
-/* ══ CONFIGURATION DU CONTENEUR ══ */
+/* â•â• CONFIGURATION DU CONTENEUR â•â• */
 #sRanking {
   flex-direction: column;
   overflow: hidden;
 }
 
-/* ══ CORPS DU CLASSEMENT (Le scroll est ici) ══ */
+/* â•â• CORPS DU CLASSEMENT (Le scroll est ici) â•â• */
 .ranking-body {
   flex: 1;                 /* Occupe tout l'espace disponible */
   overflow-y: auto;        /* Active le scroll vertical */
@@ -714,10 +692,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   display: flex;
   flex-direction: column;
   gap: 10px;
-  -webkit-overflow-scrolling: touch; /* Défilement fluide iOS */
+  -webkit-overflow-scrolling: touch; /* DÃ©filement fluide iOS */
 }
 
-/* ══ LIGNE DE CLASSEMENT ══ */
+/* â•â• LIGNE DE CLASSEMENT â•â• */
 .ranking-row {
   display: flex;
   justify-content: space-between;
@@ -729,10 +707,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   color: #fff;
   font-weight: 600;
   transition: transform 0.2s;
-  flex-shrink: 0;          /* Empêche les lignes de s'écraser */
+  flex-shrink: 0;          /* EmpÃªche les lignes de s'Ã©craser */
 }
 
-/* ══ STYLING ET EFFETS ══ */
+/* â•â• STYLING ET EFFETS â•â• */
 .ranking-row span {
   font-size: 1.1em;
 }
@@ -750,7 +728,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   font-weight: bold;
 }
   
-/* ══ FLASH CAPTURE ══ */
+/* â•â• FLASH CAPTURE â•â• */
 #captureFlash {
   position: absolute;
   top: 0;
@@ -758,27 +736,27 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   width: 100%;
   height: 100%;
   background-color: white;
-  opacity: 0; /* Invisible par défaut */
-  z-index: 20; /* Par-dessus la Pokéball et le chiot */
+  opacity: 0; /* Invisible par dÃ©faut */
+  z-index: 20; /* Par-dessus la PokÃ©ball et le chiot */
   pointer-events: none; /* Ne bloque pas les clics */
 }
 
 /* L'animation du flash */
 @keyframes flashImpact {
   0% { opacity: 0; }
-  10% { opacity: 0.8; } /* Flash très brillant très vite */
+  10% { opacity: 0.8; } /* Flash trÃ¨s brillant trÃ¨s vite */
   100% { opacity: 0; } /* Disparition douce */
 }
 
-/* La classe qui déclenche l'animation */
+/* La classe qui dÃ©clenche l'animation */
 .flash-on {
   animation: flashImpact 0.4s ease-out forwards;
 }
   
-/* --- ÉTAPE 1 : Le Lancer de la Pokéball --- */
+/* --- Ã‰TAPE 1 : Le Lancer de la PokÃ©ball --- */
 @keyframes pokeballThrow {
   0% {
-    /* Point de départ : coin bas-gauche, très grosse */
+    /* Point de dÃ©part : coin bas-gauche, trÃ¨s grosse */
     transform: translate(-50vw, 50vh) scale(3) rotate(0deg);
     opacity: 0;
   }
@@ -786,7 +764,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     opacity: 1; 
   }
   50% {
-    /* Sommet de la cloche : au milieu de l'écran, mais plus haut (valeur négative Y) */
+    /* Sommet de la cloche : au milieu de l'Ã©cran, mais plus haut (valeur nÃ©gative Y) */
     transform: translate(-50%, -200%) scale(1.5) rotate(360deg);
   }
   100% {
@@ -801,18 +779,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   top: 50%;
   left: 50%;
   z-index: 10;
-  /* ease-in-out donne une accélération plus douce en début et fin de trajectoire */
+  /* ease-in-out donne une accÃ©lÃ©ration plus douce en dÃ©but et fin de trajectoire */
   animation: pokeballThrow 1.2s ease-in-out forwards;
 }
 
-/* --- ÉTAPE 2 : L'Aspiration Tourbillonnante du Chiot --- */
+/* --- Ã‰TAPE 2 : L'Aspiration Tourbillonnante du Chiot --- */
 @keyframes puppyAspiration {
   0% {
     transform: translate(-50%, -50%) scale(1) rotate(0deg);
     opacity: 1;
   }
   100% {
-    /* Reste au centre, rétrécit et tourne jusqu'à 0 */
+    /* Reste au centre, rÃ©trÃ©cit et tourne jusqu'Ã  0 */
     transform: translate(-50%, -50%) scale(0) rotate(1080deg);
     opacity: 0;
   }
@@ -827,7 +805,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 }
 
 @media print {
-  /* 1. On cache tout sauf l'écran d'impression */
+  /* 1. On cache tout sauf l'Ã©cran d'impression */
   body * {
     visibility: hidden;
   }
@@ -835,7 +813,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     visibility: visible;
   }
   
-  /* 2. On force l'écran d'impression à prendre toute la place sans défilement */
+  /* 2. On force l'Ã©cran d'impression Ã  prendre toute la place sans dÃ©filement */
   #sPrint {
     position: absolute;
     left: 0;
@@ -860,12 +838,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     overflow: visible !important;
   }
 
-  /* 5. Éviter de couper une ligne de QR code au milieu entre deux pages */
+  /* 5. Ã‰viter de couper une ligne de QR code au milieu entre deux pages */
   .qr-print-card {
     page-break-inside: avoid;
     break-inside: avoid;
     border: 1px solid #000 !important; /* Bordure plus fine pour l'impression */
-    box-shadow: none !important;      /* Pas d'ombre portée sur papier */
+    box-shadow: none !important;      /* Pas d'ombre portÃ©e sur papier */
   }
 }
 
@@ -977,10 +955,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <g id="sp18"><ellipse cx="67" cy="56" rx="8" ry="5" fill="#1a1a1a"/><circle cx="84" cy="64" r="6" fill="#1a1a1a"/><circle cx="52" cy="72" r="5" fill="#1a1a1a"/><circle cx="93" cy="57" r="3.5" fill="#1a1a1a"/><circle cx="74" cy="83" r="3" fill="#1a1a1a"/></g>
 </svg>
 
-<!-- ════ SPLASH ════ -->
+<!-- â•â•â•â• SPLASH â•â•â•â• -->
 <div class="screen on" id="sSplash">
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
-  <div id="tapToStart">🐾 START 1🐾</div>
+  <div id="tapToStart">ðŸ¾ START 1ðŸ¾</div>
 
 <div id="testBtn" onclick="activateTestMode()"
      style="
@@ -998,10 +976,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 
 </div>
 
-<!-- ════ LOGIN ════ -->
+<!-- â•â•â•â• LOGIN â•â•â•â• -->
 <div class="screen" id="sLogin" style="background:var(--noir); color:white; justify-content:center; align-items:center; text-align:center; flex-direction:column;">
     <div style="background:var(--blanc); padding:30px; border-radius:20px; width:85%; max-width:400px;">
-        <h2 style="font-family:'Fredoka One'; color:var(--rouge); margin-bottom:20px;">BIENVENUE ! 🐾</h2>
+        <h2 style="font-family:'Fredoka One'; color:var(--rouge); margin-bottom:20px;">BIENVENUE ! ðŸ¾</h2>
         <p style="color:var(--noir); font-family:'Nunito'; font-weight:800; margin-bottom:15px;">Choisis un pseudo pour enregistrer tes scores :</p>
         
         <input type="text" id="playerPseudo" placeholder="Ton pseudo..." 
@@ -1011,23 +989,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
     </div>
 </div>
   
-<!-- ════ HOME ════ -->
+<!-- â•â•â•â• HOME â•â•â•â• -->
 <div class="screen" id="sHome">
   <div class="home-mascot">
-    <!-- Pokéball SVG inline -->
+    <!-- PokÃ©ball SVG inline -->
     <svg viewBox="0 0 120 120" width="110" height="110" style="filter:drop-shadow(0 6px 14px rgba(0,0,0,0.25))">
       <ellipse cx="60" cy="113" rx="30" ry="7" fill="rgba(0,0,0,0.12)"/>
-      <!-- Cercle extérieur noir -->
+      <!-- Cercle extÃ©rieur noir -->
       <circle cx="60" cy="60" r="52" fill="#111"/>
-      <!-- Moitié haute rouge -->
+      <!-- MoitiÃ© haute rouge -->
       <path d="M8 60 A52 52 0 0 1 112 60 Z" fill="#e00"/>
-      <!-- Moitié basse blanche -->
+      <!-- MoitiÃ© basse blanche -->
       <path d="M8 60 A52 52 0 0 0 112 60 Z" fill="#fff"/>
       <!-- Bande centrale noire -->
       <rect x="8" y="54" width="104" height="12" fill="#111"/>
       <!-- Cercle central noir -->
       <circle cx="60" cy="60" r="16" fill="#111"/>
-      <!-- Cercle central blanc intérieur -->
+      <!-- Cercle central blanc intÃ©rieur -->
       <circle cx="60" cy="60" r="10" fill="#fff"/>
       <!-- Ombre interne bas-droite -->
       <path d="M66 67 A10 10 0 0 1 52 67" fill="rgba(180,180,180,0.35)"/>
@@ -1039,40 +1017,40 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <div style="height:16px"></div>
   <div class="score-box">
     <big id="homeScore">0 / 22</big>
-    <span>chiots capturés</span>
+    <span>chiots capturÃ©s</span>
   </div>
-  <button class="btn btn-primary" onclick="goHunt()">📷 Partir à la chasse !</button>
-  <button class="btn btn-secondary" onclick="goColl()">📖 Ugodex</button>
-  <button class="btn btn-primary" onclick="show('#sRanking'); rafraichirClassement();"> 🏆 Voir le Classement</button>
-  <button class="btn ranking" onclick="goPrint()">🖨️ QR codes à imprimer</button>
-  <button id="testEndgameBtn" onclick="activateTestEndgame()" aria-label="Mode test fin de jeu" title="Mode test fin de jeu" style="position:absolute;right:6px;bottom:6px;width:34px;height:34px;border:none;border-radius:50%;background:rgba(0,0,0,0.03);color:transparent;box-shadow:none;z-index:30;cursor:pointer;">•</button>
+  <button class="btn btn-primary" onclick="goHunt()">ðŸ“· Partir Ã  la chasse !</button>
+  <button class="btn btn-secondary" onclick="goColl()">ðŸ“– Ugodex</button>
+  <button class="btn btn-primary" onclick="show('#sRanking'); rafraichirClassement();"> ðŸ† Voir le Classement</button>
+  <button class="btn ranking" onclick="goPrint()">ðŸ–¨ï¸ QR codes Ã  imprimer</button>
+  <button id="testEndgameBtn" onclick="activateTestEndgame()" aria-label="Mode test fin de jeu" title="Mode test fin de jeu" style="position:absolute;right:6px;bottom:6px;width:34px;height:34px;border:none;border-radius:50%;background:rgba(0,0,0,0.03);color:transparent;box-shadow:none;z-index:30;cursor:pointer;">â€¢</button>
 </div>
 
-<!-- ════ COLLECTION ════ -->
+<!-- â•â•â•â• COLLECTION â•â•â•â• -->
 <div class="screen" id="sColl" style="background:var(--cream)">
   <div class="panel-head">
-    <button class="icon-btn" onclick="goHome()">←</button>
+    <button class="icon-btn" onclick="goHome()">â†</button>
     <span class="panel-title">Ugodex</span>
     <span class="pill" id="collPill">0/12</span>
   </div>
   <div class="coll-body">
     <div class="prog-wrap">
       <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-      <div class="prog-lbl" id="progLbl">0 capturé(s) sur 12</div>
+      <div class="prog-lbl" id="progLbl">0 capturÃ©(s) sur 12</div>
     </div>
     <div class="grid" id="collGrid"></div>
   </div>
 </div>
 
-<!-- ════ AR ════ -->
+<!-- â•â•â•â• AR â•â•â•â• -->
 <div class="screen" id="sAR">
   <video id="arVideo" autoplay playsinline muted></video>
   <canvas id="arCanvas"></canvas>
   <div id="scanFlash"></div>
 
   <div class="ar-top">
-    <button class="icon-btn" style="background:rgba(0,0,0,.5);border-color:rgba(255,255,255,.3)" onclick="stopHunt()">←</button>
-    <span class="ar-title" id="arTitle">🐾 Cherche le QR code !</span>
+    <button class="icon-btn" style="background:rgba(0,0,0,.5);border-color:rgba(255,255,255,.3)" onclick="stopHunt()">â†</button>
+    <span class="ar-title" id="arTitle">ðŸ¾ Cherche le QR code !</span>
     <span class="ar-pill" id="arScore">0/19</span>
   </div>
 
@@ -1092,45 +1070,45 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
  <!-- Hint recherche 
   <div id="searchHint">
     <div class="hint-box">
-      Cadre le QR code et appuie sur le bouton 👇
+      Cadre le QR code et appuie sur le bouton ðŸ‘‡
     </div>
   </div>-->
 
-  <!-- Résultat scan -->
+  <!-- RÃ©sultat scan -->
   <div id="scanResult" style="display:none;position:absolute;bottom:160px;left:20px;right:20px;z-index:22;text-align:center;">
     <div id="scanResultBox" style="display:inline-block;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);border-radius:14px;padding:10px 20px;font-size:13px;font-weight:800;color:#fff;"></div>
   </div>
 
-  <!-- BOUTON PHOTO — gros, central, facile à taper -->
+  <!-- BOUTON PHOTO â€” gros, central, facile Ã  taper -->
 <button id="snapBtn" onclick="takeSnap(true)">
-  📸 Scanner le QR code
+  ðŸ“¸ Scanner le QR code
 </button>
 
-  <button id="catchBtn" onclick="openCapture()">✋ Attraper !</button>
-  <button id="arBackBtn" onclick="stopHunt()">🏠</button>
+  <button id="catchBtn" onclick="openCapture()">âœ‹ Attraper !</button>
+  <button id="arBackBtn" onclick="stopHunt()">ðŸ </button>
 </div>
 
-<!-- ════ ÉCRAN CAPTURE ════ -->
+<!-- â•â•â•â• Ã‰CRAN CAPTURE â•â•â•â• -->
 <div class="screen" id="sCatch">
   <div style="position:relative;width:100%;flex:1;overflow:hidden;background:#111;">
-    <!-- Pokéball animée pendant la capture -->
+    <!-- PokÃ©ball animÃ©e pendant la capture -->
     <div id="catchPokeWrap" style="width:100%; height:100%; position:relative; overflow:hidden;"></div>
     <div id="captureFlash"></div>
   </div>
   <div style="padding:20px 24px 36px;background:#fff;width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;">
     <div id="catchPupNum" style="font-size:12px;color:#888;font-weight:800;letter-spacing:1px;"></div>
     
-    <button class="btn-capture" onclick="doCapture()" style="width:100%;max-width:310px;">🐾 Capturer !</button>
+    <button class="btn-capture" onclick="doCapture()" style="width:100%;max-width:310px;">ðŸ¾ Capturer !</button>
     <button id="btnCancel" onclick="closeCatch()" style="background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;padding:4px;">Laisser filer l'animal</button>
     
     <button id="btnToDex" class="btn-capture" 
             style="width:100%; background:#4CAF50; display:none;">
-      📖 Ajouter au UgoDex
+      ðŸ“– Ajouter au UgoDex
     </button>
 </div>
 </div>
 
-<!-- ════ SCREEN DETAIL Ugodex (image grande + swipe QR) ════ -->
+<!-- â•â•â•â• SCREEN DETAIL Ugodex (image grande + swipe QR) â•â•â•â• -->
 <div class="screen" id="sDetail">
   <!-- SLIDER WRAPPER -->
   <div id="detailBody"
@@ -1148,8 +1126,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
            class="qr-pulse"
            src=""
            style="width:220px;height:220px;background:#fff;padding:10px;border-radius:12px;">
-      <div class="detail-qr-note">
-        A utiliser pour échanger vos Ugos entre dresseurs !
+      <div id="detailQRNote" class="detail-qr-note">
+        A utiliser pour Ã©changer vos Ugos entre dresseurs !
       </div>
     </div>
   </div>
@@ -1157,7 +1135,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <!-- BACK BUTTON -->
   <button class="icon-btn"
           style="position:absolute;top:15px;left:15px;z-index:10;background:rgba(0,0,0,.4);color:#fff;"
-          onclick="closeDetail()">←</button>
+          onclick="closeDetail()">â†</button>
 
   <!-- HINT -->
   <div id="detailSwipeHint"
@@ -1165,19 +1143,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
               background:rgba(0,0,0,.75);color:#fff;
               padding:8px 14px;border-radius:20px;
               font-size:12px;backdrop-filter:blur(6px);">
-    Swipe → QR code
+    Swipe â†’ QR code
   </div>
 </div>
 
 
-<!-- ════ SCREEN RÉCOMPENSE UGOAT ════ -->
+<!-- â•â•â•â• SCREEN RÃ‰COMPENSE UGOAT â•â•â•â• -->
 <div class="screen" id="sReward">
-<div class="reward-overlay"></div>>
+<div class="reward-overlay"></div>
   <div id="rewardConfetti" class="reward-confetti-layer"></div>
 
   <div class="reward-card">
-    <div style="font-size:48px;position:relative;z-index:2;">🏆</div>
-    <div class="reward-title">UGOAT débloqué !</div>
+    <div style="font-size:48px;position:relative;z-index:2;">ðŸ†</div>
+    <div class="reward-title">UGOAT dÃ©bloquÃ© !</div>
 
     <div class="reward-visual">
       <img src="pup22.webp" alt="UGOAT" class="reward-img"
@@ -1185,90 +1163,90 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 
       <div class="reward-overlay">
         <div id="rewardBigScore" class="reward-big-score">22 pts</div>
-        <div id="rewardBonus1" class="reward-bonus-line">🏅 Bonus Finisher : +15 pts</div>
-        <div id="rewardBonus2" class="reward-bonus-line">⏱️ Bonus Timer : +0 pt</div>
+        <div id="rewardBonus1" class="reward-bonus-line">ðŸ… Bonus Finisher : +15 pts</div>
+        <div id="rewardBonus2" class="reward-bonus-line">â±ï¸ Bonus Timer : +0 pt</div>
       </div>
     </div>
 
     <div style="font-size:14px;color:rgba(255,255,255,.6);text-align:center;position:relative;z-index:2;">
-      Tu as tout collecté.<br>Le légendaire UGOAT est à toi !
+      Tu as tout collectÃ©.<br>Le lÃ©gendaire UGOAT est Ã  toi !
     </div>
 
-    <button class="btn btn-primary" onclick="unlockUGOAT()">🐾 Ajouter au Ugodex</button>
+    <button class="btn btn-primary" onclick="unlockUGOAT()">ðŸ¾ Ajouter au Ugodex</button>
   </div>
 </div>
 
 
-<!-- ════ SCREEN CREDITS ════ -->
+<!-- â•â•â•â• SCREEN CREDITS â•â•â•â• -->
 <div class="screen" id="sCredits">
   <div class="credits-scroll">
     <div class="credits-title">101 Dalmatiens</div>
-    <div class="credits-name">Un jeu créé par...</div>
+    <div class="credits-name">Un jeu crÃ©Ã© par...</div>
     <br><br>
     <div class="credits-title">Merci aux joueurs</div>
     <div class="credits-name">...tes noms ici...</div>
     <br><br>
-    <div class="credits-title">🐾</div>
+    <div class="credits-title">ðŸ¾</div>
   </div>
   <button onclick="goColl()" style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:12px 28px;border-radius:20px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;">
     Fermer
   </button>
 </div>
   
-<!-- ════ BURST ════ -->
+<!-- â•â•â•â• BURST â•â•â•â• -->
 <div id="burst"></div>
 
-<!-- ════ ALERTE ════ -->
+<!-- â•â•â•â• ALERTE â•â•â•â• -->
 <div id="alertBanner" onclick="onAlert()">
   <div class="alert-dog-wrap" id="alertDogWrap"></div>
   <div class="alert-txt">
-    <div class="alert-h" id="alertH">Un dalmatien à trouver !</div>
-    <div class="alert-s" id="alertS">Cherche le QR code →</div>
+    <div class="alert-h" id="alertH">Un dalmatien Ã  trouver !</div>
+    <div class="alert-s" id="alertS">Cherche le QR code â†’</div>
   </div>
-  <div class="alert-arr">›</div>
+  <div class="alert-arr">â€º</div>
 </div>
 
-<!-- ════ QR À IMPRIMER ════ -->
+<!-- â•â•â•â• QR Ã€ IMPRIMER â•â•â•â• -->
 <div class="screen" id="sPrint" style="background:var(--cream)">
   <div class="panel-head">
-    <button class="icon-btn" onclick="goHome()">←</button>
+    <button class="icon-btn" onclick="goHome()">â†</button>
     <span class="panel-title">QR Codes</span>
   </div>
   <div class="print-body">
     <div class="print-intro">
       <strong>Comment jouer :</strong><br>
-      1. Imprime ou capture d'écran ces QR codes<br>
-      2. Découpe et cache chacun dans la pièce<br>
-      3. Les joueurs cherchent avec leur caméra !
+      1. Imprime ou capture d'Ã©cran ces QR codes<br>
+      2. DÃ©coupe et cache chacun dans la piÃ¨ce<br>
+      3. Les joueurs cherchent avec leur camÃ©ra !
     </div>
     <div class="qr-print-grid" id="printGrid"></div>
-    <button class="btn-print" onclick="window.print()">🖨️ Imprimer</button>
+    <button class="btn-print" onclick="window.print()">ðŸ–¨ï¸ Imprimer</button>
   </div>
 </div>
 
-<!-- ════ CLASSEMENT ════ -->
+<!-- â•â•â•â• CLASSEMENT â•â•â•â• -->
 <div class="screen" id="sRanking">
   <div class="panel-head">
-    <button class="icon-btn" onclick="goHome()">←</button>
+    <button class="icon-btn" onclick="goHome()">â†</button>
     <span class="panel-title">Classement Mondial</span>
   </div>
   <div class="ranking-body" id="rankingBody">
     </div>
 </div>
   
-<!-- ════ WIN ════ -->
+<!-- â•â•â•â• WIN â•â•â•â• -->
 <div class="screen" id="sWin">
   <div class="win-dogs-row" id="winDogsRow"></div>
-  <h2 class="win-h">Tous les<br><em>Dalmatiens</em><br>capturés !</h2>
+  <h2 class="win-h">Tous les<br><em>Dalmatiens</em><br>capturÃ©s !</h2>
   <div class="parade-wrap"><div class="parade" id="winParade"></div></div>
   <div class="win-stat"><strong id="winTime">--:--</strong><small>temps de chasse</small></div>
-  <div class="win-stat" style="margin-top:-6px"><strong id="winTotal">17 🐾</strong><small>chiots sauvés !</small></div>
-  <button class="btn-replay" onclick="reset()">🔄 Nouvelle Chasse</button>
+  <div class="win-stat" style="margin-top:-6px"><strong id="winTotal">17 ðŸ¾</strong><small>chiots sauvÃ©s !</small></div>
+  <button class="btn-replay" onclick="reset()">ðŸ”„ Nouvelle Chasse</button>
 </div>
 
-<!-- ════ VIEWER UGODEX ════ -->
+<!-- â•â•â•â• VIEWER UGODEX â•â•â•â• -->
 <div class="screen" id="sViewer">
-  <button class="icon-btn" style="position:absolute; top:15px; left:15px; z-index:10; background:rgba(0,0,0,.3); color:#fff;" onclick="closeViewer()">←</button>
+  <button class="icon-btn" style="position:absolute; top:15px; left:15px; z-index:10; background:rgba(0,0,0,.3); color:#fff;" onclick="closeViewer()">â†</button>
   <div class="viewer-body" id="viewerBody" style="flex-wrap:nowrap; transition:transform .3s ease; flex:1;">
   </div>
   <div class="viewer-dots" id="viewerDots" style="margin:10px auto;"></div>
@@ -1277,44 +1255,109 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <script>
 'use strict';
 
-/* ══ CONNEXION BASE DE DONNEES ══ */
+/* â•â• CONNEXION BASE DE DONNEES â•â• */
 // Remplace ceci :
 // const pb = new PocketBase('http://127.0.0.1:8090');
-// Par cela (en utilisant l'IP trouvée à l'étape 1) :
+// Par cela (en utilisant l'IP trouvÃ©e Ã  l'Ã©tape 1) :
 // const pb = new PocketBase('http://192.168.1.37:8090');
 // Remplace ton ancienne ligne (ex: http://127.0.0.1:8090) par celle-ci :
-const pb = new PocketBase('https://psyco.fly.dev');
+const PB_URL = 'https://psyco.fly.dev';
+const APP_URL = 'https://meilo-rc.github.io/dalmatiens/';
+const pb = typeof PocketBase !== 'undefined' ? new PocketBase(PB_URL) : null;
 let splashEl = null;
+
+function getPocketBaseCollection(){
+  if (!pb) throw new Error('PocketBase indisponible');
+  return pb.collection('Classement');
+}
+
+function escapePBString(value) {
+  return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+function buildQrUrls(data, size) {
+  const encoded = encodeURIComponent(data);
+  return [
+    `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encoded}&bgcolor=ffffff&color=000000&qzone=2`,
+    `https://quickchart.io/qr?text=${encoded}&size=${size}&margin=2&dark=000000&light=ffffff`
+  ];
+}
+
+function setQrImageSource(img, data, size) {
+  if (!img) return;
+
+  const urls = buildQrUrls(data, size);
+  let idx = 0;
+
+  img.onerror = () => {
+    idx += 1;
+    if (idx < urls.length) {
+      img.src = urls[idx];
+      return;
+    }
+
+    img.style.display = 'none';
+    img.alt = `QR indisponible (${data})`;
+
+    const parent = img.parentElement;
+    if (!parent || parent.querySelector('[data-qr-fallback="true"]')) return;
+
+    const note = document.createElement('div');
+    note.dataset.qrFallback = 'true';
+    note.className = 'detail-qr-note';
+    note.textContent = data;
+    note.style.wordBreak = 'break-word';
+    note.style.maxWidth = '240px';
+    note.style.textAlign = 'center';
+    note.style.color = '#444';
+    parent.appendChild(note);
+  };
+
+  const parent = img.parentElement;
+  const oldFallback = parent && parent.querySelector('[data-qr-fallback="true"]');
+  if (oldFallback) oldFallback.remove();
+
+  img.style.display = '';
+  img.src = urls[idx];
+}
   
 async function envoyerScore(pseudo, score) {
+  if (!pb) return false;
   try {
-    const result = await pb.collection('Classement').getList(1, 1, {
-      filter: `Pseudo = "${pseudo}"`
+    const result = await getPocketBaseCollection().getList(1, 1, {
+      filter: `Pseudo = "${escapePBString(pseudo)}"`
     });
-    // dbg('Recherche "' + pseudo + '" → ' + result.items.length + ' résultat(s)');
+    // dbg('Recherche "' + pseudo + '" â†’ ' + result.items.length + ' rÃ©sultat(s)');
     if (result.items.length > 0) {
       const id = result.items[0].id;
-      // dbg('Mise à jour id=' + id + ' score=' + score);
-      await pb.collection('Classement').update(id, { Score: score });
-      // dbg('✓ Mise à jour OK');
+      // dbg('Mise Ã  jour id=' + id + ' score=' + score);
+      await getPocketBaseCollection().update(id, { Score: score });
+      // dbg('âœ“ Mise Ã  jour OK');
     } else {
-      // dbg('Création nouveau joueur score=' + score);
-      await pb.collection('Classement').create({ Pseudo: pseudo, Score: score });
-      // dbg('✓ Création OK');
+      // dbg('CrÃ©ation nouveau joueur score=' + score);
+      await getPocketBaseCollection().create({ Pseudo: pseudo, Score: score });
+      // dbg('âœ“ CrÃ©ation OK');
     }
+    return true;
   } catch (error) {
-    // dbg('ERREUR: ' + error.message);
+    console.warn('Classement non mis ÃƒÂ  jour :', error);
+    return false;
   }
 }
   
-/* ══ AFFICHAGE DU CLASSEMENT ══ */
+/* â•â• AFFICHAGE DU CLASSEMENT â•â• */
 async function rafraichirClassement() {
     const rankingBody = document.getElementById('rankingBody');
     rankingBody.innerHTML = "Chargement...";
     const myPseudo = localStorage.getItem('ugo_pseudo');
 
+    if (!pb) {
+        rankingBody.innerHTML = "Classement temporairement indisponible.";
+        return;
+    }
+
     try {
-        const records = await pb.collection('Classement').getList(1, 20, { sort: '-Score' });
+        const records = await getPocketBaseCollection().getList(1, 20, { sort: '-Score' });
         rankingBody.innerHTML = "";
 
         if (records.items.length === 0) {
@@ -1338,14 +1381,14 @@ async function rafraichirClassement() {
 
         // Si le joueur n'est pas dans le top 20, on le cherche et on l'affiche en bas
         if(!myInTop20 && myPseudo){
-            const myResult = await pb.collection('Classement').getList(1, 1, {
-                filter: `Pseudo = "${myPseudo}"`
+            const myResult = await getPocketBaseCollection().getList(1, 1, {
+                filter: `Pseudo = "${escapePBString(myPseudo)}"`
             });
             if(myResult.items.length > 0){
                 const item = myResult.items[0];
                 const sep = document.createElement('div');
                 sep.style.cssText = 'text-align:center;color:rgba(255,255,255,0.3);font-size:12px;padding:8px;';
-                sep.textContent = '— hors top 20 —';
+                sep.textContent = 'â€” hors top 20 â€”';
                 rankingBody.appendChild(sep);
                 const row = document.createElement('div');
                 row.className = 'ranking-row';
@@ -1360,7 +1403,7 @@ async function rafraichirClassement() {
     }
 }
 
-/* ══ CALCUL BONUS HORAIRE ══ */
+/* â•â• CALCUL BONUS HORAIRE â•â• */
 function calculerBonus(created, updated) {
     function computeFromMinutes(dureeMinutes){
         const minutes = Math.max(0, dureeMinutes);
@@ -1374,7 +1417,7 @@ function calculerBonus(created, updated) {
         return { points, label: `${heureRonde}h` };
     }
 
-    // Priorité au temps de jeu local réel
+    // PrioritÃ© au temps de jeu local rÃ©el
     const localStart = Number(startTime);
     const now = Date.now();
 
@@ -1390,12 +1433,12 @@ function calculerBonus(created, updated) {
         return computeFromMinutes((end - start) / (1000 * 60));
     }
 
-    // Sécurité ultime
+    // SÃ©curitÃ© ultime
     return { points: 100, label: '1h' };
 }
   
 
-/* ══ AFFICHE BONUS TEMPS ══ */
+/* â•â• AFFICHE BONUS TEMPS â•â• */
 function afficherRecompense(record) {
     const bonus = calculerBonus(record.created, record.updated);
     pendingTimeBonus = bonus.points;
@@ -1403,7 +1446,7 @@ function afficherRecompense(record) {
     lancerSequenceReward();
 }
 
-/* ══ DETAIL UGODEX ══ */
+/* â•â• DETAIL UGODEX â•â• */
 let detailId=null, detailShowQR=false;
 let detailSlide = 0;
 let startX = 0;
@@ -1428,7 +1471,7 @@ function swipeDetail(dir){
 
   const hint = $('detailSwipeHint');
   if(hint){
-    hint.textContent = detailSlide === 0 ? 'Swipe → QR code' : '← Swipe pour revenir';
+    hint.textContent = detailSlide === 0 ? 'Swipe â†’ QR code' : 'â† Swipe pour revenir';
   }
 }
   
@@ -1451,7 +1494,7 @@ function openDetail(id, fromCapture=false){
       qrImg.src = '';
     }
     if (qrNote) {
-      qrNote.textContent = "Un UGOAT, ça ne s'échange pas, ça se mérite";
+      qrNote.textContent = "Un UGOAT, Ã§a ne s'Ã©change pas, Ã§a se mÃ©rite";
       qrNote.style.fontFamily = "'Fredoka One', cursive";
       qrNote.style.fontSize = '28px';
       qrNote.style.lineHeight = '1.2';
@@ -1462,18 +1505,13 @@ function openDetail(id, fromCapture=false){
       qrNote.style.textAlign = 'center';
     }
   } else {
-    const qrUrl =
-      'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' +
-      encodeURIComponent(QR_PREFIX + id) +
-      '&bgcolor=ffffff&color=000000&qzone=2';
-
     if (qrImg) {
       qrImg.style.display = 'block';
       qrImg.classList.add('qr-pulse');
-      qrImg.src = qrUrl;
+      setQrImageSource(qrImg, QR_PREFIX + id, 220);
     }
     if (qrNote) {
-      qrNote.textContent = 'A utiliser pour échanger vos Ugos entre dresseurs !';
+      qrNote.textContent = 'A utiliser pour Ã©changer vos Ugos entre dresseurs !';
       qrNote.style.fontFamily = '';
       qrNote.style.fontSize = '';
       qrNote.style.lineHeight = '';
@@ -1489,12 +1527,12 @@ function openDetail(id, fromCapture=false){
   if(body) body.style.transform = 'translateX(0%)';
 
   const hint = $('detailSwipeHint');
-  if(hint) hint.textContent = id === 22 ? 'Swipe → message spécial' : 'Swipe → QR code';
+  if(hint) hint.textContent = id === 22 ? 'Swipe â†’ message spÃ©cial' : 'Swipe â†’ QR code';
 
   show('sDetail');
 
   if(fromCapture) {
-    flashMsg('🎉 Capturé ! Cherche le suivant !', 2500);
+    flashMsg('ðŸŽ‰ CapturÃ© ! Cherche le suivant !', 2500);
   }
 }
 
@@ -1580,28 +1618,28 @@ function unlockUGOAT(){
   buildGrid();
   show('sColl');
   setTimeout(()=>show('sCredits'), 2000);
-  flashMsg("🏆 UGOAT ajouté à l'Ugodex !",3000);
+  flashMsg("ðŸ† UGOAT ajoutÃ© Ã  l'Ugodex !",3000);
 }
   
-/* ══ DONNÉES ══ */
+/* â•â• DONNÃ‰ES â•â• */
 const PUPS=[
   {id:1, name:"Ugo Belin"},   {id:2, name:"Ugo Boss"},
-  {id:3, name:"Ugo Chavez"},  {id:4, name:"Ugo Clément"},
-  {id:5, name:"Ugo Décrypte"},{id:6, name:"Ugo de Michet"},
-  {id:7, name:"Ugo Belet"},   {id:8, name:"Ugo Éland"},
+  {id:3, name:"Ugo Chavez"},  {id:4, name:"Ugo ClÃ©ment"},
+  {id:5, name:"Ugo DÃ©crypte"},{id:6, name:"Ugo de Michet"},
+  {id:7, name:"Ugo Belet"},   {id:8, name:"Ugo Ã‰land"},
   {id:9, name:"Ugo Rbartchev"},{id:10,name:"Ugo Rille"},
   {id:11,name:"Ugo Thique"},  {id:12,name:"Ugo Yave"},
   {id:13,name:"Ugo Humbert"}, {id:14,name:"Ugo Jackman"},
   {id:15,name:"Ugo Laurie"},  {id:16,name:"Ugo Lloris"},
   {id:17,name:"Ugo Dzilla"},  {id:18,name:"Ugo Victor"},
   {id:19,name:"Ugo Weaving"}, {id:20,name:"Cruella"},
-  {id:21,name:"Cruélisa"},    {id:22,name:"UGOAT",secret:true}
+  {id:21,name:"CruÃ©lisa"},    {id:22,name:"UGOAT",secret:true}
 ];
 const TOTAL=22;
-const BONUS_ID=22; // débloqué quand tous les 21 autres sont capturés
+const BONUS_ID=22; // dÃ©bloquÃ© quand tous les 21 autres sont capturÃ©s
 const QR_PREFIX='DAL_';
 
-/* ══ STATE ══ */
+/* â•â• STATE â•â• */
 let collected=new Set(),startTime=Date.now(),pendingPup=null,alertTimer=null;
 let camStream=null,scanLoop=null,scanPaused=false,activePupId=null;
 let bgMusic=null;
@@ -1609,8 +1647,10 @@ let rewardPending=false;
 let pendingTimeBonus = 0;
 let pendingTimeLabel = "1h";
 let rewardSequenceRunning = false;
+let scanInFlight = false;
+let barcodeDetector = null;
 
-/* ══ PERSIST ══ */
+/* â•â• PERSIST â•â• */
 function save(){try{localStorage.setItem('dal7_c',JSON.stringify([...collected]));localStorage.setItem('dal7_t',''+startTime);}catch(e){}}
 function load(){try{const c=localStorage.getItem('dal7_c'),t=localStorage.getItem('dal7_t');if(c)collected=new Set(JSON.parse(c).map(Number));if(t)startTime=parseInt(t);}catch(e){}}
 
@@ -1620,15 +1660,15 @@ function show(id) {
   const screens = document.querySelectorAll('.screen');
   screens.forEach(s => s.classList.remove('on'));
   
-  // 2. On récupère l'élément proprement (si tu as mis un # ou non)
+  // 2. On rÃ©cupÃ¨re l'Ã©lÃ©ment proprement (si tu as mis un # ou non)
   const cleanId = id.replace('#', '');
   const element = document.getElementById(cleanId);
   
   if (element) {
     element.classList.add('on');
-    console.log("Écran " + cleanId + " activé.");
+    console.log("Ã‰cran " + cleanId + " activÃ©.");
   } else {
-    console.error("Impossible de trouver l'élément : " + cleanId);
+    console.error("Impossible de trouver l'Ã©lÃ©ment : " + cleanId);
   }
 }
   
@@ -1650,11 +1690,13 @@ function pokeballSVG(caught, size=54){
 }
 function dalSVG(idx,w,h,style=''){return `<svg viewBox="0 0 120 100" width="${w}" height="${h}" style="${style}"><use href="#dal-body"/><use href="#sp${Math.min(18,idx)}"/></svg>`;}
 
-/* ══ MUSIQUE (Web Audio — mélodie d'aventure) ══ */
+/* â•â• MUSIQUE (Web Audio â€” mÃ©lodie d'aventure) â•â• */
 let audioCtx = null;
 let currentMusicLoop = null;
+let currentMusicTrack = '';
+let currentMusicToken = 0;
 
-// Convertit note MIDI -> Fréquence (Hz)
+// Convertit note MIDI -> FrÃ©quence (Hz)
 function midiToFreq(midi) {
     return 440 * Math.pow(2, (midi - 69) / 12);
 }
@@ -1687,54 +1729,51 @@ function playNotesFromData(musicData) {
     musicData.tracks.forEach(track => {
         if (!track.notes) return;
         track.notes.forEach(note => {
-            // Note: velocity / 2 pour un volume équilibré
+            // Note: velocity / 2 pour un volume Ã©quilibrÃ©
             playNote(note.midi, note.time, note.duration, note.velocity / 2, now);
         });
     });
 }
 
 async function playMusic(jsonUrl) {
-    // 1. ARRÊT TOTAL : on nettoie tout ce qui pourrait tourner
+    const token = ++currentMusicToken;
+    currentMusicTrack = jsonUrl;
+
     if (currentMusicLoop) {
         clearTimeout(currentMusicLoop);
         currentMusicLoop = null;
     }
-    // Ferme l'ancien contexte pour couper les notes immédiatement
-if (audioCtx) {
-    audioCtx.close();
-    audioCtx = null;
-}
-    // 2. On s'assure que le contexte audio est actif
+
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
-    
-    // 3. Chargement et lecture
+
     try {
         const response = await fetch(jsonUrl);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const musicData = await response.json();
-        
+        if (token !== currentMusicToken || currentMusicTrack !== jsonUrl) return;
+
         playNotesFromData(musicData);
-        
-        // 4. On stocke la nouvelle boucle pour pouvoir l'arrêter au prochain changement
+
         currentMusicLoop = setTimeout(() => {
-            playMusic(jsonUrl);
+            if (currentMusicTrack === jsonUrl) playMusic(jsonUrl);
         }, musicData.duration * 1000 + 100);
-        
+
     } catch (e) {
         console.error("Erreur chargement musique :", e);
     }
 }
 
-/* ══ HOME ══ */
+/* â•â• HOME â•â• */
 function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=collected.size+' / '+TOTAL;
   if(collected.size >= TOTAL){
   document.querySelector('.home-mascot').innerHTML = 
-    '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;">🏆</div>';
+    '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;">ðŸ†</div>';
     }
   }
 
 
-/* ══ COLLECTION ══ */
+/* â•â• COLLECTION â•â• */
 
 function teaserBonusCard(){
   const cards = document.querySelectorAll('#collGrid .card');
@@ -1777,7 +1816,7 @@ function buildGrid(){
   
   if($('collPill')) $('collPill').textContent = collected.size + '/' + TOTAL;
   if($('progFill')) $('progFill').style.width = (nCaught / nonSecret.length * 100) + '%';
-  if($('progLbl')) $('progLbl').textContent = nCaught + ' capturé(s) sur ' + nonSecret.length;
+  if($('progLbl')) $('progLbl').textContent = nCaught + ' capturÃ©(s) sur ' + nonSecret.length;
   
   const grid = $('collGrid');
   grid.innerHTML = '';
@@ -1787,22 +1826,22 @@ function buildGrid(){
     const div = document.createElement('div');
     
     if(p.secret && !ok){
-      // Chiot secret verrouillé
+      // Chiot secret verrouillÃ©
       div.className = 'card';
       div.style.opacity = '.45';
       div.style.border = '2px dashed #ccc';
       div.innerHTML = `<div class="card-dog" style="height:74px">${pokeballSVG(false)}</div>
-                       <div class="card-name" style="color:#cc1111;font-size:9px">🔒 Tout trouver !</div>
+                       <div class="card-name" style="color:#cc1111;font-size:9px">ðŸ”’ Tout trouver !</div>
                        <div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
     } 
     else if(ok){
-      // Chiot capturé : ON ACTIVE LE CLIC ICI
+      // Chiot capturÃ© : ON ACTIVE LE CLIC ICI
       div.className = 'card caught';
       // Suppression de la bordure bleue
       // div.style.border = "5px solid blue";
       div.style.cursor = 'pointer';
       
-      // On retire le onerror qui créait les symboles ' ">
+      // On retire le onerror qui crÃ©ait les symboles ' ">
       div.innerHTML = `<div class="card-dog"><img src="pup${p.id}.webp" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;"></div>
                        <div class="card-name">${p.name}</div>
                        <div class="card-num">#${String(p.id).padStart(2,'0')}</div>`;
@@ -1811,7 +1850,7 @@ function buildGrid(){
       div.onclick = () => openDetailFromThumb(div.querySelector('img'), p.id);
     } 
     else {
-      // Chiot normal verrouillé
+      // Chiot normal verrouillÃ©
       div.className = 'card locked';
       div.innerHTML = `<div class="card-dog" style="height:74px">${pokeballSVG(false)}</div>
                        <div class="card-name">???</div>
@@ -1821,7 +1860,7 @@ function buildGrid(){
   });
 }
 
-/* ══ QR À IMPRIMER ══ */
+/* â•â• QR Ã€ IMPRIMER â•â• */
 function goPrint(){
   const grid=$('printGrid');grid.innerHTML='';
 
@@ -1830,8 +1869,8 @@ function goPrint(){
   appCard.className='qr-print-card';
   appCard.style.cssText='grid-column:1/-1;flex-direction:row;gap:14px;padding:14px 16px;';
   appCard.innerHTML=
-    `<img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent('https://meilo-rc.github.io/dalmatiens/')}&bgcolor=ffffff&color=000000&qzone=1" style="width:90px;height:90px;border-radius:8px;flex-shrink:0" alt="Lien appli">`+
-    `<div style="text-align:left"><div style="font-family:'Fredoka One',cursive;font-size:14px;color:#cc1111;margin-bottom:4px">🐾 Lien de l'appli</div><div style="font-size:10px;color:#555;line-height:1.5">Scanne ce QR code<br>pour ouvrir le jeu !</div></div>`;
+    `<img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent(APP_URL)}&bgcolor=ffffff&color=000000&qzone=1" style="width:90px;height:90px;border-radius:8px;flex-shrink:0" alt="Lien appli">`+
+    `<div style="text-align:left"><div style="font-family:'Fredoka One',cursive;font-size:14px;color:#cc1111;margin-bottom:4px">ðŸ¾ Lien de l'appli</div><div style="font-size:10px;color:#555;line-height:1.5">Scanne ce QR code<br>pour ouvrir le jeu !</div></div>`;
   grid.appendChild(appCard);
 
   PUPS.forEach(p=>{
@@ -1845,12 +1884,12 @@ function goPrint(){
   show('sPrint');
 }
 
-/* ══ CHASSE AR ══ */
+/* â•â• CHASSE AR â•â• */
   
 function nextUncaught(){return PUPS.find(p=>!collected.has(p.id))||null;}
 function updateHint(){
   const p=nextUncaught();
-  if(p){$('arTitle').textContent='🐾 Cherche le QR code !';}
+  if(p){$('arTitle').textContent='ðŸ¾ Cherche le QR code !';}
 }
 
 async function goHunt(){
@@ -1858,8 +1897,14 @@ async function goHunt(){
   $('arScore').textContent=collected.size+'/'+TOTAL;
   updateHint();hideARDog();
   activePupId=null;scanPaused=false;
+  scanInFlight = false;
   $('catchBtn').classList.remove('on');
   $('scanResult').style.display='none';
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showSysMsg('Ã°Å¸â€œÂµ CamÃƒÂ©ra non supportÃƒÂ©e sur cet appareil.');
+    return;
+  }
 
   const tries=[
     {video:{facingMode:{exact:'environment'},width:{ideal:1920},height:{ideal:1080}}},
@@ -1871,16 +1916,16 @@ async function goHunt(){
   let got=false;
   for(const c of tries){
     try{camStream=await navigator.mediaDevices.getUserMedia(c);got=true;break;}
-    catch(e){if(e.name==='NotAllowedError'){showSysMsg('🔒 Autorise la caméra puis relance.');return;}}
+    catch(e){if(e.name==='NotAllowedError'){showSysMsg('ðŸ”’ Autorise la camÃ©ra puis relance.');return;}}
   }
-  if(!got){showSysMsg('📵 Caméra inaccessible.');return;}
+  if(!got){showSysMsg('ðŸ“µ CamÃ©ra inaccessible.');return;}
 
   const v=$('arVideo');
   v.srcObject=camStream;
   try{await v.play();}catch(e){v.oncanplay=()=>{v.play().catch(()=>{});v.oncanplay=null;};}
 
   scheduleAlert();
-  // Sécurité : on nettoie une boucle existante avant d'en lancer une autre
+  // SÃ©curitÃ© : on nettoie une boucle existante avant d'en lancer une autre
   if (scanLoop) clearInterval(scanLoop);
   // Lance le scan auto toutes les 1.5 secondes
    scanLoop = setInterval(() => takeSnap(false), 1500);
@@ -1889,31 +1934,32 @@ async function goHunt(){
 // Prend une photo et analyse le QR
 async function takeSnap(isManual = false) { 
   const v = $('arVideo');
-  if (!camStream || v.readyState < 2) return;
+  if (!camStream || v.readyState < 2 || scanInFlight) return;
+  scanInFlight = true;
 
   const btn = $('snapBtn');
   btn.classList.add('scanning');
-  btn.textContent = '⏳ Analyse...';
+  btn.textContent = 'â³ Analyse...';
 
   const canvas = $('arCanvas');
   let found = false;
 
-  // ── LOGIQUE DE DETECTION ──
+  // â”€â”€ LOGIQUE DE DETECTION â”€â”€
   // (Utilise 'found = true' quand tu trouves le QR)
   
   if('BarcodeDetector' in window){
     try{
-      const det=new BarcodeDetector({formats:['qr_code']});
-      const codes=await det.detect(v);
+      if (!barcodeDetector) barcodeDetector = new BarcodeDetector({formats:['qr_code']});
+      const codes=await barcodeDetector.detect(v);
       if(codes.length>0){ processQRData(codes[0].rawValue); found=true; }
       else {
-        const codes2=await det.detect(await captureFrame(v,canvas,1280));
+        const codes2=await barcodeDetector.detect(await captureFrame(v,canvas,1280));
         if(codes2.length>0){ processQRData(codes2[0].rawValue); found=true; }
       }
     }catch(e){}
   }
 
-  if (!found) { // Si toujours pas trouvé, essaie jsQR
+  if (!found && typeof jsQR === 'function') { // Si toujours pas trouvÃ©, essaie jsQR
     try{
       const img=captureImageData(v,canvas,600);
       const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'attemptBoth'});
@@ -1926,16 +1972,17 @@ async function takeSnap(isManual = false) {
     }catch(e){}
   }
 
-  // ── NETTOYAGE FINAL (Important pour le scan automatique) ──
+  // â”€â”€ NETTOYAGE FINAL (Important pour le scan automatique) â”€â”€
+  scanInFlight = false;
   if (found) {
-    // Si trouvé, on laisse le bouton tranquille car processQRData va tout arrêter
+    // Si trouvÃ©, on laisse le bouton tranquille car processQRData va tout arrÃªter
   } else {
-    // Si pas trouvé :
+    // Si pas trouvÃ© :
     btn.classList.remove('scanning');
-    btn.textContent = '📸 Scanner le QR code';
+    btn.textContent = 'ðŸ“¸ Scanner le QR code';
     
     // N'affiche l'erreur que si c'est manuel
-    if (isManual) showScanResult('❌ Pas de QR détecté — Rapproche-toi','#e88');
+    if (isManual) showScanResult('âŒ Pas de QR dÃ©tectÃ© â€” Rapproche-toi','#e88');
   }
 }
 
@@ -1963,7 +2010,7 @@ function processQRData(data){
   else if(/^\d+$/.test(data.trim())) id = parseInt(data.trim());
 
   if(id && !isNaN(id) && id >= 1 && id <= 21){
-    // --- ARRÊT DU SCAN DÈS LA DÉTECTION ---
+    // --- ARRÃŠT DU SCAN DÃˆS LA DÃ‰TECTION ---
     if(scanLoop) {
         clearInterval(scanLoop);
         scanLoop = null;
@@ -1971,7 +2018,7 @@ function processQRData(data){
     // --------------------------------------
     handleQRDetected(id);
   } else {
-    showScanResult('❌ QR non reconnu','#e88');
+    showScanResult('âŒ QR non reconnu','#e88');
   }
 }
 
@@ -1984,7 +2031,7 @@ function showScanResult(msg,color='#fff'){
 }
 
 function handleQRDetected(id){
-  if(collected.has(id)){showScanResult('✓ '+PUPS.find(x=>x.id===id).name+' déjà capturé !','#ffaa44');return;}
+  if(collected.has(id)){showScanResult('âœ“ '+PUPS.find(x=>x.id===id).name+' dÃ©jÃ  capturÃ© !','#ffaa44');return;}
   if(activePupId===id)return;
   // --- NOUVEAU : Changement de musique ---
   playMusic('wildpokemon.json');
@@ -1999,9 +2046,9 @@ function handleQRDetected(id){
     svgInternal.style.display = 'block';
     svgInternal.style.margin = '0 auto';
   }
-  $('arTitle').textContent='🐾 '+p.name+' trouvé !';
+  $('arTitle').textContent='ðŸ¾ '+p.name+' trouvÃ© !';
   showARDog();flashGreen();vibrate([60,40,120]);
-  showScanResult('✓ Un '+p.name+' sauvage apparait !','#6ef');
+  showScanResult('âœ“ Un '+p.name+' sauvage apparait !','#6ef');
   $('catchBtn').classList.add('on');
 }
 
@@ -2021,19 +2068,20 @@ function hideARDog(){
   
 function flashGreen(){const f=$('scanFlash');f.classList.add('on');setTimeout(()=>f.classList.remove('on'),300);}
 function stopHuntClean() {
-  // 1. Arrêter la boucle de scan automatique (nouveau)
+  // 1. ArrÃªter la boucle de scan automatique (nouveau)
   if (scanLoop) {
     clearInterval(scanLoop);
     scanLoop = null;
   }
+  scanInFlight = false;
 
-  // 2. Arrêter la caméra
+  // 2. ArrÃªter la camÃ©ra
   if (camStream) {
     camStream.getTracks().forEach(t => t.stop());
     camStream = null;
   }
 
-  // 3. Masquer les éléments visuels
+  // 3. Masquer les Ã©lÃ©ments visuels
   hideARDog();
   
   try {
@@ -2046,27 +2094,27 @@ function stopHuntClean() {
 }
 function stopHunt(){stopHuntClean();goHome();}
 
-/* ══ CAPTURE ══ */
+/* â•â• CAPTURE â•â• */
 function openCapture() {
   if (!activePupId) return;
   const p = PUPS.find(x => x.id === activePupId);
   pendingPup = p;
 
-  // 1. Mise à jour du texte des boutons par défaut
+  // 1. Mise Ã  jour du texte des boutons par dÃ©faut
   document.getElementById('btnCancel').textContent = "Laisser filer l'animal";
   // On s'assure que le bouton "Capturer" est visible
   const captureBtn = document.querySelector('.btn-capture:not(#btnToDex)');
   if (captureBtn) captureBtn.style.display = 'block';
 
-  // 2. IMPORTANT : Réinitialisation de l'affichage des boutons
-  // On cache le bouton "Ajouter au UgoDex" au cas où il serait resté affiché
+  // 2. IMPORTANT : RÃ©initialisation de l'affichage des boutons
+  // On cache le bouton "Ajouter au UgoDex" au cas oÃ¹ il serait restÃ© affichÃ©
   const dexBtn = $('btnToDex');
   if (dexBtn) dexBtn.style.display = 'none';
 
   // 3. Injection de l'image du chiot
   $('catchPokeWrap').innerHTML = `<img src="pup${p.id}.webp" style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 15px white);">`;
 
-  // 4. Mise à jour des textes
+  // 4. Mise Ã  jour des textes
   // $('catchPupName').textContent = p.name; // Tu peux le remettre, c'est mieux pour l'UX !
   $('catchPupNum').textContent = '#' + String(p.id).padStart(2, '0');
   
@@ -2074,11 +2122,11 @@ function openCapture() {
 }
 
 function closeCatch() {
-  // 1. Masquer l'écran de capture
+  // 1. Masquer l'Ã©cran de capture
  // hide('sCatch');
   
-  // 2. Réinitialiser les boutons :
-  // On affiche à nouveau les boutons "Capturer" et "Laisser filer"
+  // 2. RÃ©initialiser les boutons :
+  // On affiche Ã  nouveau les boutons "Capturer" et "Laisser filer"
   const captureBtn = document.querySelector('.btn-capture:not(#btnToDex)');
   const cancelBtn = $('btnCancel');
   const dexBtn = $('btnToDex');
@@ -2089,11 +2137,11 @@ function closeCatch() {
   // On masque le bouton "Ajouter au UgoDex" pour la prochaine fois
   if (dexBtn) dexBtn.style.display = 'none';
 
-  // 3. Nettoyer le contenu de #catchPokeWrap pour éviter les résidus d'animation
+  // 3. Nettoyer le contenu de #catchPokeWrap pour Ã©viter les rÃ©sidus d'animation
   const container = $('catchPokeWrap');
   container.innerHTML = ''; 
 
-  // 4. Reset global si nécessaire
+  // 4. Reset global si nÃ©cessaire
   pendingPup = null;
   activePupId = null;
 }
@@ -2115,25 +2163,25 @@ function genQRDots(seed){
 async function playCaptureAnimation() {
   const container = $('catchPokeWrap');
   
-  // 1. Récupérer l'image du chiot existante (celle qui est affichée)
+  // 1. RÃ©cupÃ©rer l'image du chiot existante (celle qui est affichÃ©e)
   const pupImg = container.querySelector('img');
   
-  // 2. Injecter la Pokéball (elle part du coin via CSS)
+  // 2. Injecter la PokÃ©ball (elle part du coin via CSS)
   container.insertAdjacentHTML('beforeend', pokeballSVG(true, 150));
   const ball = container.querySelector('svg');
   
-  // 3. ÉTAPE 1 : Lancement de la Pokéball
+  // 3. Ã‰TAPE 1 : Lancement de la PokÃ©ball
   ball.classList.add('pokeball-flying');
   
-  // On attend la durée de l'animation de vol (1000ms)
+  // On attend la durÃ©e de l'animation de vol (1000ms)
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // 4. ÉTAPE 2 : IMPACT & ASPIRATION
-  // Déclenchement du Flash Blanc
+  // 4. Ã‰TAPE 2 : IMPACT & ASPIRATION
+  // DÃ©clenchement du Flash Blanc
   const flash = $('captureFlash');
   if (flash) {
     flash.classList.add('flash-on');
-    // On retire la classe après 400ms pour qu'elle puisse être réutilisée
+    // On retire la classe aprÃ¨s 400ms pour qu'elle puisse Ãªtre rÃ©utilisÃ©e
     setTimeout(() => flash.classList.remove('flash-on'), 400);
   }
 
@@ -2145,7 +2193,7 @@ async function playCaptureAnimation() {
   // On attend la fin de l'aspiration (800ms)
   await new Promise(resolve => setTimeout(resolve, 800));
   
-  // Optionnel : On peut supprimer l'image du chiot après l'aspiration
+  // Optionnel : On peut supprimer l'image du chiot aprÃ¨s l'aspiration
   if (pupImg) pupImg.style.display = 'none';
 }
   
@@ -2153,41 +2201,41 @@ async function doCapture() {
   // 1. Protection contre les lancements multiples
   if (!pendingPup) return;
 
-  // 2. Séquence audiovisuelle : animation de la Pokéball + aspiration du chiot
+  // 2. SÃ©quence audiovisuelle : animation de la PokÃ©ball + aspiration du chiot
   await playCaptureAnimation();
 
-  // 3. Traitement métier : ajout à la collection et sauvegarde
+  // 3. Traitement mÃ©tier : ajout Ã  la collection et sauvegarde
   const p = pendingPup;
   collected.add(p.id);
   save();
 
-  // Mise à jour du score PocketBase
+  // Mise Ã  jour du score PocketBase
 const pseudo = localStorage.getItem('ugo_pseudo');
 // dbg('Pseudo: ' + pseudo + ' | Score: ' + collected.size);
 if (pseudo) envoyerScore(pseudo, collected.size);
   
-  // 4. Effets visuels et sonores de succès
+  // 4. Effets visuels et sonores de succÃ¨s
   showBurst(p.id - 1);
   spawnPaws();
   playCaptureSfx();
   vibrate([60, 30, 60, 30, 120]);
-  // --- NOUVEAU : On repasse à la musique du menu ---
+  // --- NOUVEAU : On repasse Ã  la musique du menu ---
   playMusic('mainmusic.json');
   // --------------------------------------------------
 
-  // 5. Interface : Masquer les contrôles de capture originaux
+  // 5. Interface : Masquer les contrÃ´les de capture originaux
   const container = $('sCatch').querySelector('div[style*="background:#fff"]');
   container.querySelectorAll('button').forEach(b => b.style.display = 'none');
   
   // 6. Gestion du bouton "Ajouter au UgoDex"
   let dexBtn = document.getElementById('btnToDex');
   if (!dexBtn) {
-    // Si le bouton n'existe pas dans le DOM, on le crée (au cas où)
+    // Si le bouton n'existe pas dans le DOM, on le crÃ©e (au cas oÃ¹)
     dexBtn = document.createElement('button');
     dexBtn.id = 'btnToDex';
     dexBtn.className = 'btn-capture';
     dexBtn.style.cssText = "width:100%; max-width:310px; background:#4CAF50; display:block;";
-    dexBtn.textContent = '📖 Ajouter au UgoDex';
+    dexBtn.textContent = 'ðŸ“– Ajouter au UgoDex';
     container.appendChild(dexBtn);
   } else {
     dexBtn.style.display = 'block';
@@ -2196,12 +2244,12 @@ if (pseudo) envoyerScore(pseudo, collected.size);
 // Action : Renvoie vers la vue d'ensemble du Dex
 dexBtn.onclick = () => { closeCatch(); afterAddToDex(); };
 
-  // 7. Nettoyage et mise à jour des scores
+  // 7. Nettoyage et mise Ã  jour des scores
   hideARDog();
   activePupId = null;
   $('arScore').textContent = collected.size + '/' + TOTAL;
 
-  // 8. Vérification des conditions de victoire ou récompenses spéciales
+  // 8. VÃ©rification des conditions de victoire ou rÃ©compenses spÃ©ciales
   const nonSecret = PUPS.filter(x => !x.secret);
   const allNonSecret = nonSecret.every(x => collected.has(x.id));
   
@@ -2213,7 +2261,7 @@ dexBtn.onclick = () => { closeCatch(); afterAddToDex(); };
   }
 }
 
-/* ══ SFX CAPTURE ══ */
+/* â•â• SFX CAPTURE â•â• */
 function playCaptureSfx(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
@@ -2229,7 +2277,7 @@ function playCaptureSfx(){
   }catch(e){}
 }
 
-/* ══ UI ══ */
+/* â•â• UI â•â• */
 function showSysMsg(txt){
   let el=$('sysMsg');
   if(!el){el=document.createElement('div');el.id='sysMsg';el.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:30;background:rgba(30,61,10,.9);backdrop-filter:blur(10px);border:2px solid var(--golddk);border-radius:18px;padding:20px 24px;font-size:14px;color:#fff;text-align:center;line-height:1.6;max-width:280px;white-space:pre-line;';$('sAR').appendChild(el);}
@@ -2245,11 +2293,11 @@ function flashMsg(txt,ms=2000){
 function showBurst(idx) {
   const b = $('burst');
   
-  // 1. On vide le burst de toute Pokéball (on garde seulement les confettis)
+  // 1. On vide le burst de toute PokÃ©ball (on garde seulement les confettis)
   b.innerHTML = ''; 
 
-  // 2. Création des confettis (tes pièces)
-  const pieces = ['⭐', '✨', '💫', '🌟', '🐾', '❤️', '🍀'];
+  // 2. CrÃ©ation des confettis (tes piÃ¨ces)
+  const pieces = ['â­', 'âœ¨', 'ðŸ’«', 'ðŸŒŸ', 'ðŸ¾', 'â¤ï¸', 'ðŸ€'];
   for (let i = 0; i < 14; i++) {
     const angle = (i / 14) * 360, r = 70 + Math.random() * 70;
     const tx = Math.cos(angle * Math.PI / 180) * r, ty = Math.sin(angle * Math.PI / 180) * r;
@@ -2260,33 +2308,33 @@ function showBurst(idx) {
     b.appendChild(el);
   }
   
-  // 3. Déclenchement de l'animation
+  // 3. DÃ©clenchement de l'animation
   b.classList.add('on');
   setTimeout(() => {
     b.classList.remove('on');
     b.innerHTML = '';
   }, 900);
 }
-function spawnPaws(){for(let i=0;i<6;i++)setTimeout(()=>{const p=document.createElement('div');p.className='paw-fx';p.textContent='🐾';p.style.cssText=`left:${15+Math.random()*70}%;top:${25+Math.random()*50}%;transform:rotate(${Math.random()*60-30}deg)`;document.body.appendChild(p);setTimeout(()=>p.remove(),1000);},i*140);}
+function spawnPaws(){for(let i=0;i<6;i++)setTimeout(()=>{const p=document.createElement('div');p.className='paw-fx';p.textContent='ðŸ¾';p.style.cssText=`left:${15+Math.random()*70}%;top:${25+Math.random()*50}%;transform:rotate(${Math.random()*60-30}deg)`;document.body.appendChild(p);setTimeout(()=>p.remove(),1000);},i*140);}
 function vibrate(pat){try{if(navigator.vibrate)navigator.vibrate(pat);}catch(e){}}
 
-/* ══ ALERTE ══ */
+/* â•â• ALERTE â•â• */
 function triggerAlert(){
   return; // <--- ASUPPRESSION DE LA FONCTION
   const unc=PUPS.filter(p=>!collected.has(p.id));if(!unc.length)return;
   const p=unc[0];
   $('alertDogWrap').innerHTML=pokeballSVG(false);
-  $('alertH').textContent=p.name+' attend d\'être trouvé !';
-  $('alertS').textContent='Cherche le QR code dans la pièce →';
+  $('alertH').textContent=p.name+' attend d\'Ãªtre trouvÃ© !';
+  $('alertS').textContent='Cherche le QR code dans la piÃ¨ce â†’';
   $('alertBanner').classList.add('show');vibrate([100,50,100]);
   setTimeout(()=>$('alertBanner').classList.remove('show'),6000);
 }
 function onAlert(){$('alertBanner').classList.remove('show');if(!$('sAR').classList.contains('on'))goHunt();}
 function scheduleAlert(){clearTimeout(alertTimer);alertTimer=setTimeout(triggerAlert,4000);}
 
-/* ══ WIN ══ */
+/* â•â• WIN â•â• */
 
-/* ══ VIEWER UGODEX ══ */
+/* â•â• VIEWER UGODEX â•â• */
 let viewerPupId=null, viewerSlide=0;
 
 function openViewer(id){
@@ -2302,7 +2350,7 @@ function openViewer(id){
   s0.className='viewer-slide';
   s0.innerHTML=`
     <img class="viewer-img" src="pup${id}.webp" alt="">
-    <div class="viewer-hint">← Glisse →</div>
+    <div class="viewer-hint">â† Glisse â†’</div>
   `;
   body.appendChild(s0);
 
@@ -2310,16 +2358,13 @@ function openViewer(id){
   const s1=document.createElement('div');
   s1.className='viewer-slide';
 
-  const qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='
-    + encodeURIComponent('DAL_'+id)
-    + '&bgcolor=ffffff&color=000000&qzone=2';
-
   s1.innerHTML=`
     <div class="viewer-qr-box">
-      <img src="${qrUrl}" alt="QR">
+      <img alt="QR">
     </div>
   `;
   body.appendChild(s1);
+  setQrImageSource(s1.querySelector('img'), 'DAL_'+id, 200);
 
   /* DOTS */
   const dots=$('viewerDots');
@@ -2344,7 +2389,7 @@ function setViewerSlide(n){
   viewerSlide=n;
   const slides=$('viewerBody').children;
   Array.from(slides).forEach((s,i)=>s.style.transform=`translateX(${(i-n)*100}%)`);
-  // Rétrocompatibilité : positionnement flex
+  // RÃ©trocompatibilitÃ© : positionnement flex
   $('viewerBody').style.transform=`translateX(-${n*100}%)`;
   const dots=$('viewerDots').children;
   Array.from(dots).forEach((d,i)=>d.classList.toggle('active',i===n));
@@ -2353,7 +2398,7 @@ function setViewerSlide(n){
 function closeViewer(){afterAddToDex();}
 
 
-/* ══ BONUS (Version Finale & Unique) ══ */
+/* â•â• BONUS (Version Finale & Unique) â•â• */
 async function unlockBonus() {
   const p = PUPS.find(x => x.id === BONUS_ID);
   collected.add(BONUS_ID);
@@ -2361,18 +2406,24 @@ async function unlockBonus() {
   pendingTimeBonus = 0;
   pendingTimeLabel = "1h";
 
-  flashMsg('🏆 ' + p.name + ' débloqué ! Félicitations GG !', 5000);
+  flashMsg('ðŸ† ' + p.name + ' dÃ©bloquÃ© ! FÃ©licitations GG !', 5000);
   vibrate([100, 50, 100, 50, 300]);
 
   try {
     const pseudo = localStorage.getItem('ugo_pseudo');
-    const result = await pb.collection('Classement').getList(1, 1, {
-      filter: `Pseudo = "${pseudo}"`
-    });
+    if (pb && pseudo) {
+      const result = await getPocketBaseCollection().getList(1, 1, {
+        filter: `Pseudo = "${escapePBString(pseudo)}"`
+      });
 
-    if (result.items.length > 0) {
-      const userRecord = result.items[0];
-      afficherRecompense(userRecord);
+      if (result.items.length > 0) {
+        const userRecord = result.items[0];
+        afficherRecompense(userRecord);
+      } else {
+        pendingTimeBonus = 0;
+        pendingTimeLabel = "1h";
+        lancerSequenceReward();
+      }
     } else {
       pendingTimeBonus = 0;
       pendingTimeLabel = "1h";
@@ -2456,11 +2507,11 @@ async function lancerSequenceReward(){
   }
   if (b1) {
     b1.classList.remove('show', 'pulse');
-    b1.textContent = '🏅 Bonus Finisher : +15 pts';
+    b1.textContent = 'ðŸ… Bonus Finisher : +15 pts';
   }
   if (b2) {
     b2.classList.remove('show', 'pulse');
-    b2.textContent = `⏱️ Bonus Timer (${timerLabel}) : +${timerBonus} pts`;
+    b2.textContent = `â±ï¸ Bonus Timer (${timerLabel}) : +${timerBonus} pts`;
   }
 
   show('sReward');
@@ -2478,7 +2529,7 @@ async function lancerSequenceReward(){
   await rewardWait(500);
 
   if (b2) {
-    b2.textContent = `⏱️ Bonus Timer (${timerLabel}) : +${timerBonus} pts`;
+    b2.textContent = `â±ï¸ Bonus Timer (${timerLabel}) : +${timerBonus} pts`;
     b2.classList.add('show');
     b2.classList.add('pulse');
   }
@@ -2495,7 +2546,7 @@ function showWin(){
   for(let i=0;i<TOTAL;i++){const d=document.createElement('div');d.className='parade-dog';d.innerHTML=pokeballSVG(true);par.appendChild(d);}
   const s=Math.floor((Date.now()-startTime)/1000);
   $('winTime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
-  $('winTotal').textContent=TOTAL+' 🐾';
+  $('winTotal').textContent=TOTAL+' ðŸ¾';
   vibrate([100,50,100,50,100,50,500]);
   show('sWin');
 }
@@ -2511,18 +2562,18 @@ function activateTestEndgame(){
   save();
   buildGrid();
   goHome();
-  flashMsg('🧪 Mode test activé : 20 Ugos déjà collectés', 2500);
+  flashMsg('ðŸ§ª Mode test activÃ© : 20 Ugos dÃ©jÃ  collectÃ©s', 2500);
 }
 
-// PSEUDO A ENREGISTRER (Décide où aller après le Splash)
+// PSEUDO A ENREGISTRER (DÃ©cide oÃ¹ aller aprÃ¨s le Splash)
 function initialiserApplication() {
     const pseudo = localStorage.getItem('ugo_pseudo');
     
     if (pseudo) {
         show('sHome');
-        $('homeScore').textContent = collected.size + ' / ' + TOTAL; // Le joueur a déjà un nom -> Menu principal
+        $('homeScore').textContent = collected.size + ' / ' + TOTAL; // Le joueur a dÃ©jÃ  un nom -> Menu principal
         if(collected.size >= TOTAL){
-        document.querySelector('.home-mascot').innerHTML = '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;">🏆</div>';
+        document.querySelector('.home-mascot').innerHTML = '<div style="font-size:100px;animation:mascotFloat 3s ease-in-out infinite;">ðŸ†</div>';
         }
      } else {
         show('sLogin'); // Nouveau joueur -> On demande le nom
@@ -2555,12 +2606,12 @@ async function savePseudo() {
 
     try {
         const data = { Pseudo: pseudo, Score: 0 };
-        await pb.collection('Classement').create(data);
+        if (pb) await getPocketBaseCollection().create(data);
 
         localStorage.setItem('ugo_pseudo', pseudo);
         show('sHome');
     } catch (error) {
-        console.error("Erreur PocketBase complète :", error);
+        console.error("Erreur PocketBase complÃ¨te :", error);
 
         const msg =
             error?.response?.message ||
@@ -2581,15 +2632,15 @@ async function savePseudo() {
         const looksLikeDuplicate =
             normalizedPseudoError.includes("unique") ||
             normalizedPseudoError.includes("already") ||
-            normalizedPseudoError.includes("déjà") ||
+            normalizedPseudoError.includes("dÃ©jÃ ") ||
             normalizedMsg.includes("unique") ||
             normalizedMsg.includes("already") ||
-            normalizedMsg.includes("déjà");
+            normalizedMsg.includes("dÃ©jÃ ");
 
         if (looksLikeAutoCancelled) {
-            alert("La requête a été annulée automatiquement. Réessaie une seule fois.");
+            alert("La requÃªte a Ã©tÃ© annulÃ©e automatiquement. RÃ©essaie une seule fois.");
         } else if (looksLikeDuplicate) {
-            alert("Ce pseudo est déjà utilisé (même avec des majuscules différentes). Choisis-en un autre !");
+            alert("Ce pseudo est dÃ©jÃ  utilisÃ© (mÃªme avec des majuscules diffÃ©rentes). Choisis-en un autre !");
         } else {
             alert("Erreur d'enregistrement : " + (pseudoError || msg || "cause inconnue"));
         }
@@ -2607,7 +2658,7 @@ async function savePseudo() {
 // Fonction debug
 function dbg(msg){ const d=$('debugLog'); if(d) d.innerHTML += msg + '<br>'; } 
 
-// On attend que la page soit entièrement chargée avant d'attacher les événements
+// On attend que la page soit entiÃ¨rement chargÃ©e avant d'attacher les Ã©vÃ©nements
 window.addEventListener('load', () => {
     if (typeof load === "function") {
         load();
@@ -2618,18 +2669,15 @@ window.addEventListener('load', () => {
         // 1. Nettoyage du HTML
         splashEl.removeAttribute('onclick');
         
-        // 2. Écouteur unique
+        // 2. Ã‰couteur unique
         ['click', 'touchstart'].forEach(evt => {
             splashEl.addEventListener(evt, async function(e) {
                 e.preventDefault();
                 
-                // Reprise du contexte audio si nécessaire
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                // Reprise du contexte audio si nÃ©cessaire
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 await audioCtx.resume();
-                playMusic('mainmusic.json');
-                
-                // Lancement de la musique et du jeu
-                playMusic('mainmusic.json');
+                await playMusic('mainmusic.json');
                 initialiserApplication();
                 
                 // Masquage
@@ -2649,7 +2697,7 @@ function activateTestMode(){
   ));
   localStorage.setItem('dal7_t', String(Date.now() - 20 * 60 * 1000));
   localStorage.setItem('ugo_pseudo', 'testeur');
-  alert("Mode test activé 🚀");
+  alert("Mode test activÃ© ðŸš€");
   location.reload();
 }
 
