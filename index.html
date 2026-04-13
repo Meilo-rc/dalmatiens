@@ -1017,12 +1017,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <div style="height:16px"></div>
   <div class="score-box">
     <big id="homeScore">0 / 22</big>
-    <span>chiots capturs</span>
+    <span>chiots captur&eacute;s</span>
   </div>
-  <button class="btn btn-primary" onclick="goHunt()"> Partir  la chasse !</button>
+  <button class="btn btn-primary" onclick="goHunt()"> Partir &agrave; la chasse !</button>
   <button class="btn btn-secondary" onclick="goColl()"> Ugodex</button>
   <button class="btn btn-primary" onclick="show('#sRanking'); rafraichirClassement();">  Voir le Classement</button>
-  <button class="btn ranking" onclick="goPrint()"> QR codes  imprimer</button>
+  <button class="btn ranking" onclick="goPrint()"> QR codes &agrave; imprimer</button>
   <button id="testEndgameBtn" onclick="activateTestEndgame()" aria-label="Mode test fin de jeu" title="Mode test fin de jeu" style="position:absolute;right:6px;bottom:6px;width:34px;height:34px;border:none;border-radius:50%;background:rgba(0,0,0,0.03);color:transparent;box-shadow:none;z-index:30;cursor:pointer;"></button>
 </div>
 
@@ -1036,7 +1036,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <div class="coll-body">
     <div class="prog-wrap">
       <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-      <div class="prog-lbl" id="progLbl">0 captur(s) sur 12</div>
+      <div class="prog-lbl" id="progLbl">0 captur&eacute;(s) sur 12</div>
     </div>
     <div class="grid" id="collGrid"></div>
   </div>
@@ -1215,9 +1215,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   <div class="print-body">
     <div class="print-intro">
       <strong>Comment jouer :</strong><br>
-      1. Imprime ou capture d'cran ces QR codes<br>
-      2. Dcoupe et cache chacun dans la pice<br>
-      3. Les joueurs cherchent avec leur camra !
+      1. Imprime ou capture d'&eacute;cran ces QR codes<br>
+      2. D&eacute;coupe et cache chacun dans la pi&egrave;ce<br>
+      3. Les joueurs cherchent avec leur cam&eacute;ra !
     </div>
     <div class="qr-print-grid" id="printGrid"></div>
     <button class="btn-print" onclick="window.print()"> Imprimer</button>
@@ -1237,10 +1237,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <!--  WIN  -->
 <div class="screen" id="sWin">
   <div class="win-dogs-row" id="winDogsRow"></div>
-  <h2 class="win-h">Tous les<br><em>Dalmatiens</em><br>capturs !</h2>
+  <h2 class="win-h">Tous les<br><em>Dalmatiens</em><br>captur&eacute;s !</h2>
   <div class="parade-wrap"><div class="parade" id="winParade"></div></div>
   <div class="win-stat"><strong id="winTime">--:--</strong><small>temps de chasse</small></div>
-  <div class="win-stat" style="margin-top:-6px"><strong id="winTotal">17 </strong><small>chiots sauvs !</small></div>
+  <div class="win-stat" style="margin-top:-6px"><strong id="winTotal">17</strong><small>chiots sauv&eacute;s !</small></div>
   <button class="btn-replay" onclick="reset()"> Nouvelle Chasse</button>
 </div>
 
@@ -1532,7 +1532,7 @@ function openDetail(id, fromCapture=false){
   show('sDetail');
 
   if(fromCapture) {
-    flashMsg(' Captur ! Cherche le suivant !', 2500);
+    flashMsg('Capturé ! Cherche le suivant !', 2500);
   }
 }
 
@@ -1695,6 +1695,7 @@ let audioCtx = null;
 let currentMusicLoop = null;
 let currentMusicTrack = '';
 let currentMusicToken = 0;
+let activeMusicOscillators = new Set();
 
 // Convertit note MIDI -> Frquence (Hz)
 function midiToFreq(midi) {
@@ -1716,9 +1717,30 @@ function playNote(midi, time, duration, vol, now) {
     
     osc.connect(gain);
     gain.connect(audioCtx.destination);
+
+    activeMusicOscillators.add(osc);
+    osc.onended = () => {
+        activeMusicOscillators.delete(osc);
+        try { osc.disconnect(); } catch (e) {}
+        try { gain.disconnect(); } catch (e) {}
+    };
     
     osc.start(now + time);
     osc.stop(now + time + duration);
+}
+
+function stopCurrentMusicPlayback() {
+    if (currentMusicLoop) {
+        clearTimeout(currentMusicLoop);
+        currentMusicLoop = null;
+    }
+
+    for (const osc of activeMusicOscillators) {
+        try { osc.onended = null; } catch (e) {}
+        try { osc.stop(); } catch (e) {}
+        try { osc.disconnect(); } catch (e) {}
+    }
+    activeMusicOscillators.clear();
 }
 
 // Fonction pour jouer tout le JSON
@@ -1738,11 +1760,7 @@ function playNotesFromData(musicData) {
 async function playMusic(jsonUrl) {
     const token = ++currentMusicToken;
     currentMusicTrack = jsonUrl;
-
-    if (currentMusicLoop) {
-        clearTimeout(currentMusicLoop);
-        currentMusicLoop = null;
-    }
+    stopCurrentMusicPlayback();
 
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
@@ -1816,7 +1834,7 @@ function buildGrid(){
   
   if($('collPill')) $('collPill').textContent = collected.size + '/' + TOTAL;
   if($('progFill')) $('progFill').style.width = (nCaught / nonSecret.length * 100) + '%';
-  if($('progLbl')) $('progLbl').textContent = nCaught + ' captur(s) sur ' + nonSecret.length;
+  if($('progLbl')) $('progLbl').textContent = nCaught + ' capturé(s) sur ' + nonSecret.length;
   
   const grid = $('collGrid');
   grid.innerHTML = '';
@@ -2031,7 +2049,7 @@ function showScanResult(msg,color='#fff'){
 }
 
 function handleQRDetected(id){
-  if(collected.has(id)){showScanResult(' '+PUPS.find(x=>x.id===id).name+' dj captur !','#ffaa44');return;}
+  if(collected.has(id)){showScanResult('✓ ' + PUPS.find(x=>x.id===id).name + ' déjà capturé !','#ffaa44');return;}
   if(activePupId===id)return;
   // --- NOUVEAU : Changement de musique ---
   playMusic('wildpokemon.json');
@@ -2406,7 +2424,7 @@ async function unlockBonus() {
   pendingTimeBonus = 0;
   pendingTimeLabel = "1h";
 
-  flashMsg(' ' + p.name + ' dbloqu ! Flicitations GG !', 5000);
+  flashMsg('🏆 ' + p.name + ' débloqué ! Félicitations GG !', 5000);
   vibrate([100, 50, 100, 50, 300]);
 
   try {
