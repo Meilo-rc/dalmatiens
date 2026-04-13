@@ -1342,23 +1342,34 @@ async function rafraichirClassement() {
 
 /* ══ CALCUL BONUS HORAIRE ══ */
 function calculerBonus(created, updated) {
+    // Version parfaite : priorité au temps de jeu local réel
+    const localStart = Number(startTime);
+    const now = Date.now();
+
+    if (Number.isFinite(localStart) && localStart > 0 && now > localStart) {
+        const dureeMinutes = Math.max(0, (now - localStart) / (1000 * 60));
+        const heureRonde = Math.max(1, Math.ceil(dureeMinutes / 60));
+        const surplusMinutes = Math.max(0, dureeMinutes - 60);
+        const tranches30min = Math.floor(surplusMinutes / 30);
+        const points = Math.max(0, 100 - (tranches30min * 10));
+        return { points, label: `${heureRonde}h` };
+    }
+
+    // Fallback PocketBase si jamais startTime n'est pas disponible
     const start = new Date(created).getTime();
     const end = new Date(updated).getTime();
 
-    // Valeur par défaut safe pour éviter 0h / 0 pts si les dates sont absentes
-    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
-        return { points: 100, label: '1h' };
+    if (Number.isFinite(start) && Number.isFinite(end) && end > start) {
+        const dureeMinutes = Math.max(0, (end - start) / (1000 * 60));
+        const heureRonde = Math.max(1, Math.ceil(dureeMinutes / 60));
+        const surplusMinutes = Math.max(0, dureeMinutes - 60);
+        const tranches30min = Math.floor(surplusMinutes / 30);
+        const points = Math.max(0, 100 - (tranches30min * 10));
+        return { points, label: `${heureRonde}h` };
     }
 
-    const dureeMinutes = Math.max(0, (end - start) / (1000 * 60));
-    const heureRonde = Math.max(1, Math.ceil(dureeMinutes / 60));
-
-    // 1h = 100 pts, puis -10 pts par tranche complète de 30 min au-delà de 60 min
-    const surplusMinutes = Math.max(0, dureeMinutes - 60);
-    const tranches30min = Math.floor(surplusMinutes / 30);
-    const points = Math.max(0, 100 - (tranches30min * 10));
-
-    return { points, label: `${heureRonde}h` };
+    // Sécurité ultime
+    return { points: 100, label: '1h' };
 }
   
 
