@@ -1344,25 +1344,21 @@ async function rafraichirClassement() {
 function calculerBonus(created, updated) {
     const start = new Date(created).getTime();
     const end = new Date(updated).getTime();
-    const dureeMinutes = (end - start) / (1000 * 60); // Durée en minutes
 
-    // Moins d'une heure (60 min) = 100 points
-    if (dureeMinutes < 60) {
-        return { points: 100, label: "moins d'1h" };
+    // Valeur par défaut safe pour éviter 0h / 0 pts si les dates sont absentes
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
+        return { points: 100, label: '1h' };
     }
-    
-    // On retire 10 points par tranche de 30 min supplémentaire
-    // Calcul : 1h = 100, 1h30 = 90, 2h = 80, etc.
-    const tranches30min = Math.floor((dureeMinutes - 60) / 30);
-    let points = 100 - (tranches30min * 10);
-    
-    // On bloque à 0 au minimum
-    points = Math.max(0, points);
-    
-    // Calcul de l'heure ronde supérieure pour l'affichage
-    const heureRonde = Math.ceil(dureeMinutes / 60);
-    
-    return { points: points, label: `${heureRonde}h` };
+
+    const dureeMinutes = Math.max(0, (end - start) / (1000 * 60));
+    const heureRonde = Math.max(1, Math.ceil(dureeMinutes / 60));
+
+    // 1h = 100 pts, puis -10 pts par tranche complète de 30 min au-delà de 60 min
+    const surplusMinutes = Math.max(0, dureeMinutes - 60);
+    const tranches30min = Math.floor(surplusMinutes / 30);
+    const points = Math.max(0, 100 - (tranches30min * 10));
+
+    return { points, label: `${heureRonde}h` };
 }
   
 
@@ -1577,7 +1573,7 @@ let collected=new Set(),startTime=Date.now(),pendingPup=null,alertTimer=null;
 let camStream=null,scanLoop=null,scanPaused=false,activePupId=null;
 let bgMusic=null;
 let pendingTimeBonus = 0;
-let pendingTimeLabel = "0h";
+let pendingTimeLabel = "1h";
 let rewardSequenceRunning = false;
 
 /* ══ PERSIST ══ */
@@ -2298,7 +2294,7 @@ async function unlockBonus() {
   collected.add(BONUS_ID);
   save();
   pendingTimeBonus = 0;
-  pendingTimeLabel = "0h";
+  pendingTimeLabel = "1h";
 
   flashMsg('🏆 ' + p.name + ' débloqué ! Félicitations GG !', 5000);
   vibrate([100, 50, 100, 50, 300]);
@@ -2314,13 +2310,13 @@ async function unlockBonus() {
       afficherRecompense(userRecord);
     } else {
       pendingTimeBonus = 0;
-      pendingTimeLabel = "0h";
+      pendingTimeLabel = "1h";
       lancerSequenceReward();
     }
   } catch (err) {
     console.error("Erreur calcul bonus:", err);
     pendingTimeBonus = 0;
-    pendingTimeLabel = "0h";
+    pendingTimeLabel = "1h";
     lancerSequenceReward();
   }
 }
@@ -2383,7 +2379,7 @@ async function lancerSequenceReward(){
   const baseScore = collected.size;
   const finisherBonus = 15;
   const timerBonus = pendingTimeBonus || 0;
-  const timerLabel = pendingTimeLabel || '0h';
+  const timerLabel = pendingTimeLabel || '1h';
 
   const big = $('rewardBigScore');
   const b1 = $('rewardBonus1');
