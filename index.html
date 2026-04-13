@@ -1378,18 +1378,55 @@ function openDetail(id, fromCapture=false){
 
   $('detailImg').src = 'pup' + id + '.webp';
 
-  const qrUrl =
-    'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' +
-    encodeURIComponent(QR_PREFIX + id) +
-    '&bgcolor=ffffff&color=000000&qzone=2';
+  const qrImg = $('detailQRImg');
+  const qrNote = $('detailQRNote');
 
-  $('detailQRImg').src = qrUrl;
+  if (id === 22) {
+    if (qrImg) {
+      qrImg.style.display = 'none';
+      qrImg.classList.remove('qr-pulse');
+      qrImg.src = '';
+    }
+    if (qrNote) {
+      qrNote.textContent = "Un UGOAT ça ne s'échange pas !";
+      qrNote.style.fontFamily = "'Fredoka One', cursive";
+      qrNote.style.fontSize = '28px';
+      qrNote.style.lineHeight = '1.2';
+      qrNote.style.maxWidth = '280px';
+      qrNote.style.color = '#111';
+      qrNote.style.opacity = '1';
+      qrNote.style.animation = 'none';
+      qrNote.style.textAlign = 'center';
+    }
+  } else {
+    const qrUrl =
+      'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' +
+      encodeURIComponent(QR_PREFIX + id) +
+      '&bgcolor=ffffff&color=000000&qzone=2';
+
+    if (qrImg) {
+      qrImg.style.display = 'block';
+      qrImg.classList.add('qr-pulse');
+      qrImg.src = qrUrl;
+    }
+    if (qrNote) {
+      qrNote.textContent = 'A utiliser pour échanger vos Ugos entre dresseurs !';
+      qrNote.style.fontFamily = '';
+      qrNote.style.fontSize = '';
+      qrNote.style.lineHeight = '';
+      qrNote.style.maxWidth = '';
+      qrNote.style.color = '';
+      qrNote.style.opacity = '';
+      qrNote.style.animation = '';
+      qrNote.style.textAlign = '';
+    }
+  }
 
   const body = $('detailBody');
   if(body) body.style.transform = 'translateX(0%)';
 
   const hint = $('detailSwipeHint');
-  if(hint) hint.textContent = 'Swipe → QR code';
+  if(hint) hint.textContent = id === 22 ? 'Swipe → message spécial' : 'Swipe → QR code';
 
   show('sDetail');
 
@@ -2074,7 +2111,7 @@ dexBtn.onclick = () => { closeCatch(); goColl(p.id); };
   const allNonSecret = nonSecret.every(x => collected.has(x.id));
   
   if (allNonSecret && !collected.has(22)) {
-    setTimeout(() => show('sReward'), 600);
+    setTimeout(() => lancerSequenceReward(), 600);
   } else if (collected.size >= TOTAL) {
     stopHuntClean();
     showWin();
