@@ -458,13 +458,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   text-shadow:0 3px 0 #000,0 10px 20px rgba(0,0,0,.4);
 }
 .scan-blackout{
-  animation:scanBlackout .55s steps(1,end) 1;
+  animation:scanBlackout 1.65s steps(1,end) 1;
 }
 @keyframes scanBlackout{
   0%{background:rgba(0,0,0,0);opacity:0;}
   18%{background:rgba(0,0,0,.95);opacity:1;}
   36%{background:rgba(0,0,0,0);opacity:0;}
   54%{background:rgba(0,0,0,.95);opacity:1;}
+  72%{background:rgba(0,0,0,0);opacity:0;}
+  88%{background:rgba(0,0,0,.95);opacity:1;}
   100%{background:rgba(0,0,0,0);opacity:0;}
 }
 
@@ -539,6 +541,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   top:14px;
   left:14px;
   z-index:5;
+}
+.catch-slide-in{
+  animation:catchSlideIn 1.1s cubic-bezier(.22,.9,.25,1) forwards;
+}
+@keyframes catchSlideIn{
+  0%{transform:translate(-115vw,-50%);}
+  100%{transform:translateY(-50%);}
+}
+.btn-dex-add{
+  background:linear-gradient(180deg,#d4e58d,#adc26a);
+  border-color:#55662a;
+  box-shadow:0 6px 0 #55662a;
+  color:#243018;
+}
+.btn-dex-add:active{
+  transform:scale(.96) translateY(4px);
+  box-shadow:0 1px 0 #55662a;
 }
 
 /*  BURST  */
@@ -829,7 +848,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 .reward-img{width:80%;max-width:300px;border-radius:16px;box-shadow:0 0 40px rgba(255,220,68,.3);}
 .reward-sub{font-family:'VT323',monospace;font-size:24px;color:rgba(255,255,255,.75);text-align:center;}
 
-#catchPokeWrap img {position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%); /* Centre parfaitement */max-width: 80%;}
+#catchPokeWrap img{
+  position:absolute;
+  top:50%;
+  right:4%;
+  left:auto;
+  transform:translateY(-50%);
+  max-width:74%;
+  max-height:82%;
+}
   
 @keyframes mascotFloat {0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
 
@@ -949,22 +976,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 /* --- TAPE 2 : L'Aspiration Tourbillonnante du Chiot --- */
 @keyframes puppyAspiration {
   0% {
-    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    transform: translateY(-50%) scale(1) rotate(0deg);
     opacity: 1;
   }
   100% {
-    /* Reste au centre, rtrcit et tourne jusqu' 0 */
-    transform: translate(-50%, -50%) scale(0) rotate(1080deg);
+    transform: translate(-80%,-50%) scale(0) rotate(1080deg);
     opacity: 0;
   }
 }
 
 .puppy-aspiring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 5;
-  animation: puppyAspiration 0.8s ease-in forwards;
+  position:absolute;
+  top:50%;
+  right:4%;
+  left:auto;
+  z-index:5;
+  animation:puppyAspiration .8s ease-in forwards;
 }
 
 @media print {
@@ -1310,12 +1337,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
    Scanner le QR code
 </button>
 
-  <button id="catchBtn" onclick="openCapture()"> Attraper !</button>
 </div>
 
 <!--  CRAN CAPTURE  -->
 <div class="screen" id="sCatch">
-  <div style="position:relative;width:100%;flex:1;overflow:hidden;background:#111;">
+  <div style="position:relative;width:100%;flex:1;overflow:hidden;background:#fff;">
     <button class="icon-btn catch-back-btn" onclick="closeCatch()">&larr;</button>
     <!-- Pokball anime pendant la capture -->
     <div id="catchPokeWrap" style="width:100%; height:100%; position:relative; overflow:hidden;"></div>
@@ -1324,12 +1350,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   <div class="catch-action-panel">
     <div id="catchPupNum" class="catch-num"></div>
     <div class="catch-battle-box">
-      <div id="catchBattleText" class="catch-battle-text">Le joueur utilise une Pok&eacute;ball.</div>
+      <div id="catchBattleText" class="catch-battle-text">Le joueur utilise une Pokeball.</div>
     </div>
     
     <button class="btn-capture" onclick="doCapture()" style="width:100%;max-width:310px;">Lancer</button>
-    <button id="btnToDex" class="btn-capture" 
-            style="width:100%; background:#4CAF50; display:none;">
+    <button id="btnToDex" class="btn-capture btn-dex-add" 
+            style="width:100%;max-width:310px;display:none;">
        Ajouter au UgoDex
     </button>
 </div>
@@ -1344,7 +1370,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
     <div style="min-width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:linear-gradient(180deg,#d7e893,#a8bc69);padding:24px 24px 96px;">
       <img id="detailImg"
            src=""
-           style="max-width:100%;max-height:72vh;object-fit:contain;transition:transform .2s ease;background:#d7e893;padding:12px;border:4px solid #55662a;border-radius:14px;box-shadow:0 0 0 4px rgba(255,255,255,.16),6px 6px 0 rgba(52,63,22,.22);">
+           style="max-width:100%;max-height:72vh;object-fit:contain;transition:transform .2s ease;background:#fff;padding:3px;border:4px solid #55662a;border-radius:12px;box-shadow:0 0 0 2px rgba(255,255,255,.16),4px 4px 0 rgba(52,63,22,.22);">
     </div>
 
     <!-- SLIDE 2 : QR -->
@@ -1352,7 +1378,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
       <img id="detailQRImg"
            class="qr-pulse"
            src=""
-           style="width:220px;height:220px;background:#d7e893;padding:10px;border:4px solid #55662a;border-radius:14px;box-shadow:0 0 0 4px rgba(255,255,255,.16),6px 6px 0 rgba(52,63,22,.22);">
+           style="width:220px;height:220px;background:#fff;padding:4px;border:4px solid #55662a;border-radius:12px;box-shadow:0 0 0 2px rgba(255,255,255,.16),4px 4px 0 rgba(52,63,22,.22);">
       <div id="detailQRNote" class="detail-qr-note">
         A utiliser pour changer vos Ugos entre dresseurs !
       </div>
@@ -2154,7 +2180,6 @@ async function goHunt(){
   updateHint();hideARDog();
   activePupId=null;scanPaused=false;
   scanInFlight = false;
-  $('catchBtn').classList.remove('on');
   $('scanResult').style.display='none';
 
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -2302,14 +2327,16 @@ function handleQRDetected(id){
     svgInternal.style.display = 'block';
     svgInternal.style.margin = '0 auto';
   }
-  $('arTitle').textContent='\ud83d\udc3e ' + p.name + ' trouv\u00e9 !';
-  $('arTitle').classList.add('ar-found-title');
+  $('arTitle').textContent='';
+  $('arTitle').classList.remove('ar-found-title');
   const blackout = $('scanFlash');
   blackout.classList.add('scan-blackout');
-  setTimeout(() => blackout.classList.remove('scan-blackout'), 560);
+  setTimeout(() => blackout.classList.remove('scan-blackout'), 1660);
   showARDog();flashGreen();vibrate([60,40,120]);
   showScanResult('\u2713 Un ' + p.name + ' sauvage appara\u00eet !','#6ef');
-  $('catchBtn').classList.add('on');
+  setTimeout(() => {
+    if (activePupId === id) openCapture();
+  }, 1650);
 }
 
 function showARDog(){
@@ -2320,9 +2347,6 @@ function hideARDog(){
   const dogEl=$('arDog');
   dogEl.classList.remove('on');
   $('arPokeball').innerHTML = '';
-  // SUPPRIME CETTE LIGNE :
-  // $('searchHint').style.display=''; 
-  $('catchBtn').classList.remove('on');
   activePupId=null;
 }
   
@@ -2368,15 +2392,20 @@ function openCapture() {
   // 2. IMPORTANT : Rinitialisation de l'affichage des boutons
   // On cache le bouton "Ajouter au UgoDex" au cas o il serait rest affich
   const dexBtn = $('btnToDex');
-  if (dexBtn) dexBtn.style.display = 'none';
+  if (dexBtn) {
+    dexBtn.style.display = 'none';
+    dexBtn.classList.add('btn-dex-add');
+  }
+  const backBtn = $('sCatch').querySelector('.catch-back-btn');
+  if (backBtn) backBtn.style.display = 'flex';
 
   // 3. Injection de l'image du chiot
-  $('catchPokeWrap').innerHTML = `<img src="pup${p.id}.webp" style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 15px white);">`;
+  $('catchPokeWrap').innerHTML = `<img class="catch-slide-in" src="pup${p.id}.webp" alt="${p.name}" style="width:auto;height:80%;object-fit:contain;filter:drop-shadow(0 10px 12px rgba(0,0,0,.14));">`;
 
   // 4. Mise  jour des textes
   // $('catchPupName').textContent = p.name; // Tu peux le remettre, c'est mieux pour l'UX !
   $('catchPupNum').textContent = '#' + String(p.id).padStart(2, '0');
-  $('catchBattleText').textContent = pseudo + ' utilise une Pokéball.';
+  $('catchBattleText').textContent = pseudo + ' utilise une Pokeball.';
   
   show('sCatch');
 }
@@ -2405,16 +2434,16 @@ function closeCatch() {
   pendingPup = null;
   activePupId = null;
   const battleText = $('catchBattleText');
-  if (battleText) battleText.textContent = 'Le joueur utilise une Pokéball.';
+  if (battleText) battleText.textContent = 'Le joueur utilise une Pokeball.';
 }
   
 
-function afterAddToDex(){
+function afterAddToDex(scrollToId=null){
   if (collected.size === 21 && !collected.has(22)) {
     rewardPending = true;
     goColl(22);
   } else {
-    goColl(pendingPup ? pendingPup.id : null);
+    goColl(scrollToId);
   }
 }
 
@@ -2499,16 +2528,21 @@ if (pseudo) envoyerScore(pseudo, collected.size);
     // Si le bouton n'existe pas dans le DOM, on le cre (au cas o)
     dexBtn = document.createElement('button');
     dexBtn.id = 'btnToDex';
-    dexBtn.className = 'btn-capture';
-    dexBtn.style.cssText = "width:100%; max-width:310px; background:#4CAF50; display:block;";
+    dexBtn.className = 'btn-capture btn-dex-add';
+    dexBtn.style.cssText = "width:100%; max-width:310px; display:block;";
     dexBtn.textContent = 'Ajouter au UgoDex';
     container.appendChild(dexBtn);
   } else {
     dexBtn.style.display = 'block';
+    dexBtn.classList.add('btn-dex-add');
   }
 
 // Action : Renvoie vers la vue d'ensemble du Dex
-dexBtn.onclick = () => { closeCatch(); afterAddToDex(); };
+dexBtn.onclick = () => {
+  const focusId = p.id;
+  closeCatch();
+  afterAddToDex(focusId);
+};
 
   // 7. Nettoyage et mise  jour des scores
   hideARDog();
