@@ -534,6 +534,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   cursor:pointer;
   padding:4px;
 }
+.catch-back-btn{
+  position:absolute;
+  top:14px;
+  left:14px;
+  z-index:5;
+}
 
 /*  BURST  */
 #burst{position:fixed;inset:0;z-index:200;display:none;pointer-events:none;align-items:center;justify-content:center;}
@@ -1310,6 +1316,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 <!--  CRAN CAPTURE  -->
 <div class="screen" id="sCatch">
   <div style="position:relative;width:100%;flex:1;overflow:hidden;background:#111;">
+    <button class="icon-btn catch-back-btn" onclick="closeCatch()">&larr;</button>
     <!-- Pokball anime pendant la capture -->
     <div id="catchPokeWrap" style="width:100%; height:100%; position:relative; overflow:hidden;"></div>
     <div id="captureFlash"></div>
@@ -1321,8 +1328,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
     </div>
     
     <button class="btn-capture" onclick="doCapture()" style="width:100%;max-width:310px;">Lancer</button>
-    <button id="btnCancel" class="catch-secondary" onclick="closeCatch()">Laisser filer l'animal</button>
-    
     <button id="btnToDex" class="btn-capture" 
             style="width:100%; background:#4CAF50; display:none;">
        Ajouter au UgoDex
@@ -2356,9 +2361,7 @@ function openCapture() {
   pendingPup = p;
   const pseudo = localStorage.getItem('ugo_pseudo') || 'Le joueur';
 
-  // 1. Mise  jour du texte des boutons par dfaut
-  document.getElementById('btnCancel').textContent = "Laisser filer l'animal";
-  // On s'assure que le bouton "Capturer" est visible
+  // 1. On s'assure que le bouton "Capturer" est visible
   const captureBtn = document.querySelector('.btn-capture:not(#btnToDex)');
   if (captureBtn) captureBtn.style.display = 'block';
 
@@ -2385,11 +2388,11 @@ function closeCatch() {
   // 2. Rinitialiser les boutons :
   // On affiche  nouveau les boutons "Capturer" et "Laisser filer"
   const captureBtn = document.querySelector('.btn-capture:not(#btnToDex)');
-  const cancelBtn = $('btnCancel');
   const dexBtn = $('btnToDex');
+  const backBtn = $('sCatch').querySelector('.catch-back-btn');
 
   if (captureBtn) captureBtn.style.display = 'block';
-  if (cancelBtn) cancelBtn.style.display = 'block';
+  if (backBtn) backBtn.style.display = 'flex';
   
   // On masque le bouton "Ajouter au UgoDex" pour la prochaine fois
   if (dexBtn) dexBtn.style.display = 'none';
@@ -2482,9 +2485,13 @@ if (pseudo) envoyerScore(pseudo, collected.size);
   playMusic('mainmusic.json');
   // --------------------------------------------------
 
-  // 5. Interface : Masquer les contrles de capture originaux
-  const container = $('sCatch').querySelector('div[style*="background:#fff"]');
-  container.querySelectorAll('button').forEach(b => b.style.display = 'none');
+  // 5. Interface : Masquer les contrôles de capture originaux
+  const container = $('sCatch').querySelector('.catch-action-panel');
+  if (!container) return;
+  const launchBtn = container.querySelector('.btn-capture:not(#btnToDex)');
+  const backBtn = $('sCatch').querySelector('.catch-back-btn');
+  if (launchBtn) launchBtn.style.display = 'none';
+  if (backBtn) backBtn.style.display = 'none';
   
   // 6. Gestion du bouton "Ajouter au UgoDex"
   let dexBtn = document.getElementById('btnToDex');
@@ -2494,7 +2501,7 @@ if (pseudo) envoyerScore(pseudo, collected.size);
     dexBtn.id = 'btnToDex';
     dexBtn.className = 'btn-capture';
     dexBtn.style.cssText = "width:100%; max-width:310px; background:#4CAF50; display:block;";
-    dexBtn.textContent = ' Ajouter au UgoDex';
+    dexBtn.textContent = 'Ajouter au UgoDex';
     container.appendChild(dexBtn);
   } else {
     dexBtn.style.display = 'block';
