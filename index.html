@@ -865,6 +865,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   0%{transform:translateY(-10vh) rotate(0deg);}
   100%{transform:translateY(120vh) rotate(720deg);}
 }
+.home-confetti-layer{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:1;
+}
+.home-confetti{
+  position:absolute;
+  top:-10%;
+  width:10px;
+  height:18px;
+  border-radius:2px;
+  opacity:.95;
+  animation:rewardConfettiFall linear forwards;
+}
 .reward-img{width:80%;max-width:300px;border-radius:16px;box-shadow:0 0 40px rgba(255,220,68,.3);}
 .reward-sub{font-family:'VT323',monospace;font-size:24px;color:rgba(255,255,255,.88);text-align:center;}
 
@@ -1318,6 +1334,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   
 <!--  HOME  -->
 <div class="screen" id="sHome">
+  <div id="homeConfetti" class="home-confetti-layer"></div>
   <div class="home-mascot">
     <!-- Pokball SVG inline -->
     <svg viewBox="0 0 120 120" width="110" height="110" style="filter:drop-shadow(0 6px 14px rgba(0,0,0,0.25))">
@@ -2065,6 +2082,32 @@ function updateHomeMascot(){
     el.innerHTML = defaultHomeMascotMarkup;
   }
 }
+function lancerConfettisHome(){
+  const layer = $('homeConfetti');
+  if (!layer) return;
+  layer.innerHTML = '';
+  const colors = ['#ffdd44','#ff5e7e','#6ef','#7cff7c','#ffffff','#ff9f1c'];
+
+  for(let i = 0; i < 55; i++){
+    const piece = document.createElement('div');
+    piece.className = 'home-confetti';
+    piece.style.left = (Math.random() * 100) + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = (2 + Math.random() * 1.6) + 's';
+    piece.style.animationDelay = (Math.random() * 0.35) + 's';
+    piece.style.transform = `translateY(-10vh) rotate(${Math.random()*180}deg)`;
+    if (Math.random() > 0.5) {
+      piece.style.width = '12px';
+      piece.style.height = '12px';
+      piece.style.borderRadius = '50%';
+    }
+    layer.appendChild(piece);
+  }
+
+  setTimeout(() => {
+    if (layer) layer.innerHTML = '';
+  }, 3800);
+}
 function load(){
   try{
     const c=localStorage.getItem('dal7_c'),t=localStorage.getItem('dal7_t');
@@ -2209,6 +2252,7 @@ function goHome(){
   show('sHome');
   $('homeScore').textContent=collected.size+' / '+TOTAL;
   updateHomeMascot();
+  if (collected.size >= TOTAL) lancerConfettisHome();
 }
 
 
