@@ -668,7 +668,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   font-size:24px;
   color:#38471b;
   text-align:center;
-  max-width:240px;
+  max-width:220px;
   line-height:1.15;
   opacity:0;
   animation:qrNoteIn .6s ease-out .15s forwards, qrNoteFloat 2.4s ease-in-out 1s infinite;
@@ -893,6 +893,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   max-width:74%;
   max-height:82%;
 }
+.catch-pup{
+  top:12%;
+  right:4%;
+  max-width:56%;
+  max-height:58%;
+  transform:none !important;
+}
+.catch-sasha{
+  position:absolute;
+  left:4%;
+  bottom:14px;
+  width:auto;
+  height:128px;
+  max-width:38%;
+  object-fit:contain;
+  z-index:8;
+  animation:catchSashaIn .75s cubic-bezier(.22,.9,.25,1) .85s both;
+}
+@keyframes catchSashaIn{
+  0%{transform:translate(-120%,0);}
+  100%{transform:translate(0,0);}
+}
   
 @keyframes mascotFloat {0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
 
@@ -1016,6 +1038,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   animation: pokeballThrow 1.2s ease-in-out forwards;
 }
 .pokeball-captured{
+  position:absolute;
+  top:54%;
+  left:71%;
   animation:pokeballCatchBounce 1.2s ease-out forwards;
 }
 @keyframes pokeballCatchBounce{
@@ -1471,7 +1496,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
            src=""
            style="width:220px;height:220px;background:#fff;padding:4px;border:4px solid #55662a;border-radius:12px;box-shadow:0 0 0 2px rgba(255,255,255,.16),4px 4px 0 rgba(52,63,22,.22);">
       <div id="detailQRNote" class="detail-qr-note">
-        A utiliser pour changer vos Ugos entre dresseurs !
+        A utiliser pour échanger vos Ugos<br>entre dresseurs !
       </div>
     </div>
   </div>
@@ -1898,7 +1923,7 @@ function openDetail(id, fromCapture=false){
       setQrImageSource(qrImg, QR_PREFIX + id, 220);
     }
     if (qrNote) {
-      qrNote.textContent = 'A utiliser pour changer vos Ugos entre dresseurs !';
+      qrNote.innerHTML = 'A utiliser pour &eacute;changer vos Ugos<br>entre dresseurs !';
       qrNote.style.fontFamily = '';
       qrNote.style.fontSize = '';
       qrNote.style.lineHeight = '';
@@ -2625,7 +2650,9 @@ function openCapture() {
   if (backBtn) backBtn.style.display = 'flex';
 
   // 3. Injection de l'image du chiot
-  $('catchPokeWrap').innerHTML = `<img class="catch-slide-in" src="pup${p.id}.webp" alt="${p.name}" style="width:auto;height:80%;object-fit:contain;filter:none;">`;
+  $('catchPokeWrap').innerHTML =
+    `<img class="catch-slide-in catch-pup" src="pup${p.id}.webp" alt="${p.name}" style="width:auto;height:58%;object-fit:contain;filter:none;">` +
+    `<img class="catch-sasha" src="sasha.webp" alt="Sasha" onerror="this.style.display='none'">`;
 
   // 4. Mise  jour des textes
   // $('catchPupName').textContent = p.name; // Tu peux le remettre, c'est mieux pour l'UX !
