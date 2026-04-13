@@ -19,20 +19,20 @@
   --rouge:#cc1111;--rouge2:#e82222;--rougefonce:#8b0000;
   --teal:#3dd6cc;--green:#2ecc71;
   --muted:rgba(0,0,0,0.45);
-  --gbc-shell:#7d74bc;
-  --gbc-shell-dark:#564f8c;
-  --gbc-shell-light:#a9a2df;
-  --gbc-plastic:#d6d2ef;
+  --gbc-shell:#cfcfcf;
+  --gbc-shell-dark:#8b8b8b;
+  --gbc-shell-light:#f4f4f4;
+  --gbc-plastic:#e7e7e7;
   --gbc-screen:#b7c97b;
   --gbc-screen-dark:#6e7f38;
   --gbc-screen-mid:#8fa35b;
   --gbc-ink:#243018;
-  --gbc-accent:#c03a79;
-  --gbc-accent-dark:#7d1f51;
-  --gbc-blue:#3677c9;
-  --gbc-blue-dark:#1d4780;
+  --gbc-accent:#d93636;
+  --gbc-accent-dark:#7f1414;
+  --gbc-blue:#252525;
+  --gbc-blue-dark:#000000;
 }
-html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180deg,#524a87 0%,#7168aa 45%,#3f3a69 100%);color:var(--noir);font-family:'Nunito',sans-serif;-webkit-font-smoothing:antialiased;}
+html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180deg,#bdbdbd 0%,#e7e7e7 45%,#8f8f8f 100%);color:var(--noir);font-family:'VT323','Press Start 2P',sans-serif;-webkit-font-smoothing:antialiased;}
 .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;}
 .screen.on{display:flex;}
 
@@ -72,19 +72,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 /*  HOME  */
 #sHome{
   background:
-    radial-gradient(circle at top left,rgba(255,255,255,.25),transparent 26%),
+    radial-gradient(circle at top left,rgba(255,255,255,.45),transparent 26%),
     linear-gradient(180deg,var(--gbc-shell-light),var(--gbc-shell) 55%,var(--gbc-shell-dark));
   justify-content:center;padding:26px 24px 34px;gap:0;position:relative;
 }
 /* Bande rouge en haut */
 #sHome::before{
   content:'';position:absolute;top:0;left:0;right:0;height:8px;
-  background:linear-gradient(90deg,#3b355e 0%,#c6beff 50%,#3b355e 100%);
+  background:linear-gradient(90deg,#1d1d1d 0%,#f8f8f8 50%,#1d1d1d 100%);
 }
 /* Bande rouge en bas */
 #sHome::after{
   content:'';position:absolute;bottom:0;left:0;right:0;height:8px;
-  background:linear-gradient(90deg,#3b355e 0%,#c6beff 50%,#3b355e 100%);
+  background:linear-gradient(90deg,#1d1d1d 0%,#f8f8f8 50%,#1d1d1d 100%);
 }
   
 .home-mascot {
@@ -104,14 +104,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 .game-title{
   font-family:'Press Start 2P',cursive;font-size:24px;line-height:1.3;
   text-align:center;position:relative;z-index:10;
-  color:#f6f3ff;
+  color:#ffffff;
   -webkit-text-stroke:0;
-  text-shadow:0 4px 0 #484178,0 8px 18px rgba(21,15,48,.35);
+  text-shadow:0 4px 0 #2d2d2d,0 8px 18px rgba(0,0,0,.28);
   letter-spacing:.5px;
 }
 .game-title small{
   display:block;font-family:'VT323',monospace;font-size:26px;
-  color:#efeaff;-webkit-text-stroke:0;
+  color:#191919;-webkit-text-stroke:0;
   text-shadow:none;letter-spacing:1px;margin-top:8px;font-weight:400;
 }
 
@@ -126,23 +126,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 }
 .btn:active{transform:translateY(4px);}
 .btn-primary{
-  background:linear-gradient(180deg,#f575b0,#c03a79);
+  background:linear-gradient(180deg,#ff6a6a,#d93636);
   color:#fff7fb;
   border:4px solid var(--gbc-accent-dark);
-  box-shadow:0 6px 0 var(--gbc-accent-dark),0 10px 22px rgba(58,22,59,0.35);
+  box-shadow:0 6px 0 var(--gbc-accent-dark),0 10px 22px rgba(66,12,12,0.28);
 }
 .btn-primary:active{box-shadow:0 1px 0 var(--gbc-accent-dark);}
 .btn-secondary{
-  background:linear-gradient(180deg,#63a4f3,#3677c9);
-  color:#f4fbff;
+  background:linear-gradient(180deg,#4b4b4b,#252525);
+  color:#f4f4f4;
   border:4px solid var(--gbc-blue-dark);
-  box-shadow:0 6px 0 var(--gbc-blue-dark),0 10px 22px rgba(13,34,75,0.28);
+  box-shadow:0 6px 0 var(--gbc-blue-dark),0 10px 22px rgba(0,0,0,0.28);
 }
 .btn-secondary:active{box-shadow:0 1px 0 var(--gbc-blue-dark);}
 .btn-ghost{
-  background:linear-gradient(180deg,#ece8ff,#cbc4f2);color:#3f3a69;
-  border:3px solid #7a72ab;
-  box-shadow:0 4px 0 #6b6397;
+  background:linear-gradient(180deg,#ffffff,#d8d8d8);color:#1d1d1d;
+  border:3px solid #7d7d7d;
+  box-shadow:0 4px 0 #606060;
 }
 .btn-ghost:active{box-shadow:0 1px 0 #6b6397;}
 
@@ -151,7 +151,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   border:4px solid #55662a;
   border-radius:14px;padding:14px 40px;text-align:center;
   position:relative;z-index:10;
-  box-shadow:0 0 0 4px rgba(232,227,255,.22),6px 6px 0 rgba(54,49,92,.55);
+  box-shadow:0 0 0 4px rgba(255,255,255,.18),6px 6px 0 rgba(38,38,38,.35);
   margin-bottom:24px;
 }
 .score-box big{font-family:'Press Start 2P',cursive;font-size:28px;color:var(--gbc-ink);display:block;line-height:1.2;}
@@ -161,18 +161,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 #sColl,#sPrint,#sRanking{
   justify-content:flex-start;
   background:
-    radial-gradient(circle at top left,rgba(255,255,255,.16),transparent 24%),
+    radial-gradient(circle at top left,rgba(255,255,255,.22),transparent 24%),
     linear-gradient(180deg,var(--gbc-shell-light),var(--gbc-shell) 55%,var(--gbc-shell-dark));
 }
 .panel-head{
-  width:100%;background:linear-gradient(180deg,#8a82c6,#655e9d);
-  border-bottom:4px solid #3f3a69;
+  width:100%;background:linear-gradient(180deg,#f3f3f3,#bbbbbb);
+  border-bottom:4px solid #2b2b2b;
   padding:16px 16px 14px;
   display:flex;align-items:center;gap:10px;flex-shrink:0;
-  box-shadow:inset 0 -3px 0 rgba(0,0,0,.16);
+  box-shadow:inset 0 -3px 0 rgba(255,255,255,.18);
 }
-.icon-btn{width:40px;height:40px;border-radius:12px;border:3px solid rgba(49,41,89,.55);background:linear-gradient(180deg,#ece8ff,#c8c1ef);color:#433c70;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 rgba(67,60,112,.45);}
-.panel-title{font-family:'Press Start 2P',cursive;font-size:13px;color:#f8f6ff;flex:1;line-height:1.35;}
+.icon-btn{width:40px;height:40px;border-radius:12px;border:3px solid rgba(31,31,31,.55);background:linear-gradient(180deg,#ffffff,#cfcfcf);color:#1a1a1a;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 rgba(32,32,32,.35);}
+.panel-title{font-family:'Press Start 2P',cursive;font-size:13px;color:#1a1a1a;flex:1;line-height:1.35;}
 .pill{background:linear-gradient(180deg,#c8db85,#9fb45f);color:var(--gbc-ink);padding:6px 12px;border-radius:12px;font-family:'Press Start 2P',cursive;font-size:10px;font-weight:400;border:3px solid #55662a;box-shadow:0 3px 0 #4a5b20;}
 
 .coll-body{flex:1;overflow-y:auto;width:100%;padding:14px;-webkit-overflow-scrolling:touch;}
@@ -182,7 +182,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   background:linear-gradient(180deg,#c7da84,#a8bc69 70%,#95a85d);
   border:4px solid #55662a;
   border-radius:18px;
-  box-shadow:0 0 0 4px rgba(232,227,255,.18), 7px 7px 0 rgba(54,49,92,.5);
+  box-shadow:0 0 0 4px rgba(255,255,255,.14), 7px 7px 0 rgba(33,33,33,.28);
   color:var(--gbc-ink);
 }
 .prog-wrap{margin-bottom:14px;}
@@ -213,25 +213,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 
 #sLogin{
   background:
-    radial-gradient(circle at top left,rgba(255,255,255,.2),transparent 22%),
+    radial-gradient(circle at top left,rgba(255,255,255,.3),transparent 22%),
     linear-gradient(180deg,var(--gbc-shell-light),var(--gbc-shell) 55%,var(--gbc-shell-dark)) !important;
 }
 #sLogin > div{
-  background:linear-gradient(180deg,#d9d4f3,#b9b1e6) !important;
-  border:5px solid #4c4678;
-  box-shadow:0 0 0 5px rgba(238,234,255,.2),8px 8px 0 rgba(54,49,92,.48);
+  background:linear-gradient(180deg,#f5f5f5,#d2d2d2) !important;
+  border:5px solid #454545;
+  box-shadow:0 0 0 5px rgba(255,255,255,.18),8px 8px 0 rgba(34,34,34,.32);
 }
 #sLogin h2{
   font-family:'Press Start 2P',cursive !important;
   font-size:18px;
   line-height:1.5;
-  color:#4d467a !important;
+  color:#1f1f1f !important;
 }
 #sLogin p{
   font-family:'VT323',monospace !important;
   font-size:28px;
   line-height:1.15;
-  color:#2f2b48 !important;
+  color:#1f1f1f !important;
 }
 #playerPseudo{
   background:linear-gradient(180deg,#d2e391,#afc16b) !important;
@@ -439,7 +439,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 }
 #catchBtn.on{display:block;}
 @keyframes catchPulse{0%,100%{transform:translateX(-50%)scale(1)}50%{transform:translateX(-50%)scale(1.05)translateY(-2px)}}
-#arBackBtn{position:absolute;bottom:50px;left:16px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:2px solid rgba(255,255,255,.25);border-radius:12px;padding:12px 14px;font-size:20px;cursor:pointer;z-index:20;}
+#arBackBtn{display:none !important;}
 
 /*  MODAL CAPTURE  */
 #modalQR{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:28px;}
@@ -499,7 +499,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 .qr-print-card{background:#fff;border-radius:12px;padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:3px 3px 0 #bbb;border:2px solid #ddd;}
 .qr-print-card img{width:80px;height:80px;border-radius:6px;}
 .qr-print-name{font-size:9px;font-weight:900;color:var(--noir);text-align:center;}
-.btn-print{width:100%;margin-top:16px;padding:16px;border-radius:12px;border:3px solid var(--rougefonce);background:var(--rouge2);color:#fff;font-family:'Fredoka One',cursive;font-size:17px;cursor:pointer;box-shadow:0 4px 0 var(--rougefonce);}
+.btn-print{width:100%;margin-top:16px;padding:16px;border-radius:16px;border:4px solid var(--gbc-accent-dark);background:linear-gradient(180deg,#ff6a6a,#d93636);color:#fff;font-family:'Press Start 2P',cursive;font-size:12px;line-height:1.45;cursor:pointer;box-shadow:0 6px 0 var(--gbc-accent-dark);}
 
 /*  WIN  */
 #sWin{
@@ -766,6 +766,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   flex-direction: column;
   gap: 10px;
   -webkit-overflow-scrolling: touch; /* Dfilement fluide iOS */
+  font-family:'Press Start 2P',cursive;
 }
 
 /*  LIGNE DE CLASSEMENT  */
@@ -773,19 +774,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 15px 20px;
+  background: linear-gradient(180deg,#d1e28d,#adc26a);
+  padding: 14px 18px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
-  font-weight: 600;
+  border: 3px solid #58692a;
+  color: #243018;
+  font-weight: 400;
+  box-shadow:4px 4px 0 rgba(52,63,22,.22);
   transition: transform 0.2s;
   flex-shrink: 0;          /* Empche les lignes de s'craser */
 }
 
 /*  STYLING ET EFFETS  */
 .ranking-row span {
-  font-size: 1.1em;
+  font-size: 12px;
 }
 
 .pseudo-display::first-letter {
@@ -793,12 +795,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 }
 
 /* Effet pour le top 3 */
-.ranking-row:nth-child(1) { background: rgba(255, 215, 0, 0.2); border-color: rgba(255, 215, 0, 0.4); }
-.ranking-row:nth-child(2) { background: rgba(192, 192, 192, 0.2); border-color: rgba(192, 192, 192, 0.4); }
-.ranking-row:nth-child(3) { background: rgba(205, 127, 50, 0.2); border-color: rgba(255, 127, 50, 0.4); }
+.ranking-row:nth-child(1) { background: linear-gradient(180deg,#d7e992,#bfd46f); border-color:#58692a; }
+.ranking-row:nth-child(2) { background: linear-gradient(180deg,#d4e58d,#b4c86b); border-color:#58692a; }
+.ranking-row:nth-child(3) { background: linear-gradient(180deg,#c9dc83,#a4bb61); border-color:#58692a; }
 
 .score-display {
-  font-weight: bold;
+  font-family:'VT323',monospace;
+  font-size:28px;
+  color:#38471b;
+  font-weight:400;
 }
   
 /*  FLASH CAPTURE  */
@@ -1102,7 +1107,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 <!--  COLLECTION  -->
 <div class="screen" id="sColl" style="background:var(--cream)">
   <div class="panel-head">
-    <button class="icon-btn" onclick="goHome()"></button>
+    <button class="icon-btn" onclick="goHome()">&larr;</button>
     <span class="panel-title">Ugodex</span>
     <span class="pill" id="collPill">0/12</span>
   </div>
@@ -1122,7 +1127,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   <div id="scanFlash"></div>
 
   <div class="ar-top">
-    <button class="icon-btn" style="background:rgba(0,0,0,.5);border-color:rgba(255,255,255,.3)" onclick="stopHunt()"></button>
+    <button class="icon-btn" style="background:linear-gradient(180deg,#ffffff,#cfcfcf);border-color:rgba(31,31,31,.55);color:#1a1a1a" onclick="stopHunt()">&larr;</button>
     <span class="ar-title" id="arTitle"> Cherche le QR code !</span>
     <span class="ar-pill" id="arScore">0/19</span>
   </div>
@@ -1158,7 +1163,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 </button>
 
   <button id="catchBtn" onclick="openCapture()"> Attraper !</button>
-  <button id="arBackBtn" onclick="stopHunt()"></button>
 </div>
 
 <!--  CRAN CAPTURE  -->
@@ -1206,9 +1210,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   </div>
 
   <!-- BACK BUTTON -->
-  <button class="icon-btn"
+    <button class="icon-btn"
           style="position:absolute;top:15px;left:15px;z-index:10;background:rgba(0,0,0,.4);color:#fff;"
-          onclick="closeDetail()"></button>
+          onclick="closeDetail()">&larr;</button>
 
   <!-- HINT -->
   <div id="detailSwipeHint"
@@ -1282,7 +1286,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 <!--  QR  IMPRIMER  -->
 <div class="screen" id="sPrint" style="background:var(--cream)">
   <div class="panel-head">
-    <button class="icon-btn" onclick="goHome()"></button>
+    <button class="icon-btn" onclick="goHome()">&larr;</button>
     <span class="panel-title">QR Codes</span>
   </div>
   <div class="print-body">
@@ -1300,7 +1304,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 <!--  CLASSEMENT  -->
 <div class="screen" id="sRanking">
   <div class="panel-head">
-    <button class="icon-btn" onclick="goHome()"></button>
+    <button class="icon-btn" onclick="goHome()">&larr;</button>
     <span class="panel-title">Classement Mondial</span>
   </div>
   <div class="ranking-body" id="rankingBody">
@@ -1319,7 +1323,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 
 <!--  VIEWER UGODEX  -->
 <div class="screen" id="sViewer">
-  <button class="icon-btn" style="position:absolute; top:15px; left:15px; z-index:10; background:rgba(0,0,0,.3); color:#fff;" onclick="closeViewer()"></button>
+  <button class="icon-btn" style="position:absolute; top:15px; left:15px; z-index:10; background:linear-gradient(180deg,#ffffff,#cfcfcf); color:#1a1a1a;" onclick="closeViewer()">&larr;</button>
   <div class="viewer-body" id="viewerBody" style="flex-wrap:nowrap; transition:transform .3s ease; flex:1;">
   </div>
   <div class="viewer-dots" id="viewerDots" style="margin:10px auto;"></div>
