@@ -1474,7 +1474,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
       </div>
     </div>
   </div>
-  <button onclick="goColl()" style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#ff6a6a,#d93636);border:4px solid #7f1414;color:#fff;padding:14px 24px;border-radius:16px;font-family:'Press Start 2P',cursive;font-size:12px;line-height:1.4;cursor:pointer;box-shadow:0 6px 0 #7f1414;">
+  <button onclick="closeCredits()" style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#ff6a6a,#d93636);border:4px solid #7f1414;color:#fff;padding:14px 24px;border-radius:16px;font-family:'Press Start 2P',cursive;font-size:12px;line-height:1.4;cursor:pointer;box-shadow:0 6px 0 #7f1414;">
     Fermer
   </button>
 </div>
@@ -1903,8 +1903,26 @@ function unlockUGOAT(){
   if (pseudo) envoyerScore(pseudo, finalScore);
   buildGrid();
   show('sColl');
-  setTimeout(()=>show('sCredits'), 2000);
+  setTimeout(()=>goCredits(), 2000);
   flashMsg(" UGOAT ajout  l'Ugodex !",3000);
+}
+
+async function goCredits(){
+  show('sCredits');
+  try {
+    await playMusic('tetris.json');
+  } catch (e) {
+    console.error('Erreur lecture crédits :', e);
+  }
+}
+
+async function closeCredits(){
+  goColl();
+  try {
+    await playMusic('mainmusic.json');
+  } catch (e) {
+    console.error('Erreur reprise musique menu :', e);
+  }
 }
   
 /*  DONNES  */
