@@ -468,15 +468,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   text-shadow:0 3px 0 #000,0 10px 20px rgba(0,0,0,.4);
 }
 .scan-blackout{
-  animation:scanBlackout 1.65s steps(1,end) 1;
+  animation:scanBlackout 2s steps(1,end) 1;
 }
 @keyframes scanBlackout{
   0%{background:rgba(0,0,0,0);opacity:0;}
-  18%{background:rgba(0,0,0,.95);opacity:1;}
-  36%{background:rgba(0,0,0,0);opacity:0;}
-  54%{background:rgba(0,0,0,.95);opacity:1;}
-  72%{background:rgba(0,0,0,0);opacity:0;}
-  88%{background:rgba(0,0,0,.95);opacity:1;}
+  10%{background:rgba(0,0,0,.96);opacity:1;}
+  14%{background:rgba(0,0,0,0);opacity:0;}
+  34%{background:rgba(0,0,0,0);opacity:0;}
+  39%{background:rgba(0,0,0,.96);opacity:1;}
+  43%{background:rgba(0,0,0,0);opacity:0;}
+  66%{background:rgba(0,0,0,0);opacity:0;}
+  71%{background:rgba(0,0,0,.96);opacity:1;}
+  75%{background:rgba(0,0,0,0);opacity:0;}
   100%{background:rgba(0,0,0,0);opacity:0;}
 }
 
@@ -505,37 +508,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 .btn-capture:active{transform:scale(.96)translateY(4px);box-shadow:0 1px 0 var(--gbc-accent-dark);}
 .catch-action-panel{
   padding:20px 24px 36px;
-  background:linear-gradient(180deg,#d7d7d7,#bcbcbc);
+  background:linear-gradient(180deg,#c8db85,#a5bb67);
   width:100%;
   display:flex;
   flex-direction:column;
   align-items:center;
   gap:12px;
-  border-top:4px solid #242424;
+  border-top:4px solid #55662a;
   box-shadow:inset 0 4px 0 rgba(255,255,255,.22);
 }
 .catch-battle-box{
   width:100%;
   max-width:340px;
-  background:linear-gradient(180deg,#d4e58d,#adc26a);
-  border:4px solid #55662a;
-  border-radius:16px;
-  box-shadow:0 0 0 4px rgba(255,255,255,.14),6px 6px 0 rgba(0,0,0,.2);
-  padding:16px 18px;
+  min-height:78px;
+  padding:8px 6px 2px;
 }
 .catch-battle-text{
   font-family:'VT323',monospace;
-  font-size:28px;
-  line-height:1.1;
+  font-size:30px;
+  line-height:1.05;
   color:#243018;
   text-align:left;
 }
 .catch-num{
-  font-family:'Press Start 2P',cursive;
-  font-size:10px;
-  color:#1f1f1f;
-  letter-spacing:.6px;
-  text-transform:uppercase;
+  display:none;
 }
 .catch-secondary{
   background:none;
@@ -963,39 +959,39 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
     opacity: 1; 
   }
   50% {
-    transform: translate(-18vw, -220%) scale(1.5) rotate(360deg);
+    transform: translate(-15vw, -245%) scale(1.25) rotate(360deg);
   }
   100% {
-    transform: translate(-50%, -50%) scale(0.5) rotate(720deg);
+    transform: translate(-50%, -50%) scale(0.38) rotate(720deg);
     opacity: 1;
   }
 }
 
 .pokeball-flying {
   position: absolute;
-  top: 58%;
-  left: 68%;
+  top: 54%;
+  left: 71%;
   z-index: 11;
   animation: pokeballThrow 1.2s ease-in-out forwards;
 }
 .pokeball-ground-shadow{
   position:absolute;
-  top:58%;
-  left:68%;
-  width:70px;
-  height:18px;
+  top:54%;
+  left:71%;
+  width:56px;
+  height:14px;
   border-radius:50%;
   background:radial-gradient(ellipse at center,rgba(0,0,0,.28) 0%,rgba(0,0,0,.14) 45%,rgba(0,0,0,0) 75%);
-  transform:translate(-50%,34px) scale(.2);
+  transform:translate(-50%,28px) scale(.2);
   opacity:0;
   z-index:9;
   animation:pokeballShadowDrop 1.2s ease-in-out forwards;
 }
 @keyframes pokeballShadowDrop{
-  0%{opacity:0;transform:translate(-50%,40px) scale(.1);}
-  35%{opacity:.08;transform:translate(-50%,36px) scale(.3);}
-  65%{opacity:.18;transform:translate(-50%,35px) scale(.75);}
-  100%{opacity:.3;transform:translate(-50%,34px) scale(1);}
+  0%{opacity:0;transform:translate(-50%,34px) scale(.1);}
+  35%{opacity:.08;transform:translate(-50%,31px) scale(.3);}
+  65%{opacity:.18;transform:translate(-50%,29px) scale(.75);}
+  100%{opacity:.3;transform:translate(-50%,28px) scale(1);}
 }
 
 /* --- TAPE 2 : L'Aspiration Tourbillonnante du Chiot --- */
@@ -2374,12 +2370,12 @@ function handleQRDetected(id){
   $('arTitle').classList.remove('ar-found-title');
   const blackout = $('scanFlash');
   blackout.classList.add('scan-blackout');
-  setTimeout(() => blackout.classList.remove('scan-blackout'), 1660);
+  setTimeout(() => blackout.classList.remove('scan-blackout'), 2000);
   showARDog();flashGreen();vibrate([60,40,120]);
   showScanResult('\u2713 Un ' + p.name + ' sauvage appara\u00eet !','#6ef');
   setTimeout(() => {
     if (activePupId === id) openCapture();
-  }, 1650);
+  }, 1980);
 }
 
 function showARDog(){
@@ -2422,6 +2418,27 @@ function stopHuntClean() {
 function stopHunt(){stopHuntClean();goHome();}
 
 /*  CAPTURE  */
+let catchTypingToken = 0;
+
+function typeCatchBattleText(text, speed = 26) {
+  const el = $('catchBattleText');
+  if (!el) return;
+  const token = ++catchTypingToken;
+  el.textContent = '';
+  let i = 0;
+
+  function tick() {
+    if (token !== catchTypingToken) return;
+    el.textContent = text.slice(0, i);
+    if (i < text.length) {
+      i += 1;
+      setTimeout(tick, speed);
+    }
+  }
+
+  tick();
+}
+
 function openCapture() {
   if (!activePupId) return;
   const p = PUPS.find(x => x.id === activePupId);
@@ -2447,8 +2464,8 @@ function openCapture() {
 
   // 4. Mise  jour des textes
   // $('catchPupName').textContent = p.name; // Tu peux le remettre, c'est mieux pour l'UX !
-  $('catchPupNum').textContent = '#' + String(p.id).padStart(2, '0');
-  $('catchBattleText').textContent = pseudo + ' utilise une Pokeball.';
+  $('catchPupNum').textContent = '';
+  typeCatchBattleText(pseudo + ' utilise une Pokeball.');
   
   show('sCatch');
 }
@@ -2487,6 +2504,7 @@ function closeCatch() {
   container.innerHTML = ''; 
 
   // 4. Reset global si ncessaire
+  catchTypingToken += 1;
   pendingPup = null;
   activePupId = null;
   const battleText = $('catchBattleText');
@@ -2579,7 +2597,7 @@ if (pseudo) envoyerScore(pseudo, collected.size);
   const backBtn = $('sCatch').querySelector('.catch-back-btn');
   if (launchBtn) launchBtn.style.display = 'none';
   if (backBtn) backBtn.style.display = 'none';
-  $('catchBattleText').textContent = 'F\u00e9licitation ! Ti\u00e9 un tigre !';
+  typeCatchBattleText('F\u00e9licitation ! Ti\u00e9 un tigre !', 24);
   
   // 6. Gestion du bouton "Ajouter au UgoDex"
   let dexBtn = document.getElementById('btnToDex');
