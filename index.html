@@ -908,6 +908,26 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   100%{opacity:.6;}
 }
 
+
+.card.bonus-tease{
+  animation: bonusTeaseShake .7s ease-in-out 3, bonusTeaseGlow 1s ease-in-out 3;
+  border-color:#ffdd44 !important;
+  box-shadow:0 0 0 3px rgba(255,221,68,0.45), 3px 3px 0 var(--rougefonce) !important;
+}
+
+@keyframes bonusTeaseShake{
+  0%,100%{ transform:translateX(0); }
+  20%{ transform:translateX(-3px) rotate(-1deg); }
+  40%{ transform:translateX(3px) rotate(1deg); }
+  60%{ transform:translateX(-2px) rotate(-0.5deg); }
+  80%{ transform:translateX(2px) rotate(0.5deg); }
+}
+
+@keyframes bonusTeaseGlow{
+  0%,100%{ filter:brightness(1); }
+  50%{ filter:brightness(1.25); }
+}
+
 </style>
 </head>
 <body>
@@ -1342,30 +1362,32 @@ async function rafraichirClassement() {
 
 /* ══ CALCUL BONUS HORAIRE ══ */
 function calculerBonus(created, updated) {
-    // Version parfaite : priorité au temps de jeu local réel
-    const localStart = Number(startTime);
-    const now = Date.now();
-
-    if (Number.isFinite(localStart) && localStart > 0 && now > localStart) {
-        const dureeMinutes = Math.max(0, (now - localStart) / (1000 * 60));
-        const heureRonde = Math.max(1, Math.ceil(dureeMinutes / 60));
-        const surplusMinutes = Math.max(0, dureeMinutes - 60);
+    function computeFromMinutes(dureeMinutes){
+        const minutes = Math.max(0, dureeMinutes);
+        const heureRonde = Math.max(1, Math.ceil(minutes / 60));
+        if (minutes <= 60) {
+            return { points: 100, label: `${heureRonde}h` };
+        }
+        const surplusMinutes = minutes - 60;
         const tranches30min = Math.floor(surplusMinutes / 30);
         const points = Math.max(0, 100 - (tranches30min * 10));
         return { points, label: `${heureRonde}h` };
     }
 
-    // Fallback PocketBase si jamais startTime n'est pas disponible
+    // Priorité au temps de jeu local réel
+    const localStart = Number(startTime);
+    const now = Date.now();
+
+    if (Number.isFinite(localStart) && localStart > 0 && now > localStart) {
+        return computeFromMinutes((now - localStart) / (1000 * 60));
+    }
+
+    // Fallback PocketBase
     const start = new Date(created).getTime();
     const end = new Date(updated).getTime();
 
     if (Number.isFinite(start) && Number.isFinite(end) && end > start) {
-        const dureeMinutes = Math.max(0, (end - start) / (1000 * 60));
-        const heureRonde = Math.max(1, Math.ceil(dureeMinutes / 60));
-        const surplusMinutes = Math.max(0, dureeMinutes - 60);
-        const tranches30min = Math.floor(surplusMinutes / 30);
-        const points = Math.max(0, 100 - (tranches30min * 10));
-        return { points, label: `${heureRonde}h` };
+        return computeFromMinutes((end - start) / (1000 * 60));
     }
 
     // Sécurité ultime
@@ -1583,6 +1605,7 @@ const QR_PREFIX='DAL_';
 let collected=new Set(),startTime=Date.now(),pendingPup=null,alertTimer=null;
 let camStream=null,scanLoop=null,scanPaused=false,activePupId=null;
 let bgMusic=null;
+let rewardPending=false;
 let pendingTimeBonus = 0;
 let pendingTimeLabel = "1h";
 let rewardSequenceRunning = false;
@@ -1712,9 +1735,30 @@ function goHome(){stopHuntClean();show('sHome');$('homeScore').textContent=colle
 
 
 /* ══ COLLECTION ══ */
+
+function teaserBonusCard(){
+  const cards = document.querySelectorAll('#collGrid .card');
+  const bonusCard = Array.from(cards).find(c => {
+    const num = c.querySelector('.card-num');
+    return num && num.textContent === '#22';
+  });
+  if(!bonusCard) return;
+  bonusCard.classList.add('bonus-tease');
+  bonusCard.scrollIntoView({block:'center', behavior:'smooth'});
+  setTimeout(() => bonusCard.classList.remove('bonus-tease'), 2600);
+}
+
+function triggerRewardFromUgodex(){
+  if(!rewardPending) return;
+  rewardPending = false;
+  teaserBonusCard();
+  setTimeout(() => lancerSequenceReward(), 2600);
+}
+
 function goColl(scrollToId=null){
   buildGrid();
   show('sColl');
+  triggerRewardFromUgodex();
   if(scrollToId){
     setTimeout(()=>{
       const card = document.querySelector('#collGrid .card:nth-child('+scrollToId+')');
@@ -2054,6 +2098,16 @@ function closeCatch() {
   activePupId = null;
 }
   
+
+function afterAddToDex(){
+  if (collected.size === 21 && !collected.has(22)) {
+    rewardPending = true;
+    goColl(22);
+  } else {
+    goColl(pendingPup ? pendingPup.id : null);
+  }
+}
+
 function genQRDots(seed){
   const g=$('qrDots');g.innerHTML='';let r=seed*9301+49297;
   for(let i=0;i<35;i++){r=(r*9301+49297)%233280;const on=(r/233280)>0.42;const d=document.createElement('div');d.className='qd';d.style.background=on?'#111':'transparent';g.appendChild(d);}
@@ -2140,7 +2194,7 @@ if (pseudo) envoyerScore(pseudo, collected.size);
   }
 
 // Action : Renvoie vers la vue d'ensemble du Dex
-dexBtn.onclick = () => { closeCatch(); goColl(p.id); };
+dexBtn.onclick = () => { closeCatch(); afterAddToDex(); };
 
   // 7. Nettoyage et mise à jour des scores
   hideARDog();
@@ -2152,7 +2206,7 @@ dexBtn.onclick = () => { closeCatch(); goColl(p.id); };
   const allNonSecret = nonSecret.every(x => collected.has(x.id));
   
   if (allNonSecret && !collected.has(22)) {
-    setTimeout(() => lancerSequenceReward(), 600);
+    
   } else if (collected.size >= TOTAL) {
     stopHuntClean();
     showWin();
@@ -2296,7 +2350,7 @@ function setViewerSlide(n){
   Array.from(dots).forEach((d,i)=>d.classList.toggle('active',i===n));
 }
 
-function closeViewer(){goColl();}
+function closeViewer(){afterAddToDex();}
 
 
 /* ══ BONUS (Version Finale & Unique) ══ */
