@@ -203,7 +203,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   border:3px solid #617234;
   box-shadow:4px 4px 0 rgba(71,61,119,.45);position:relative;
 }
-.card.caught{border-color:#3c5f22;box-shadow:4px 4px 0 rgba(63,111,49,.45);background:linear-gradient(135deg,#dff0a4,#b8ce73);cursor:pointer;}
+.card.caught{border-color:#3c5f22;box-shadow:4px 4px 0 rgba(63,111,49,.45);background:#ffffff;cursor:pointer;}
 .card.secret{border-color:#737373;background:linear-gradient(135deg,#cfcfcf,#e8e8e8);opacity:.5;pointer-events:none;}
 .card.caught::after{content:'';position:absolute;top:4px;right:6px;width:14px;height:14px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M1 6l4 4 6-7' stroke='%23cc1111' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/contain;}
 .card-dog{width:74px;height:132px;display:flex;align-items:center;justify-content:center;}
@@ -389,16 +389,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 #scanLine{display:none;}
 #snapBtn{
   position:absolute;bottom:50px;left:50%;transform:translateX(-50%);
-  background:rgba(0,0,0,.6);backdrop-filter:blur(10px);
-  border:3px solid rgba(255,255,255,.5);border-radius:50px;
-  padding:18px 36px;
-  font-family:'Fredoka One',cursive;font-size:20px;color:#fff;
+  background:linear-gradient(180deg,#ff6a6a,#d93636);backdrop-filter:blur(10px);
+  border:4px solid var(--gbc-accent-dark);border-radius:18px;
+  padding:18px 28px;
+  font-family:'Press Start 2P',cursive;font-size:12px;line-height:1.45;color:#fff;
   cursor:pointer;white-space:nowrap;z-index:20;
-  box-shadow:0 4px 20px rgba(0,0,0,.4);
+  box-shadow:0 6px 0 var(--gbc-accent-dark),0 10px 20px rgba(0,0,0,.3);
   transition:transform .1s,background .1s;
+  text-transform:uppercase;
 }
-#snapBtn:active{transform:translateX(-50%)scale(.93);background:rgba(0,0,0,.85);}
-#snapBtn.scanning{background:rgba(204,17,17,.7);border-color:rgba(255,255,255,.8);}
+#snapBtn:active{transform:translateX(-50%)scale(.93);background:linear-gradient(180deg,#f05454,#bd2222);}
+#snapBtn.scanning{background:linear-gradient(180deg,#4d4d4d,#252525);border-color:#000;}
 
 #arDog{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:19;display:none;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
 #arDog.on{display:flex;}
@@ -437,11 +438,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 
 #catchBtn{
   position:absolute;bottom:50px;left:50%;transform:translateX(-50%);
-  background:var(--rouge2);border:3px solid var(--rougefonce);border-radius:24px;
-  padding:16px 50px;font-family:'Fredoka One',cursive;font-size:22px;color:#fff;
+  background:linear-gradient(180deg,#ff6a6a,#d93636);border:4px solid var(--gbc-accent-dark);border-radius:18px;
+  padding:16px 34px;font-family:'Press Start 2P',cursive;font-size:12px;line-height:1.45;color:#fff;
   cursor:pointer;white-space:nowrap;
-  box-shadow:0 5px 0 var(--rougefonce),0 10px 30px rgba(180,0,0,0.4);
+  box-shadow:0 6px 0 var(--gbc-accent-dark),0 10px 24px rgba(180,0,0,0.28);
   animation:catchPulse 1.1s ease-in-out infinite;z-index:20;display:none;
+  text-transform:uppercase;
 }
 #catchBtn.on{display:block;}
 @keyframes catchPulse{0%,100%{transform:translateX(-50%)scale(1)}50%{transform:translateX(-50%)scale(1.05)translateY(-2px)}}
@@ -465,11 +467,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 .qr-scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--rouge2),transparent);box-shadow:0 0 10px var(--rouge2);animation:qrScan 1.6s ease-in-out infinite;}
 @keyframes qrScan{0%{top:8%}50%{top:88%}100%{top:8%}}
 .btn-capture{
-  background:var(--rouge2);border:3px solid var(--rougefonce);border-radius:22px;
-  padding:16px 50px;font-family:'Fredoka One',cursive;font-size:22px;color:#fff;
-  cursor:pointer;box-shadow:0 5px 0 var(--rougefonce);transition:transform .15s;
+  background:linear-gradient(180deg,#ff6a6a,#d93636);border:4px solid var(--gbc-accent-dark);border-radius:18px;
+  padding:16px 24px;font-family:'Press Start 2P',cursive;font-size:12px;line-height:1.45;color:#fff;
+  cursor:pointer;box-shadow:0 6px 0 var(--gbc-accent-dark);transition:transform .15s;text-transform:uppercase;
 }
-.btn-capture:active{transform:scale(.96)translateY(4px);box-shadow:0 1px 0 var(--rougefonce);}
+.btn-capture:active{transform:scale(.96)translateY(4px);box-shadow:0 1px 0 var(--gbc-accent-dark);}
 
 /*  BURST  */
 #burst{position:fixed;inset:0;z-index:200;display:none;pointer-events:none;align-items:center;justify-content:center;}
@@ -940,11 +942,74 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   }
 }
 
-#sCredits{background:#000;justify-content:center;overflow:hidden;}
-.credits-scroll{animation:creditsRoll 20s linear forwards;padding:100vh 30px;text-align:center;color:#fff;line-height:2.5;}
-@keyframes creditsRoll{from{transform:translateY(0)}to{transform:translateY(-100%)}}
-.credits-title{font-family:'Press Start 2P',cursive;font-size:18px;line-height:1.5;color:#ffffff;text-shadow:0 4px 0 #7f1414;margin-bottom:12px;}
-.credits-name{font-family:'VT323',monospace;font-size:30px;color:rgba(255,255,255,0.85);}
+#sCredits{
+  background:
+    radial-gradient(circle at top left,rgba(255,255,255,.24),transparent 24%),
+    linear-gradient(180deg,var(--gbc-shell-light),var(--gbc-shell) 55%,var(--gbc-shell-dark));
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  padding:24px;
+}
+.credits-gb{
+  width:min(92vw,420px);
+  aspect-ratio: 0.8;
+  background:linear-gradient(180deg,#efefef,#cfcfcf 58%,#a5a5a5);
+  border:6px solid #3b3b3b;
+  border-radius:24px 24px 58px 24px;
+  box-shadow:0 0 0 6px rgba(255,255,255,.16),10px 12px 0 rgba(33,33,33,.26);
+  padding:22px 18px 26px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.credits-brand{
+  width:100%;
+  font-family:'Press Start 2P',cursive;
+  font-size:10px;
+  line-height:1.4;
+  color:#3b3b3b;
+  text-align:center;
+  margin-bottom:12px;
+}
+.credits-screen-shell{
+  width:100%;
+  background:#8f8f8f;
+  border:4px solid #585858;
+  border-radius:18px 18px 28px 18px;
+  padding:18px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.24);
+}
+.credits-led{
+  font-family:'VT323',monospace;
+  font-size:18px;
+  color:#7f1414;
+  letter-spacing:1px;
+  margin-bottom:10px;
+}
+.credits-screen{
+  position:relative;
+  width:100%;
+  aspect-ratio:1 / 1;
+  overflow:hidden;
+  background:linear-gradient(180deg,#c8db85,#a5bb67);
+  border:4px solid #55662a;
+  border-radius:8px;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.22);
+}
+.credits-scroll{
+  position:absolute;
+  left:0; right:0; bottom:-100%;
+  animation:creditsRoll 20s linear forwards;
+  padding:100% 18px 24px;
+  text-align:center;
+  color:#243018;
+  line-height:1.6;
+}
+@keyframes creditsRoll{from{transform:translateY(0)}to{transform:translateY(-115%)}}
+.credits-title{font-family:'Press Start 2P',cursive;font-size:14px;line-height:1.6;color:#243018;margin-bottom:10px;}
+.credits-name{font-family:'VT323',monospace;font-size:28px;color:#38471b;}
   
 
 /* PREMIUM GOLD TITLE */
@@ -1271,14 +1336,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 
 <!--  SCREEN CREDITS  -->
 <div class="screen" id="sCredits">
-  <div class="credits-scroll">
-    <div class="credits-title">101 Dalmatiens</div>
-    <div class="credits-name">Un jeu cr par...</div>
-    <br><br>
-    <div class="credits-title">Merci aux joueurs</div>
-    <div class="credits-name">...tes noms ici...</div>
-    <br><br>
-    <div class="credits-title"></div>
+  <div class="credits-gb">
+    <div class="credits-brand">UGO PLAYER</div>
+    <div class="credits-screen-shell">
+      <div class="credits-led">● POWER</div>
+      <div class="credits-screen">
+        <div class="credits-scroll">
+          <div class="credits-title">101 Dalmatiens</div>
+          <div class="credits-name">Un jeu créé par...</div>
+          <br><br>
+          <div class="credits-title">Merci aux joueurs</div>
+          <div class="credits-name">...tes noms ici...</div>
+          <br><br>
+          <div class="credits-title">Fin</div>
+        </div>
+      </div>
+    </div>
   </div>
   <button onclick="goColl()" style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#ff6a6a,#d93636);border:4px solid #7f1414;color:#fff;padding:14px 24px;border-radius:16px;font-family:'Press Start 2P',cursive;font-size:12px;line-height:1.4;cursor:pointer;box-shadow:0 6px 0 #7f1414;">
     Fermer
