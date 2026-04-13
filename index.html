@@ -567,7 +567,128 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 #capturePokeWrap{width:110px;height:110px;display:flex;align-items:center;justify-content:center;animation:qrPop .5s cubic-bezier(.34,1.56,.64,1);}
 
 /* ══ SCREEN RECOMPENSE (item 22) ══ */
-#sReward{background:linear-gradient(135deg,#111,#222);justify-content:center;align-items:center;padding:30px;gap:20px;}
+#sReward{
+  background:linear-gradient(135deg,#111,#1a1a2e);
+  justify-content:center;
+  align-items:center;
+  padding:30px;
+  gap:20px;
+  overflow:hidden;
+  position:relative;
+}
+.reward-card{
+  position:relative;
+  z-index:2;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:18px;
+}
+.reward-title{
+  font-family:'Fredoka One',cursive;
+  font-size:32px;
+  color:var(--gold2,#ffdd44);
+  text-align:center;
+  text-shadow:0 0 20px rgba(255,220,68,.5);
+  position:relative;
+  z-index:2;
+}
+.reward-visual{
+  position:relative;
+  width:80%;
+  max-width:320px;
+  max-height:42vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.reward-img{
+  width:100%;
+  max-width:320px;
+  max-height:42vh;
+  object-fit:contain;
+  border-radius:16px;
+  box-shadow:0 0 40px rgba(255,220,68,.3);
+}
+.reward-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  padding:16px;
+  pointer-events:none;
+}
+.reward-big-score{
+  font-family:'Fredoka One',cursive;
+  font-size:36px;
+  color:#fff;
+  text-shadow:0 4px 16px rgba(0,0,0,.8);
+  background:rgba(0,0,0,.32);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(8px);
+  border-radius:16px;
+  padding:10px 18px;
+  min-width:170px;
+  text-align:center;
+  opacity:0;
+  transform:translateY(10px) scale(.96);
+}
+.reward-big-score.show{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  transition:all .35s ease;
+}
+.reward-bonus-line{
+  font-family:'Fredoka One',cursive;
+  font-size:18px;
+  color:#fff;
+  text-align:center;
+  background:rgba(0,0,0,.38);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(8px);
+  border-radius:14px;
+  padding:10px 16px;
+  opacity:0;
+  transform:translateY(12px) scale(.96);
+  min-width:220px;
+}
+.reward-bonus-line.show{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  transition:all .35s ease;
+}
+.reward-bonus-line.pulse{
+  animation:rewardPulse .7s ease;
+}
+@keyframes rewardPulse{
+  0%{transform:translateY(0) scale(1);}
+  35%{transform:translateY(0) scale(1.08);}
+  100%{transform:translateY(0) scale(1);}
+}
+.reward-confetti-layer{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:1;
+}
+.reward-confetti{
+  position:absolute;
+  top:-10%;
+  width:10px;
+  height:18px;
+  border-radius:2px;
+  opacity:.95;
+  animation:rewardConfettiFall linear forwards;
+}
+@keyframes rewardConfettiFall{
+  0%{transform:translateY(-10vh) rotate(0deg);}
+  100%{transform:translateY(120vh) rotate(720deg);}
+}
 .reward-title{font-family:'Fredoka One',cursive;font-size:32px;color:var(--gold2);text-align:center;text-shadow:0 0 20px rgba(255,220,68,.5);}
 .reward-img{width:80%;max-width:300px;border-radius:16px;box-shadow:0 0 40px rgba(255,220,68,.3);}
 .reward-sub{font-size:14px;color:rgba(255,255,255,.6);text-align:center;}
@@ -995,19 +1116,34 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
   </div>
 </div>
 
+
 <!-- ════ SCREEN RÉCOMPENSE UGOAT ════ -->
-<div class="screen" id="sReward" style="background:linear-gradient(135deg,#111,#1a1a2e);justify-content:center;align-items:center;padding:30px;gap:20px;">
-  <div style="font-size:48px;">🏆</div>
-  <div style="font-family:'Fredoka One',cursive;font-size:32px;color:var(--gold2,#ffdd44);text-align:center;text-shadow:0 0 20px rgba(255,220,68,.5);">UGOAT débloqué !</div>
-  <img src="pup22.webp" alt="UGOAT" style="width:80%;max-width:300px;max-height:40vh;object-fit:contain;border-radius:16px;box-shadow:0 0 40px rgba(255,220,68,.3);" onerror="this.style.display='none'">
-  <div style="font-size:14px;color:rgba(255,255,255,.6);text-align:center;">Tu as tout collecté.<br>Le légendaire UGOAT est à toi !</div>
-  <div style="font-family:'Fredoka One',cursive;font-size:20px;color:#ffdd44;text-align:center;background:rgba(255,220,68,0.15);border:2px solid rgba(255,220,68,0.4);border-radius:12px;padding:12px 20px;">
-  🏅 Bonus Finisher : +15 pts !
-</div>
-  <div id="bonusMsg" style="font-family:'Fredoka One',cursive;font-size:18px;color:#fff;text-align:center;margin-top:10px;">
+<div class="screen" id="sReward">
+  <div id="rewardConfetti" class="reward-confetti-layer"></div>
+
+  <div class="reward-card">
+    <div style="font-size:48px;position:relative;z-index:2;">🏆</div>
+    <div class="reward-title">UGOAT débloqué !</div>
+
+    <div class="reward-visual">
+      <img src="pup22.webp" alt="UGOAT" class="reward-img"
+           onerror="this.style.display='none'">
+
+      <div class="reward-overlay">
+        <div id="rewardBigScore" class="reward-big-score">22 pts</div>
+        <div id="rewardBonus1" class="reward-bonus-line">🏅 Bonus Finisher : +15 pts</div>
+        <div id="rewardBonus2" class="reward-bonus-line">⏱️ Bonus Timer : +0 pt</div>
+      </div>
+    </div>
+
+    <div style="font-size:14px;color:rgba(255,255,255,.6);text-align:center;position:relative;z-index:2;">
+      Tu as tout collecté.<br>Le légendaire UGOAT est à toi !
+    </div>
+
+    <button class="btn btn-primary" onclick="unlockUGOAT()">🐾 Ajouter au Ugodex</button>
   </div>
-  <button class="btn btn-primary" onclick="unlockUGOAT()">🐾 Ajouter au Ugodex</button>
 </div>
+
 
 <!-- ════ SCREEN CREDITS ════ -->
 <div class="screen" id="sCredits">
@@ -1195,19 +1331,15 @@ function calculerBonus(created, updated) {
     return { points: points, label: `${heureRonde}h` };
 }
   
+
 /* ══ AFFICHE BONUS TEMPS ══ */
 function afficherRecompense(record) {
     const bonus = calculerBonus(record.created, record.updated);
     pendingTimeBonus = bonus.points;
-
-    const msgEl = document.getElementById('bonusMsg');
-    if (msgEl) {
-        msgEl.innerHTML = `⏱️ Bonus temporel en moins de ${bonus.label} : <span style="color:#ffdd44">+${bonus.points} pts</span>`;
-    }
-
-    show('sReward');
+    pendingTimeLabel = bonus.label;
+    lancerSequenceReward();
 }
-  
+
 /* ══ DETAIL UGODEX ══ */
 let detailId=null, detailShowQR=false;
 let detailSlide = 0;
@@ -1340,7 +1472,8 @@ function setupDetailSwipe(){
 }
 
 function unlockUGOAT(){
-  collected.add(22);save();
+  collected.add(22);
+  save();
   const pseudo = localStorage.getItem('ugo_pseudo');
   const finalScore = collected.size + 15 + pendingTimeBonus;
   if (pseudo) envoyerScore(pseudo, finalScore);
@@ -1373,6 +1506,8 @@ let collected=new Set(),startTime=Date.now(),pendingPup=null,alertTimer=null;
 let camStream=null,scanLoop=null,scanPaused=false,activePupId=null;
 let bgMusic=null;
 let pendingTimeBonus = 0;
+let pendingTimeLabel = "0h";
+let rewardSequenceRunning = false;
 
 /* ══ PERSIST ══ */
 function save(){try{localStorage.setItem('dal7_c',JSON.stringify([...collected]));localStorage.setItem('dal7_t',''+startTime);}catch(e){}}
@@ -2085,18 +2220,18 @@ function setViewerSlide(n){
 
 function closeViewer(){goColl();}
 
+
 /* ══ BONUS (Version Finale & Unique) ══ */
 async function unlockBonus() {
   const p = PUPS.find(x => x.id === BONUS_ID);
   collected.add(BONUS_ID);
   save();
   pendingTimeBonus = 0;
-  
-  // Feedback immédiat
+  pendingTimeLabel = "0h";
+
   flashMsg('🏆 ' + p.name + ' débloqué ! Félicitations GG !', 5000);
   vibrate([100, 50, 100, 50, 300]);
 
-  // Logique de calcul du bonus temporel et affichage récompense
   try {
     const pseudo = localStorage.getItem('ugo_pseudo');
     const result = await pb.collection('Classement').getList(1, 1, {
@@ -2107,19 +2242,119 @@ async function unlockBonus() {
       const userRecord = result.items[0];
       afficherRecompense(userRecord);
     } else {
-      const msgEl = document.getElementById('bonusMsg');
-      if (msgEl) msgEl.innerHTML = `⏱️ Bonus temporel : <span style="color:#ffdd44">+0 pt</span>`;
       pendingTimeBonus = 0;
-      show('sReward');
+      pendingTimeLabel = "0h";
+      lancerSequenceReward();
     }
   } catch (err) {
     console.error("Erreur calcul bonus:", err);
-    const msgEl = document.getElementById('bonusMsg');
-    if (msgEl) msgEl.innerHTML = `⏱️ Bonus temporel : <span style="color:#ffdd44">+0 pt</span>`;
     pendingTimeBonus = 0;
-    show('sReward');
+    pendingTimeLabel = "0h";
+    lancerSequenceReward();
   }
 }
+
+
+
+function rewardWait(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function animateRewardScore(from, to, duration){
+  return new Promise(resolve => {
+    const el = $('rewardBigScore');
+    if (!el) return resolve();
+    const start = performance.now();
+
+    function tick(now){
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.round(from + (to - from) * eased);
+      el.textContent = value + ' pts';
+      if (progress < 1) requestAnimationFrame(tick);
+      else resolve();
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+function lancerConfettisReward(){
+  const layer = $('rewardConfetti');
+  if (!layer) return;
+  layer.innerHTML = '';
+  const colors = ['#ffdd44','#ff5e7e','#6ef','#7cff7c','#ffffff','#ff9f1c'];
+
+  for(let i = 0; i < 70; i++){
+    const piece = document.createElement('div');
+    piece.className = 'reward-confetti';
+    piece.style.left = (Math.random() * 100) + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = (2.4 + Math.random() * 1.8) + 's';
+    piece.style.animationDelay = (Math.random() * 0.5) + 's';
+    piece.style.transform = `translateY(-10vh) rotate(${Math.random()*180}deg)`;
+    if (Math.random() > 0.5) {
+      piece.style.width = '12px';
+      piece.style.height = '12px';
+      piece.style.borderRadius = '50%';
+    }
+    layer.appendChild(piece);
+  }
+
+  setTimeout(() => {
+    if (layer) layer.innerHTML = '';
+  }, 4200);
+}
+
+async function lancerSequenceReward(){
+  if (rewardSequenceRunning) return;
+  rewardSequenceRunning = true;
+
+  const baseScore = collected.size;
+  const finisherBonus = 15;
+  const timerBonus = pendingTimeBonus || 0;
+  const timerLabel = pendingTimeLabel || '0h';
+
+  const big = $('rewardBigScore');
+  const b1 = $('rewardBonus1');
+  const b2 = $('rewardBonus2');
+
+  if (big) {
+    big.classList.remove('show');
+    big.textContent = baseScore + ' pts';
+  }
+  if (b1) {
+    b1.classList.remove('show', 'pulse');
+    b1.textContent = '🏅 Bonus Finisher : +15 pts';
+  }
+  if (b2) {
+    b2.classList.remove('show', 'pulse');
+    b2.textContent = `⏱️ Bonus Timer (${timerLabel}) : +${timerBonus} pts`;
+  }
+
+  show('sReward');
+  lancerConfettisReward();
+  await rewardWait(180);
+
+  if (big) big.classList.add('show');
+  await rewardWait(650);
+
+  if (b1) {
+    b1.classList.add('show');
+    b1.classList.add('pulse');
+  }
+  await animateRewardScore(baseScore, baseScore + finisherBonus, 900);
+  await rewardWait(500);
+
+  if (b2) {
+    b2.textContent = `⏱️ Bonus Timer (${timerLabel}) : +${timerBonus} pts`;
+    b2.classList.add('show');
+    b2.classList.add('pulse');
+  }
+  await animateRewardScore(baseScore + finisherBonus, baseScore + finisherBonus + timerBonus, 1100);
+
+  rewardSequenceRunning = false;
+}
+
 
 function showWin(){
   const row=$('winDogsRow');row.innerHTML='';
