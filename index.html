@@ -2299,15 +2299,16 @@ function stopCurrentMusicPlayback() {
 }
 
 // Fonction pour jouer tout le JSON
-function playNotesFromData(musicData) {
+function playNotesFromData(musicData, speed = 1) {
     if (!audioCtx) return;
     const now = audioCtx.currentTime;
     
     musicData.tracks.forEach(track => {
         if (!track.notes) return;
         track.notes.forEach(note => {
-            // Note: velocity / 2 pour un volume quilibr
-            playNote(note.midi, note.time, note.duration, note.velocity / 2, now);
+            const noteTime = note.time / speed;
+            const noteDuration = Math.max(0.02, note.duration / speed);
+            playNote(note.midi, noteTime, noteDuration, note.velocity / 2, now);
         });
     });
 }
@@ -2326,11 +2327,12 @@ async function playMusic(jsonUrl) {
         const musicData = await response.json();
         if (token !== currentMusicToken || currentMusicTrack !== jsonUrl) return;
 
-        playNotesFromData(musicData);
+        const speed = jsonUrl === 'tetris.json' ? 1.4 : 1;
+        playNotesFromData(musicData, speed);
 
         currentMusicLoop = setTimeout(() => {
             if (currentMusicTrack === jsonUrl) playMusic(jsonUrl);
-        }, musicData.duration * 1000 + 100);
+        }, (musicData.duration / speed) * 1000 + 100);
 
     } catch (e) {
         console.error("Erreur chargement musique :", e);
