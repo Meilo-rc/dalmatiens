@@ -937,12 +937,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   max-height:82%;
 }
 #catchPokeWrap .catch-pup{
-  top:4%;
-  right:2%;
+  top:auto;
+  right:1%;
   left:auto;
-  bottom:auto;
-  max-width:54%;
-  max-height:56%;
+  bottom:138px;
+  max-width:62%;
+  max-height:68%;
   transform:none !important;
   animation:
     catchPupIn .7s cubic-bezier(.22,.9,.25,1) both,
@@ -1598,7 +1598,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
            onerror="this.style.display='none'">
 
       <div class="reward-overlay">
-        <div id="rewardBonus1" class="reward-bonus-line"> Bonus Finisher : +15 pts</div>
+        <div id="rewardBonus1" class="reward-bonus-line"> Bonus Finisher : +50 pts</div>
         <div id="rewardBonus2" class="reward-bonus-line"> Bonus Timer : +0 pt</div>
         <div id="rewardBigScore" class="reward-big-score">22 pts</div>
       </div>
@@ -1986,7 +1986,7 @@ function openDetail(id, fromCapture=false){
     if (qrImg) {
       qrImg.style.display = 'block';
       qrImg.classList.add('qr-pulse');
-      setQrImageSource(qrImg, QR_PREFIX + id, 220);
+      setQrImageSource(qrImg, TRADE_QR_PREFIX + id, 220);
     }
     if (qrNote) {
       qrNote.innerHTML = 'A utiliser pour &eacute;changer vos Ugos<br>entre dresseurs !';
@@ -2089,10 +2089,16 @@ function setupDetailSwipe(){
 
 function finalizeUGOATUnlock(){
   collected.add(22);
+  const timerBonus = pendingTimeBonus || 0;
+  if (!finisherBonusAwarded) {
+    playerScore += FINISHER_BONUS_POINTS;
+    finisherBonusAwarded = true;
+  }
+  playerScore += timerBonus;
+  pendingTimeBonus = 0;
   save();
   const pseudo = localStorage.getItem('ugo_pseudo');
-  const finalScore = collected.size + 15 + pendingTimeBonus;
-  if (pseudo) envoyerScore(pseudo, finalScore);
+  if (pseudo) envoyerScore(pseudo, playerScore);
   buildGrid();
   show('sColl');
   setTimeout(()=>goCredits(), 2000);
@@ -2140,7 +2146,11 @@ const PUPS=[
 ];
 const TOTAL=22;
 const BONUS_ID=22; // dbloqu quand tous les 21 autres sont capturs
-const QR_PREFIX='DAL_';
+const HUNT_QR_PREFIX='DAL_';
+const TRADE_QR_PREFIX='TRADE_';
+const CAPTURE_POINTS=10;
+const EXCHANGE_POINTS=5;
+const FINISHER_BONUS_POINTS=50;
 
 /*  STATE  */
 let collected=new Set(),startTime=Date.now(),pendingPup=null,alertTimer=null;
@@ -2153,9 +2163,22 @@ let rewardSequenceRunning = false;
 let scanInFlight = false;
 let barcodeDetector = null;
 let defaultHomeMascotMarkup = '';
+let playerScore = 0;
+let finisherBonusAwarded = false;
 
 /*  PERSIST  */
-function save(){try{localStorage.setItem('dal7_c',JSON.stringify([...collected]));localStorage.setItem('dal7_t',''+startTime);}catch(e){}}
+function inferScoreFromCollection(ids, finisherDone){
+  const nonSecretCount = PUPS.filter(p => !p.secret && ids.has(p.id)).length;
+  return (nonSecretCount * CAPTURE_POINTS) + (finisherDone ? FINISHER_BONUS_POINTS : 0);
+}
+function save(){
+  try{
+    localStorage.setItem('dal7_c',JSON.stringify([...collected]));
+    localStorage.setItem('dal7_t',''+startTime);
+    localStorage.setItem('dal7_s',''+playerScore);
+    localStorage.setItem('dal7_fb', finisherBonusAwarded ? '1' : '0');
+  }catch(e){}
+}
 function hasAllNonSecretCaptured(){
   return PUPS.filter(p => !p.secret).every(p => collected.has(p.id));
 }
@@ -2203,8 +2226,15 @@ function lancerConfettisHome(){
 function load(){
   try{
     const c=localStorage.getItem('dal7_c'),t=localStorage.getItem('dal7_t');
+    const s=localStorage.getItem('dal7_s'),fb=localStorage.getItem('dal7_fb');
     if(c) collected = new Set(JSON.parse(c).map(Number));
     if(t) startTime = parseInt(t);
+    if (fb === '1') finisherBonusAwarded = true;
+    else if (fb === '0') finisherBonusAwarded = false;
+    else finisherBonusAwarded = collected.has(BONUS_ID);
+
+    if (s !== null && !Number.isNaN(parseInt(s, 10))) playerScore = parseInt(s, 10);
+    else playerScore = inferScoreFromCollection(collected, finisherBonusAwarded);
   }catch(e){}
   syncBonusPersistence();
 }
@@ -2453,7 +2483,7 @@ function goPrint(){
   PUPS.forEach(p=>{
     const card=document.createElement('div');
     card.className='qr-print-card';
-    const data=encodeURIComponent(QR_PREFIX+p.id);
+    const data=encodeURIComponent(HUNT_QR_PREFIX+p.id);
     card.innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${data}&bgcolor=ffffff&color=000000&qzone=1" alt="QR ${p.id}">`+
       `<div class="qr-print-name">${p.name}<br>#${String(p.id).padStart(2,'0')}</div>`;
     grid.appendChild(card);
@@ -2581,24 +2611,60 @@ function captureImageData(video,canvas,size){
   return ctx.getImageData(0,0,size,size);
 }
 
+function awardPoints(points){
+  playerScore += points;
+  save();
+  const pseudo = localStorage.getItem('ugo_pseudo');
+  if (pseudo) envoyerScore(pseudo, playerScore);
+}
+
 function processQRData(data){
   if(!data) return;
-  
+
+  const raw = String(data).trim();
   let id = null;
-  if(data.startsWith(QR_PREFIX)) id = parseInt(data.slice(QR_PREFIX.length));
-  else if(/^\d+$/.test(data.trim())) id = parseInt(data.trim());
+  let mode = null;
+
+  if(raw.startsWith(HUNT_QR_PREFIX)) {
+    id = parseInt(raw.slice(HUNT_QR_PREFIX.length), 10);
+    mode = 'hunt';
+  } else if(raw.startsWith(TRADE_QR_PREFIX)) {
+    id = parseInt(raw.slice(TRADE_QR_PREFIX.length), 10);
+    mode = 'trade';
+  } else if(/^\d+$/.test(raw)) {
+    id = parseInt(raw, 10);
+    mode = 'hunt';
+  }
 
   if(id && !isNaN(id) && id >= 1 && id <= 21){
-    // --- ARRT DU SCAN DS LA DTECTION ---
     if(scanLoop) {
-        clearInterval(scanLoop);
-        scanLoop = null;
+      clearInterval(scanLoop);
+      scanLoop = null;
     }
-    // --------------------------------------
-    handleQRDetected(id);
+    if (mode === 'trade') handleTradeQRDetected(id);
+    else handleQRDetected(id);
   } else {
     showScanResult(' QR non reconnu','#e88');
   }
+}
+
+function handleTradeQRDetected(id){
+  const pup = PUPS.find(x=>x.id===id);
+  if(!pup) return;
+
+  if(collected.has(id)){
+    showScanResult('\u2713 ' + pup.name + ' d\u00e9j\u00e0 obtenu !','#ffaa44');
+    if (!scanLoop && camStream) scanLoop = setInterval(() => takeSnap(false), 1500);
+    return;
+  }
+
+  collected.add(id);
+  awardPoints(EXCHANGE_POINTS);
+  stopHuntClean();
+  playCaptureSfx();
+  playMusic('mainmusic.json');
+  flashMsg('+5 pts : echange valide !', 2400);
+  openDetail(id);
 }
 
 function showScanResult(msg,color='#fff'){
@@ -2720,7 +2786,7 @@ function openCapture() {
 
   // 3. Injection de l'image du chiot
   $('catchPokeWrap').innerHTML =
-    `<img class="catch-slide-in catch-pup" src="pup${p.id}.webp" alt="${p.name}" style="width:auto;height:58%;object-fit:contain;filter:none;">` +
+    `<img class="catch-slide-in catch-pup" src="pup${p.id}.webp" alt="${p.name}" style="width:auto;height:68%;object-fit:contain;filter:none;">` +
     `<img class="catch-sasha" src="sasha.webp" alt="Sasha" onerror="this.style.display='none'">`;
 
   // 4. Mise  jour des textes
@@ -2850,12 +2916,7 @@ async function doCapture() {
   // 3. Traitement mtier : ajout  la collection et sauvegarde
   const p = pendingPup;
   collected.add(p.id);
-  save();
-
-  // Mise  jour du score PocketBase
-const pseudo = localStorage.getItem('ugo_pseudo');
-// dbg('Pseudo: ' + pseudo + ' | Score: ' + collected.size);
-if (pseudo) envoyerScore(pseudo, collected.size);
+  awardPoints(CAPTURE_POINTS);
   
   // 4. Effets visuels et sonores de succs
   showBurst(p.id - 1);
@@ -3017,7 +3078,7 @@ function openViewer(id){
     </div>
   `;
   body.appendChild(s1);
-  setQrImageSource(s1.querySelector('img'), 'DAL_'+id, 200);
+  setQrImageSource(s1.querySelector('img'), TRADE_QR_PREFIX + id, 200);
 
   /* DOTS */
   const dots=$('viewerDots');
@@ -3140,8 +3201,8 @@ async function lancerSequenceReward(){
   if (rewardSequenceRunning) return;
   rewardSequenceRunning = true;
 
-  const baseScore = collected.size;
-  const finisherBonus = 15;
+  const baseScore = playerScore;
+  const finisherBonus = FINISHER_BONUS_POINTS;
   const timerBonus = pendingTimeBonus || 0;
   const timerLabel = pendingTimeLabel || '1h';
 
@@ -3155,7 +3216,7 @@ async function lancerSequenceReward(){
   }
   if (b1) {
     b1.classList.remove('show', 'pulse');
-    b1.textContent = ' Bonus Finisher : +15 pts';
+    b1.textContent = ' Bonus Finisher : +' + FINISHER_BONUS_POINTS + ' pts';
   }
   if (b2) {
     b2.classList.remove('show', 'pulse');
@@ -3197,7 +3258,16 @@ function showWin(){
   vibrate([100,50,100,50,100,50,500]);
   show('sWin');
 }
-function reset(){collected=new Set();startTime=Date.now();save();pendingPup=null;activePupId=null;show('sSplash');}
+function reset(){
+  collected=new Set();
+  startTime=Date.now();
+  playerScore=0;
+  finisherBonusAwarded=false;
+  save();
+  pendingPup=null;
+  activePupId=null;
+  show('sSplash');
+}
 
 function activateTestEndgame(){
   const existingPseudo = localStorage.getItem('ugo_pseudo');
@@ -3206,6 +3276,8 @@ function activateTestEndgame(){
   }
   collected = new Set(Array.from({length:20}, (_,i)=>i+1));
   startTime = Date.now() - (20 * 60 * 1000);
+  playerScore = 20 * CAPTURE_POINTS;
+  finisherBonusAwarded = false;
   save();
   buildGrid();
   goHome();
@@ -3266,7 +3338,7 @@ async function savePseudo() {
     }
 
     try {
-        const data = { Pseudo: pseudo, Score: 0 };
+        const data = { Pseudo: pseudo, Score: playerScore };
         if (pb) await getPocketBaseCollection().create(data);
 
         localStorage.setItem('ugo_pseudo', pseudo);
@@ -3371,6 +3443,8 @@ function activateTestMode(){
     Array.from({length:20}, (_,i)=>i+1)
   ));
   localStorage.setItem('dal7_t', String(Date.now() - 20 * 60 * 1000));
+  localStorage.setItem('dal7_s', String(20 * CAPTURE_POINTS));
+  localStorage.setItem('dal7_fb', '0');
   localStorage.setItem('ugo_pseudo', 'testeur');
   alert("Mode test activ ");
   location.reload();
