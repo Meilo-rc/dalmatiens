@@ -1155,7 +1155,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 
   <div class="reward-card">
     <div style="font-size:48px;position:relative;z-index:2;"></div>
-    <div class="reward-title">UGOAT dbloqu !</div>
+    <div class="reward-title">UGOAT d&eacute;bloqu&eacute; !</div>
 
     <div class="reward-visual">
       <img src="pup22.webp" alt="UGOAT" class="reward-img"
@@ -1200,8 +1200,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--noir);color:va
 <div id="alertBanner" onclick="onAlert()">
   <div class="alert-dog-wrap" id="alertDogWrap"></div>
   <div class="alert-txt">
-    <div class="alert-h" id="alertH">Un dalmatien  trouver !</div>
-    <div class="alert-s" id="alertS">Cherche le QR code </div>
+    <div class="alert-h" id="alertH">Un dalmatien &agrave; trouver !</div>
+    <div class="alert-s" id="alertS">Cherche le QR code &rarr;</div>
   </div>
   <div class="alert-arr"></div>
 </div>
@@ -1920,7 +1920,7 @@ async function goHunt(){
   $('scanResult').style.display='none';
 
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    showSysMsg(' Camra non supporte sur cet appareil.');
+    showSysMsg('\ud83d\udcf5 Cam\u00e9ra non support\u00e9e sur cet appareil.');
     return;
   }
 
@@ -1934,9 +1934,9 @@ async function goHunt(){
   let got=false;
   for(const c of tries){
     try{camStream=await navigator.mediaDevices.getUserMedia(c);got=true;break;}
-    catch(e){if(e.name==='NotAllowedError'){showSysMsg(' Autorise la camra puis relance.');return;}}
+    catch(e){if(e.name==='NotAllowedError'){showSysMsg('\ud83d\udd12 Autorise la cam\u00e9ra puis relance.');return;}}
   }
-  if(!got){showSysMsg(' Camra inaccessible.');return;}
+  if(!got){showSysMsg('\ud83d\udcf5 Cam\u00e9ra inaccessible.');return;}
 
   const v=$('arVideo');
   v.srcObject=camStream;
@@ -2049,7 +2049,7 @@ function showScanResult(msg,color='#fff'){
 }
 
 function handleQRDetected(id){
-  if(collected.has(id)){showScanResult('✓ ' + PUPS.find(x=>x.id===id).name + ' déjà capturé !','#ffaa44');return;}
+  if(collected.has(id)){showScanResult('\u2713 ' + PUPS.find(x=>x.id===id).name + ' d\u00e9j\u00e0 captur\u00e9 !','#ffaa44');return;}
   if(activePupId===id)return;
   // --- NOUVEAU : Changement de musique ---
   playMusic('wildpokemon.json');
@@ -2064,9 +2064,9 @@ function handleQRDetected(id){
     svgInternal.style.display = 'block';
     svgInternal.style.margin = '0 auto';
   }
-  $('arTitle').textContent=' '+p.name+' trouv !';
+  $('arTitle').textContent='\ud83d\udc3e ' + p.name + ' trouv\u00e9 !';
   showARDog();flashGreen();vibrate([60,40,120]);
-  showScanResult(' Un '+p.name+' sauvage apparait !','#6ef');
+  showScanResult('\u2713 Un ' + p.name + ' sauvage appara\u00eet !','#6ef');
   $('catchBtn').classList.add('on');
 }
 
@@ -2342,8 +2342,8 @@ function triggerAlert(){
   const unc=PUPS.filter(p=>!collected.has(p.id));if(!unc.length)return;
   const p=unc[0];
   $('alertDogWrap').innerHTML=pokeballSVG(false);
-  $('alertH').textContent=p.name+' attend d\'tre trouv !';
-  $('alertS').textContent='Cherche le QR code dans la pice ';
+  $('alertH').textContent=p.name + ' attend d\'\u00eatre trouv\u00e9 !';
+  $('alertS').textContent='Cherche le QR code dans la pi\u00e8ce \u2192';
   $('alertBanner').classList.add('show');vibrate([100,50,100]);
   setTimeout(()=>$('alertBanner').classList.remove('show'),6000);
 }
@@ -2424,7 +2424,7 @@ async function unlockBonus() {
   pendingTimeBonus = 0;
   pendingTimeLabel = "1h";
 
-  flashMsg('🏆 ' + p.name + ' débloqué ! Félicitations GG !', 5000);
+  flashMsg('\ud83c\udfc6 ' + p.name + ' d\u00e9bloqu\u00e9 ! F\u00e9licitations GG !', 5000);
   vibrate([100, 50, 100, 50, 300]);
 
   try {
@@ -2580,7 +2580,7 @@ function activateTestEndgame(){
   save();
   buildGrid();
   goHome();
-  flashMsg(' Mode test activ : 20 Ugos dj collects', 2500);
+  flashMsg('Mode test activ\u00e9 : 20 Ugos d\u00e9j\u00e0 collect\u00e9s', 2500);
 }
 
 // PSEUDO A ENREGISTRER (Dcide o aller aprs le Splash)
