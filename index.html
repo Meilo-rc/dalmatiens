@@ -3103,7 +3103,13 @@ function openCapture() {
 
   // 1. On s'assure que le bouton "Capturer" est visible
   const captureBtn = document.querySelector('.btn-capture:not(#btnToDex)');
-  if (captureBtn) captureBtn.style.display = 'block';
+  if (captureBtn) {
+    captureBtn.style.display = 'block';
+    captureBtn.disabled = false;
+    captureBtn.style.pointerEvents = '';
+    captureBtn.textContent = 'Lancer';
+    captureBtn.onclick = () => doCapture();
+  }
 
   // 2. IMPORTANT : Rinitialisation de l'affichage des boutons
   // On cache le bouton "Ajouter au UgoDex" au cas o il serait rest affich
@@ -3160,6 +3166,8 @@ function closeCatch() {
   if (captureBtn) {
     captureBtn.style.display = 'block';
     captureBtn.disabled = false;
+    captureBtn.style.pointerEvents = '';
+    captureBtn.textContent = 'Lancer';
     captureBtn.onclick = () => doCapture();
   }
   if (backBtn) backBtn.style.display = 'flex';
@@ -3180,6 +3188,7 @@ function closeCatch() {
   bossBattleTurn = 0;
   bossBattleHp = BOSS_TOTAL_HP;
   bossAwaitingPlayerMove = false;
+  normalCaptureBusy = false;
   const battleText = $('catchBattleText');
   if (battleText) battleText.textContent = 'Le joueur utilise une Pokeball.';
 }
