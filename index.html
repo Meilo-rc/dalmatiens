@@ -2982,7 +2982,7 @@ async function playCaptureAnimation() {
   if (pupImg) {
     pupImg.classList.remove('idle');
     pupImg.style.transition = 'none';
-    pupImg.style.animation = 'none';
+    pupImg.style.animation = '';
     void pupImg.offsetWidth;
     pupImg.style.zIndex = '10';
     if (ball) ball.style.zIndex = '14';
