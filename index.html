@@ -3458,6 +3458,8 @@ function setupPseudoInput() {
 // Fonction debug
 function dbg(msg){ const d=$('debugLog'); if(d) d.innerHTML += msg + '<br>'; } 
 
+let splashStarting = false;
+
 // On attend que la page soit entirement charge avant d'attacher les vnements
 window.addEventListener('load', () => {
     defaultHomeMascotMarkup = document.querySelector('.home-mascot')?.innerHTML || '';
@@ -3468,24 +3470,28 @@ window.addEventListener('load', () => {
     const splashEl = $('sSplash');
     
     if (splashEl) {
-        // 1. Nettoyage du HTML
         splashEl.removeAttribute('onclick');
-        
-        // 2. couteur unique
-        ['click', 'touchstart'].forEach(evt => {
-            splashEl.addEventListener(evt, async function(e) {
-                e.preventDefault();
-                
-                // Reprise du contexte audio si ncessaire
+
+        const startFromSplash = async (e) => {
+            if (e) e.preventDefault();
+            if (splashStarting) return;
+            splashStarting = true;
+
+            try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                await audioCtx.resume();
+                if (audioCtx.state === 'suspended') await audioCtx.resume();
                 await playMusic('mainmusic.json');
-                initialiserApplication();
-                
-                // Masquage
-                splashEl.style.display = 'none';
-            }, { once: true });
-        });
+            } catch (err) {
+                console.error('Erreur démarrage splash :', err);
+            }
+
+            initialiserApplication();
+            splashEl.classList.remove('on');
+            splashEl.style.display = 'none';
+        };
+
+        splashEl.addEventListener('pointerup', startFromSplash);
+        splashEl.addEventListener('click', startFromSplash);
     }
 });
 
