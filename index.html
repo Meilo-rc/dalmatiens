@@ -2962,6 +2962,7 @@ async function playCaptureAnimation() {
   const ball = container.querySelector('svg');
   
   // 3. TAPE 1 : Lancement de la Pokball
+  playPokeballThrowSfx();
   ball.classList.add('pokeball-flying');
   
   // On attend la dure de l'animation de vol (1000ms)
@@ -2975,9 +2976,14 @@ async function playCaptureAnimation() {
     // On retire la classe aprs 400ms pour qu'elle puisse tre rutilise
     setTimeout(() => flash.classList.remove('flash-on'), 400);
   }
+  playPokeballAbsorbSfx();
 
   // Aspiration visuelle du chiot
   if (pupImg) {
+    pupImg.classList.remove('idle');
+    pupImg.style.transition = 'none';
+    pupImg.style.animation = 'none';
+    void pupImg.offsetWidth;
     pupImg.style.zIndex = '10';
     if (ball) ball.style.zIndex = '14';
     pupImg.classList.add('puppy-aspiring');
@@ -3073,6 +3079,54 @@ dexBtn.onclick = () => {
 }
 
 /*  SFX CAPTURE  */
+function playPokeballThrowSfx(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const now=ctx.currentTime;
+    const o=ctx.createOscillator(), g=ctx.createGain(), f=ctx.createBiquadFilter();
+    o.type='triangle';
+    o.frequency.setValueAtTime(980, now);
+    o.frequency.exponentialRampToValueAtTime(220, now + 0.18);
+    f.type='lowpass';
+    f.frequency.setValueAtTime(1800, now);
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(0.08, now + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+    o.connect(f); f.connect(g); g.connect(ctx.destination);
+    o.start(now); o.stop(now + 0.22);
+    setTimeout(()=>ctx.close(), 500);
+  }catch(e){}
+}
+
+function playPokeballAbsorbSfx(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const now=ctx.currentTime;
+
+    const o1=ctx.createOscillator(), g1=ctx.createGain();
+    o1.type='square';
+    o1.frequency.setValueAtTime(240, now);
+    o1.frequency.exponentialRampToValueAtTime(980, now + 0.14);
+    g1.gain.setValueAtTime(0.0001, now);
+    g1.gain.exponentialRampToValueAtTime(0.06, now + 0.012);
+    g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+    o1.connect(g1); g1.connect(ctx.destination);
+    o1.start(now); o1.stop(now + 0.18);
+
+    const o2=ctx.createOscillator(), g2=ctx.createGain();
+    o2.type='sine';
+    o2.frequency.setValueAtTime(760, now + 0.03);
+    o2.frequency.exponentialRampToValueAtTime(1280, now + 0.16);
+    g2.gain.setValueAtTime(0.0001, now + 0.03);
+    g2.gain.exponentialRampToValueAtTime(0.035, now + 0.06);
+    g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.17);
+    o2.connect(g2); g2.connect(ctx.destination);
+    o2.start(now + 0.03); o2.stop(now + 0.18);
+
+    setTimeout(()=>ctx.close(), 500);
+  }catch(e){}
+}
+
 function playCaptureSfx(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
