@@ -2499,6 +2499,24 @@ let currentMusicLoop = null;
 let currentMusicTrack = '';
 let currentMusicToken = 0;
 let activeMusicOscillators = new Set();
+let musicMasterGain = null;
+
+function getSharedAudioContext() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+    return audioCtx;
+}
+
+function ensureMusicOutput() {
+    const ctx = getSharedAudioContext();
+    if (!ctx) return null;
+    if (!musicMasterGain) {
+        musicMasterGain = ctx.createGain();
+        musicMasterGain.gain.value = 1;
+        musicMasterGain.connect(ctx.destination);
+    }
+    return musicMasterGain;
+}
 
 // Convertit note MIDI -> Frquence (Hz)
 function midiToFreq(midi) {
@@ -2508,6 +2526,8 @@ function midiToFreq(midi) {
 // Joue une note unique
 function playNote(midi, time, duration, vol, now) {
     if (!audioCtx) return;
+    const output = ensureMusicOutput();
+    if (!output) return;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     
@@ -2519,7 +2539,7 @@ function playNote(midi, time, duration, vol, now) {
     gain.gain.linearRampToValueAtTime(0, now + time + duration - 0.01);
     
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(output);
 
     activeMusicOscillators.add(osc);
     osc.onended = () => {
@@ -2532,7 +2552,17 @@ function playNote(midi, time, duration, vol, now) {
     osc.stop(now + time + duration);
 }
 
-function stopCurrentMusicPlayback() {
+async function stopCurrentMusicPlayback(fadeMs = 0) {
+    const ctx = getSharedAudioContext();
+    if (ctx && musicMasterGain && fadeMs > 0) {
+        const now = ctx.currentTime;
+        const currentGain = Math.max(0.0001, musicMasterGain.gain.value || 1);
+        musicMasterGain.gain.cancelScheduledValues(now);
+        musicMasterGain.gain.setValueAtTime(currentGain, now);
+        musicMasterGain.gain.exponentialRampToValueAtTime(0.0001, now + (fadeMs / 1000));
+        await new Promise(resolve => setTimeout(resolve, fadeMs));
+    }
+
     if (currentMusicLoop) {
         clearTimeout(currentMusicLoop);
         currentMusicLoop = null;
@@ -2544,6 +2574,12 @@ function stopCurrentMusicPlayback() {
         try { osc.disconnect(); } catch (e) {}
     }
     activeMusicOscillators.clear();
+
+    if (ctx && musicMasterGain) {
+        const resetAt = ctx.currentTime + 0.01;
+        musicMasterGain.gain.cancelScheduledValues(resetAt);
+        musicMasterGain.gain.setValueAtTime(1, resetAt);
+    }
 }
 
 // Fonction pour jouer tout le JSON
@@ -2563,11 +2599,13 @@ function playNotesFromData(musicData, speed = 1) {
 
 async function playMusic(jsonUrl) {
     const token = ++currentMusicToken;
+    const previousTrack = currentMusicTrack;
     currentMusicTrack = jsonUrl;
-    stopCurrentMusicPlayback();
+    await stopCurrentMusicPlayback(previousTrack && previousTrack !== jsonUrl ? 240 : 0);
 
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') await audioCtx.resume();
+    ensureMusicOutput();
 
     try {
         const response = await fetch(jsonUrl);
@@ -3155,7 +3193,8 @@ function updateBossLifeBar(){
 
 function playBossExplosionSfx(){
   try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const ctx = getSharedAudioContext();
+    if (!ctx) return;
     const now=ctx.currentTime;
     const o1=ctx.createOscillator(), g1=ctx.createGain();
     o1.type='square';
@@ -3178,7 +3217,6 @@ function playBossExplosionSfx(){
     g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
     o2.connect(g2); g2.connect(ctx.destination);
     o2.start(now + 0.015); o2.stop(now + 0.14);
-    setTimeout(()=>ctx.close(), 600);
   }catch(e){}
 }
 
@@ -3289,11 +3327,12 @@ async function runUGOATBossTurn(){
     await rewardWait(1400);
 
     typeCatchBattleText('<strong>UGOAT</strong> lance une attaque <strong>' + BOSS_ATTACKS[bossBattleTurn - 1] + '</strong>.', 22);
+    await rewardWait(1500);
     playBossExplosionSfx();
     triggerBattleHitAnimation('#catchPokeWrap .catch-sasha');
     bossBattleHp = Math.max(0, bossBattleHp - BOSS_DAMAGE_PATTERN[bossBattleTurn - 1]);
     updateBossLifeBar();
-    await rewardWait(3000);
+    await rewardWait(1500);
 
     if (bossBattleTurn === 5) {
       typeCatchBattleText('Ouch ! ' + pseudo + ' est mal en point.', 22);
@@ -3301,9 +3340,10 @@ async function runUGOATBossTurn(){
     }
 
     typeCatchBattleText('<span class="player-name">' + pseudo + '</span> lance <strong>' + BOSS_PLAYER_MOVES[bossBattleTurn - 1] + '</strong>.', 22);
+    await rewardWait(1500);
     playBossExplosionSfx();
     triggerBattleHitAnimation('#catchPokeWrap .catch-pup');
-    await rewardWait(3000);
+    await rewardWait(1500);
 
     if (launchBtn) {
       launchBtn.disabled = false;
@@ -3488,7 +3528,8 @@ dexBtn.onclick = () => {
 /*  SFX CAPTURE  */
 function playPokeballThrowSfx(){
   try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const ctx = getSharedAudioContext();
+    if (!ctx) return;
     const now=ctx.currentTime;
     const o=ctx.createOscillator(), g=ctx.createGain();
     o.type='square';
@@ -3501,13 +3542,13 @@ function playPokeballThrowSfx(){
     g.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
     o.connect(g); g.connect(ctx.destination);
     o.start(now); o.stop(now + 0.17);
-    setTimeout(()=>ctx.close(), 500);
   }catch(e){}
 }
 
 function playPokeballAbsorbSfx(){
   try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const ctx = getSharedAudioContext();
+    if (!ctx) return;
     const now=ctx.currentTime;
     const o1=ctx.createOscillator(), g1=ctx.createGain();
     o1.type='square';
@@ -3530,14 +3571,13 @@ function playPokeballAbsorbSfx(){
     g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
     o2.connect(g2); g2.connect(ctx.destination);
     o2.start(now + 0.03); o2.stop(now + 0.105);
-
-    setTimeout(()=>ctx.close(), 500);
   }catch(e){}
 }
 
 function playCaptureSfx(){
   try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const ctx = getSharedAudioContext();
+    if (!ctx) return;
     [[523,.0,.1],[659,.12,.1],[784,.24,.1],[1047,.36,.3],[1319,.7,.4]].forEach(([f,s,d])=>{
       const o=ctx.createOscillator(),g=ctx.createGain();
       o.connect(g);g.connect(ctx.destination);
@@ -3546,7 +3586,6 @@ function playCaptureSfx(){
       g.gain.linearRampToValueAtTime(0,ctx.currentTime+s+d);
       o.start(ctx.currentTime+s);o.stop(ctx.currentTime+s+d+0.05);
     });
-    setTimeout(()=>ctx.close(),1500);
   }catch(e){}
 }
 
@@ -3783,6 +3822,7 @@ async function lancerSequenceReward(){
   }
 
   show('sReward');
+  playMusic('Mario.json');
   lancerConfettisReward();
   await rewardWait(180);
 
