@@ -2318,7 +2318,7 @@ async function goCredits(){
     });
   }
   try {
-    await playMusic('tetris.json');
+    await playMusicWithFallback('Tetris.json', 'tetris.json');
   } catch (e) {
     console.error('Erreur lecture crédits :', e);
   }
@@ -2378,6 +2378,7 @@ let bossBattleActive = false;
 let bossBattleTurn = 0;
 let bossBattleBusy = false;
 let bossBattleHp = 30;
+let bossAwaitingPlayerMove = false;
 const BOSS_TOTAL_HP = 30;
 const BOSS_ATTACKS = ['VITESSE MINI LISSE','STCA','PANNE JHMI','7700','PREAVIS DE GREVE'];
 const BOSS_PLAYER_MOVES = ['DEGROUPEMENT',"CAP D'EVITEMENT",'PASSAGE SOUS U','FICHE REFLEXE','DECLARATION PREALABLE'];
@@ -2500,6 +2501,7 @@ let currentMusicTrack = '';
 let currentMusicToken = 0;
 let activeMusicOscillators = new Set();
 let musicMasterGain = null;
+let sfxMasterGain = null;
 
 function getSharedAudioContext() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -2516,6 +2518,17 @@ function ensureMusicOutput() {
         musicMasterGain.connect(ctx.destination);
     }
     return musicMasterGain;
+}
+
+function ensureSfxOutput() {
+    const ctx = getSharedAudioContext();
+    if (!ctx) return null;
+    if (!sfxMasterGain) {
+        sfxMasterGain = ctx.createGain();
+        sfxMasterGain.gain.value = 1.45;
+        sfxMasterGain.connect(ctx.destination);
+    }
+    return sfxMasterGain;
 }
 
 // Convertit note MIDI -> Frquence (Hz)
@@ -2619,10 +2632,20 @@ async function playMusic(jsonUrl) {
         currentMusicLoop = setTimeout(() => {
             if (currentMusicTrack === jsonUrl) playMusic(jsonUrl);
         }, (musicData.duration / speed) * 1000 + 100);
+        return true;
 
     } catch (e) {
         console.error("Erreur chargement musique :", e);
+        return false;
     }
+}
+
+async function playMusicWithFallback(...jsonUrls) {
+    for (const jsonUrl of jsonUrls) {
+        const ok = await playMusic(jsonUrl);
+        if (ok) return true;
+    }
+    return false;
 }
 
 /*  HOME  */
@@ -3155,6 +3178,7 @@ function closeCatch() {
   bossBattleBusy = false;
   bossBattleTurn = 0;
   bossBattleHp = BOSS_TOTAL_HP;
+  bossAwaitingPlayerMove = false;
   const battleText = $('catchBattleText');
   if (battleText) battleText.textContent = 'Le joueur utilise une Pokeball.';
 }
@@ -3195,6 +3219,8 @@ function playBossExplosionSfx(){
   try{
     const ctx = getSharedAudioContext();
     if (!ctx) return;
+    const output = ensureSfxOutput();
+    if (!output) return;
     const now=ctx.currentTime;
     const o1=ctx.createOscillator(), g1=ctx.createGain();
     o1.type='square';
@@ -3202,9 +3228,9 @@ function playBossExplosionSfx(){
     o1.frequency.setValueAtTime(140, now + 0.05);
     o1.frequency.setValueAtTime(82, now + 0.12);
     g1.gain.setValueAtTime(0.0001, now);
-    g1.gain.linearRampToValueAtTime(0.12, now + 0.008);
+    g1.gain.linearRampToValueAtTime(0.24, now + 0.008);
     g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
-    o1.connect(g1); g1.connect(ctx.destination);
+    o1.connect(g1); g1.connect(output);
     o1.start(now); o1.stop(now + 0.22);
 
     const o2=ctx.createOscillator(), g2=ctx.createGain();
@@ -3213,9 +3239,9 @@ function playBossExplosionSfx(){
     o2.frequency.setValueAtTime(440, now + 0.055);
     o2.frequency.setValueAtTime(220, now + 0.095);
     g2.gain.setValueAtTime(0.0001, now + 0.015);
-    g2.gain.linearRampToValueAtTime(0.055, now + 0.025);
+    g2.gain.linearRampToValueAtTime(0.12, now + 0.025);
     g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
-    o2.connect(g2); g2.connect(ctx.destination);
+    o2.connect(g2); g2.connect(output);
     o2.start(now + 0.015); o2.stop(now + 0.14);
   }catch(e){}
 }
@@ -3305,6 +3331,35 @@ function prepareUGOATBossCatchScene(){
   renderBossBallIndicators();
 }
 
+async function runUGOATPlayerMove(){
+  if (!bossBattleActive || bossBattleBusy || !bossAwaitingPlayerMove) return;
+  const pseudo = (localStorage.getItem('ugo_pseudo') || 'Joueur').toUpperCase();
+  const launchBtn = document.querySelector('#sCatch .btn-capture:not(#btnToDex)');
+  const moveName = BOSS_PLAYER_MOVES[Math.max(0, bossBattleTurn - 1)] || 'ATTAQUE';
+  bossBattleBusy = true;
+  bossAwaitingPlayerMove = false;
+
+  if (launchBtn) {
+    launchBtn.disabled = true;
+    launchBtn.style.display = 'none';
+  }
+
+  typeCatchBattleText('<span class="player-name">' + pseudo + '</span> lance <strong>' + moveName + '</strong>.', 22);
+  await rewardWait(1500);
+  playBossExplosionSfx();
+  triggerBattleHitAnimation('#catchPokeWrap .catch-pup');
+  await rewardWait(1500);
+
+  if (launchBtn) {
+    launchBtn.textContent = 'Lancer';
+    launchBtn.disabled = false;
+    launchBtn.style.display = 'block';
+    launchBtn.onclick = () => runUGOATBossTurn();
+  }
+  typeCatchBattleText('<span class="player-name">' + pseudo + '</span> lance une Pokeball.', 22);
+  bossBattleBusy = false;
+}
+
 async function runUGOATBossTurn(){
   if (!bossBattleActive || bossBattleBusy) return;
   const pseudo = (localStorage.getItem('ugo_pseudo') || 'Joueur').toUpperCase();
@@ -3322,6 +3377,7 @@ async function runUGOATBossTurn(){
   if (bossBattleTurn < 5) {
     await playBossFailedThrowAnimation();
     bossBattleTurn += 1;
+    bossAwaitingPlayerMove = false;
     renderBossBallIndicators();
     typeCatchBattleText('Raté ! Le UGOAT est beaucoup trop fort !', 22);
     await rewardWait(1400);
@@ -3339,22 +3395,20 @@ async function runUGOATBossTurn(){
       await rewardWait(3000);
     }
 
-    typeCatchBattleText('<span class="player-name">' + pseudo + '</span> lance <strong>' + BOSS_PLAYER_MOVES[bossBattleTurn - 1] + '</strong>.', 22);
-    await rewardWait(1500);
-    playBossExplosionSfx();
-    triggerBattleHitAnimation('#catchPokeWrap .catch-pup');
-    await rewardWait(1500);
-
     if (launchBtn) {
+      launchBtn.textContent = BOSS_PLAYER_MOVES[bossBattleTurn - 1];
       launchBtn.disabled = false;
       launchBtn.style.display = 'block';
+      launchBtn.onclick = () => runUGOATPlayerMove();
     }
-    typeCatchBattleText('<span class="player-name">' + pseudo + '</span> lance une Pokeball.', 22);
+    typeCatchBattleText('<span class="player-name">' + pseudo + '</span> prépare sa riposte.', 22);
+    bossAwaitingPlayerMove = true;
     bossBattleBusy = false;
     return;
   }
 
   await playCaptureAnimation();
+  bossAwaitingPlayerMove = false;
   typeCatchBattleText('Le UGOAT est enfin capturé !', 24);
   if (launchBtn) launchBtn.style.display = 'none';
   let btn = $('btnToDex');
@@ -3381,8 +3435,10 @@ function openUGOATBossBattle(){
   const backBtn = $('sCatch').querySelector('.catch-back-btn');
   $('catchPupNum').textContent = '';
   prepareUGOATBossCatchScene();
+  playMusicWithFallback('wildpokemon.json');
   typeCatchBattleText('Oh ! Un UGOAT sauvage !\n<span class="player-name">' + (localStorage.getItem('ugo_pseudo') || 'JOUEUR').toUpperCase() + '</span> prépare sa Pokéball...', 22);
   if (launchBtn) {
+    launchBtn.textContent = 'Lancer';
     launchBtn.style.display = 'block';
     launchBtn.disabled = false;
     launchBtn.onclick = () => runUGOATBossTurn();
@@ -3530,6 +3586,8 @@ function playPokeballThrowSfx(){
   try{
     const ctx = getSharedAudioContext();
     if (!ctx) return;
+    const output = ensureSfxOutput();
+    if (!output) return;
     const now=ctx.currentTime;
     const o=ctx.createOscillator(), g=ctx.createGain();
     o.type='square';
@@ -3538,9 +3596,9 @@ function playPokeballThrowSfx(){
     o.frequency.setValueAtTime(740, now + 0.08);
     o.frequency.setValueAtTime(554, now + 0.12);
     g.gain.setValueAtTime(0.0001, now);
-    g.gain.linearRampToValueAtTime(0.075, now + 0.006);
+    g.gain.linearRampToValueAtTime(0.18, now + 0.006);
     g.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
-    o.connect(g); g.connect(ctx.destination);
+    o.connect(g); g.connect(output);
     o.start(now); o.stop(now + 0.17);
   }catch(e){}
 }
@@ -3549,6 +3607,8 @@ function playPokeballAbsorbSfx(){
   try{
     const ctx = getSharedAudioContext();
     if (!ctx) return;
+    const output = ensureSfxOutput();
+    if (!output) return;
     const now=ctx.currentTime;
     const o1=ctx.createOscillator(), g1=ctx.createGain();
     o1.type='square';
@@ -3557,9 +3617,9 @@ function playPokeballAbsorbSfx(){
     o1.frequency.setValueAtTime(494, now + 0.07);
     o1.frequency.setValueAtTime(740, now + 0.105);
     g1.gain.setValueAtTime(0.0001, now);
-    g1.gain.linearRampToValueAtTime(0.065, now + 0.01);
+    g1.gain.linearRampToValueAtTime(0.17, now + 0.01);
     g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
-    o1.connect(g1); g1.connect(ctx.destination);
+    o1.connect(g1); g1.connect(output);
     o1.start(now); o1.stop(now + 0.15);
 
     const o2=ctx.createOscillator(), g2=ctx.createGain();
@@ -3567,9 +3627,9 @@ function playPokeballAbsorbSfx(){
     o2.frequency.setValueAtTime(988, now + 0.03);
     o2.frequency.setValueAtTime(1319, now + 0.07);
     g2.gain.setValueAtTime(0.0001, now + 0.03);
-    g2.gain.linearRampToValueAtTime(0.03, now + 0.045);
+    g2.gain.linearRampToValueAtTime(0.09, now + 0.045);
     g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
-    o2.connect(g2); g2.connect(ctx.destination);
+    o2.connect(g2); g2.connect(output);
     o2.start(now + 0.03); o2.stop(now + 0.105);
   }catch(e){}
 }
@@ -3578,11 +3638,13 @@ function playCaptureSfx(){
   try{
     const ctx = getSharedAudioContext();
     if (!ctx) return;
+    const output = ensureSfxOutput();
+    if (!output) return;
     [[523,.0,.1],[659,.12,.1],[784,.24,.1],[1047,.36,.3],[1319,.7,.4]].forEach(([f,s,d])=>{
       const o=ctx.createOscillator(),g=ctx.createGain();
-      o.connect(g);g.connect(ctx.destination);
+      o.connect(g);g.connect(output);
       o.type='triangle';o.frequency.setValueAtTime(f,ctx.currentTime+s);
-      g.gain.setValueAtTime(0.15,ctx.currentTime+s);
+      g.gain.setValueAtTime(0.26,ctx.currentTime+s);
       g.gain.linearRampToValueAtTime(0,ctx.currentTime+s+d);
       o.start(ctx.currentTime+s);o.stop(ctx.currentTime+s+d+0.05);
     });
@@ -3822,7 +3884,7 @@ async function lancerSequenceReward(){
   }
 
   show('sReward');
-  playMusic('Mario.json');
+  await playMusicWithFallback('mario.json', 'Mario.json');
   lancerConfettisReward();
   await rewardWait(180);
 
