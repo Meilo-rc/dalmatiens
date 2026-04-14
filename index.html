@@ -2302,7 +2302,7 @@ let bossBattleHp = 30;
 const BOSS_TOTAL_HP = 30;
 const BOSS_ATTACKS = ['VITESSE MINI LISSE','STCA','PANNE JHMI','7700','PREAVIS DE GREVE'];
 const BOSS_PLAYER_MOVES = ['DEGROUPEMENT',"CAP D'EVITEMENT",'PASSAGE SOUS U','FICHE REFLEXE','DECLARATION PREALABLE'];
-const BOSS_DAMAGE_PATTERN = [2,4,3,5,10];
+const BOSS_DAMAGE_PATTERN = [2,4,3,5,15];
 
 /*  PERSIST  */
 function inferScoreFromCollection(ids, finisherDone){
@@ -3064,6 +3064,11 @@ function updateBossLifeBar(){
   const fill = $('bossLifeFill');
   if (!fill) return;
   fill.style.width = Math.max(0, (bossBattleHp / BOSS_TOTAL_HP) * 100) + '%';
+  if (bossBattleHp < 10) {
+    fill.style.background = 'repeating-linear-gradient(90deg,#ff7979 0 8px,#d83434 8px 16px)';
+  } else {
+    fill.style.background = 'repeating-linear-gradient(90deg,#93ff7a 0 8px,#77dc5d 8px 16px)';
+  }
 }
 
 function playBossExplosionSfx(){
@@ -3188,6 +3193,11 @@ async function runUGOATBossTurn(){
     bossBattleHp = Math.max(0, bossBattleHp - BOSS_DAMAGE_PATTERN[bossBattleTurn - 1]);
     updateBossLifeBar();
     await rewardWait(3000);
+
+    if (bossBattleTurn === 5) {
+      typeCatchBattleText('Ouch ! ' + pseudo + ' est mal en point.', 22);
+      await rewardWait(3000);
+    }
 
     typeCatchBattleText('<span class="player-name">' + pseudo + '</span> lance <strong>' + BOSS_PLAYER_MOVES[bossBattleTurn - 1] + '</strong>.', 22);
     playBossExplosionSfx();
