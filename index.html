@@ -790,6 +790,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   gap:20px;
   overflow:hidden;
   position:relative;
+  min-height:100dvh;
+}
+#sReward::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at top left,rgba(255,255,255,.16),transparent 24%),
+    linear-gradient(180deg,#5a549d 0%,#413e7a 55%,#2c2a58 100%);
+  z-index:0;
+  pointer-events:none;
 }
 .reward-card{
   position:relative;
@@ -960,17 +971,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   opacity:0;
   transform:none !important;
 }
-.catch-pup.entering{
-  opacity:1;
-  animation:catchPupIn .75s cubic-bezier(.22,.9,.25,1) both;
-}
 .catch-pup.idle{
   opacity:1;
   animation:catchPupIdle 2.4s ease-in-out infinite;
-}
-.catch-sasha.entering{
-  opacity:1;
-  animation:catchSashaIn .7s cubic-bezier(.22,.9,.25,1) both;
 }
 .catch-sasha.idle{
   opacity:1;
@@ -1433,7 +1436,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
         <p style="color:var(--noir); font-family:'Nunito'; font-weight:800; margin-bottom:15px;">Choisis un pseudo pour enregistrer tes scores</p>
         
         <div id="pseudoWrap">
-          <div id="playerPseudoDisplay" class="is-empty">Ton pseudo_</div>
+          <div id="playerPseudoDisplay" class="is-empty"><span class="cursor">_</span></div>
           <input type="text" id="playerPseudo" placeholder="Ton pseudo..." autocomplete="off" autocapitalize="none" spellcheck="false">
         </div>
         
@@ -2771,6 +2774,48 @@ function stopHunt(){stopHuntClean();goHome();}
 /*  CAPTURE  */
 let catchTypingToken = 0;
 
+function startCatchIntroAnimation(pupEl, sashaEl) {
+  if (pupEl) {
+    pupEl.classList.remove('idle', 'puppy-aspiring');
+    pupEl.style.animation = 'none';
+    pupEl.style.transition = 'none';
+    pupEl.style.opacity = '1';
+    pupEl.style.transform = 'translateX(-185%)';
+  }
+
+  if (sashaEl) {
+    sashaEl.classList.remove('idle');
+    sashaEl.style.animation = 'none';
+    sashaEl.style.transition = 'none';
+    sashaEl.style.opacity = '1';
+    sashaEl.style.transform = 'translateX(-135%)';
+  }
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (pupEl) {
+        pupEl.style.transition = 'transform .75s cubic-bezier(.22,.9,.25,1)';
+        pupEl.style.transform = 'translateX(0)';
+        setTimeout(() => {
+          pupEl.style.transition = 'none';
+          pupEl.classList.add('idle');
+        }, 760);
+      }
+
+      if (sashaEl) {
+        setTimeout(() => {
+          sashaEl.style.transition = 'transform .7s cubic-bezier(.22,.9,.25,1)';
+          sashaEl.style.transform = 'translateX(0)';
+          setTimeout(() => {
+            sashaEl.style.transition = 'none';
+            sashaEl.classList.add('idle');
+          }, 710);
+        }, 820);
+      }
+    });
+  });
+}
+
 function typeCatchBattleText(text, speed = 26) {
   const el = $('catchBattleText');
   if (!el) return;
@@ -2826,30 +2871,7 @@ function openCapture() {
   const pupEl = wrap ? wrap.querySelector('.catch-pup') : null;
   const sashaEl = wrap ? wrap.querySelector('.catch-sasha') : null;
 
-  if (pupEl) pupEl.classList.remove('entering', 'idle', 'puppy-aspiring');
-  if (sashaEl) sashaEl.classList.remove('entering', 'idle');
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      if (pupEl) {
-        pupEl.classList.add('entering');
-        setTimeout(() => {
-          pupEl.classList.remove('entering');
-          pupEl.classList.add('idle');
-        }, 760);
-      }
-
-      if (sashaEl) {
-        setTimeout(() => {
-          sashaEl.classList.add('entering');
-          setTimeout(() => {
-            sashaEl.classList.remove('entering');
-            sashaEl.classList.add('idle');
-          }, 700);
-        }, 820);
-      }
-    });
-  });
+  startCatchIntroAnimation(pupEl, sashaEl);
 }
 
 function returnToHuntFromCatch() {
@@ -3367,7 +3389,7 @@ function refreshPseudoDisplay() {
         display.innerHTML = value + '<span class="cursor">_</span>';
     } else {
         display.classList.add('is-empty');
-        display.innerHTML = 'Ton pseudo<span class="cursor">_</span>';
+        display.innerHTML = '<span class="cursor">_</span>';
     }
 }
 
