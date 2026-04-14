@@ -1712,7 +1712,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
       Tu as tout collect&eacute;.<br>Le l&eacute;gendaire UGOAT est &agrave; toi !
     </div>
 
-    <button class="btn btn-primary" onclick="finalizeUGOATUnlock()"> Ajouter au Ugodex</button>
+    <button class="btn btn-primary" onclick="finalizeUGOATUnlock()"> Crédits</button>
   </div>
 </div>
 
@@ -2210,9 +2210,7 @@ function finalizeUGOATUnlock(){
   const pseudo = localStorage.getItem('ugo_pseudo');
   if (pseudo) envoyerScore(pseudo, playerScore);
   buildGrid();
-  show('sColl');
-  setTimeout(()=>goCredits(), 2000);
-  flashMsg(" UGOAT ajout  l'Ugodex !",3000);
+  goCredits();
 }
 
 async function goCredits(){
@@ -3162,7 +3160,7 @@ function prepareUGOATBossCatchScene(){
       </div>
       <div id="bossBallIndicators" class="boss-balls"></div>
     </div>
-    <img class="catch-pup idle" src="pup22.webp" alt="UGOAT" style="width:auto;height:68%;object-fit:contain;filter:none;opacity:1;">
+    <img class="catch-pup idle" src="UGOAT.webp" alt="UGOAT" style="width:auto;height:68%;object-fit:contain;filter:none;opacity:1;" onerror="this.onerror=null;this.src='pup22.webp';">
     <img class="catch-sasha idle" src="sasha.webp" alt="Sasha" style="opacity:1;" onerror="this.style.display='none'">`;
   updateBossLifeBar();
   renderBossBallIndicators();
