@@ -945,8 +945,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   max-height:68%;
   transform:none !important;
   animation:
-    catchPupIn .7s cubic-bezier(.22,.9,.25,1) both,
-    catchPupIdle 2.4s ease-in-out .8s infinite;
+    catchPupIn .75s cubic-bezier(.22,.9,.25,1) both,
+    catchPupIdle 2.4s ease-in-out .95s infinite;
 }
 #catchPokeWrap .catch-sasha{
   position:absolute;
@@ -961,8 +961,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   z-index:8;
   transform:none !important;
   animation:
-    catchSashaIn .7s cubic-bezier(.22,.9,.25,1) .2s both,
-    catchSashaIdle 2.6s ease-in-out 1s infinite;
+    catchSashaIn .7s cubic-bezier(.22,.9,.25,1) .85s both,
+    catchSashaIdle 2.6s ease-in-out 1.6s infinite;
 }
 @keyframes catchSashaIn{
   0%{transform:translate(-120%,0);}
@@ -973,7 +973,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   50%{transform:translate(0,-3px);}
 }
 @keyframes catchPupIn{
-  0%{transform:translate(18%, -8%) scale(.92); opacity:0;}
+  0%{transform:translateX(-170%); opacity:1;}
   100%{transform:translate(0,0) scale(1); opacity:1;}
 }
 @keyframes catchPupIdle{
@@ -1306,7 +1306,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 }
 
 /* CINEMATIC OVERLAY */
-.reward-overlay{
+#sReward > .reward-overlay{
   position:absolute;
   inset:0;
   background:radial-gradient(circle at center, rgba(255,215,0,0.15), transparent 60%);
