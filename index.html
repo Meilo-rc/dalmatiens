@@ -2820,29 +2820,36 @@ function openCapture() {
   $('catchPupNum').textContent = '';
   typeCatchBattleText('<span class="player-name">' + pseudo.toUpperCase() + '</span> utilise une Pokeball.');
 
+  show('sCatch');
+
   const wrap = $('catchPokeWrap');
   const pupEl = wrap ? wrap.querySelector('.catch-pup') : null;
   const sashaEl = wrap ? wrap.querySelector('.catch-sasha') : null;
-  if (pupEl) {
-    pupEl.classList.remove('entering', 'idle', 'puppy-aspiring');
-    requestAnimationFrame(() => pupEl.classList.add('entering'));
-    setTimeout(() => {
-      pupEl.classList.remove('entering');
-      pupEl.classList.add('idle');
-    }, 760);
-  }
-  if (sashaEl) {
-    sashaEl.classList.remove('entering', 'idle');
-    setTimeout(() => {
-      sashaEl.classList.add('entering');
-      setTimeout(() => {
-        sashaEl.classList.remove('entering');
-        sashaEl.classList.add('idle');
-      }, 700);
-    }, 780);
-  }
-  
-  show('sCatch');
+
+  if (pupEl) pupEl.classList.remove('entering', 'idle', 'puppy-aspiring');
+  if (sashaEl) sashaEl.classList.remove('entering', 'idle');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (pupEl) {
+        pupEl.classList.add('entering');
+        setTimeout(() => {
+          pupEl.classList.remove('entering');
+          pupEl.classList.add('idle');
+        }, 760);
+      }
+
+      if (sashaEl) {
+        setTimeout(() => {
+          sashaEl.classList.add('entering');
+          setTimeout(() => {
+            sashaEl.classList.remove('entering');
+            sashaEl.classList.add('idle');
+          }, 700);
+        }, 820);
+      }
+    });
+  });
 }
 
 function returnToHuntFromCatch() {
@@ -3499,6 +3506,6 @@ function activateTestMode(){
 }
 
 </script>
-<div id="debugLog" style="position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);color:#0f0;font-size:11px;padding:8px;z-index:9999;max-height:150px;overflow-y:auto;"></div>
+<div id="debugLog" style="display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);color:#0f0;font-size:11px;padding:8px;z-index:9999;max-height:150px;overflow-y:auto;"></div>
 </body>
 </html>
