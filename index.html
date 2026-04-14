@@ -2806,8 +2806,8 @@ function startCatchIntroAnimation(pupEl, sashaEl) {
     sashaEl.classList.remove('idle');
     sashaEl.style.animation = 'none';
     sashaEl.style.transition = 'none';
-    sashaEl.style.opacity = '1';
-    sashaEl.style.transform = 'translateX(135%)';
+    sashaEl.style.opacity = '0';
+    sashaEl.style.transform = 'translateX(240%)';
   }
 
   requestAnimationFrame(() => {
@@ -2823,6 +2823,7 @@ function startCatchIntroAnimation(pupEl, sashaEl) {
 
       if (sashaEl) {
         setTimeout(() => {
+          sashaEl.style.opacity = '1';
           sashaEl.style.transition = 'transform .7s cubic-bezier(.22,.9,.25,1)';
           sashaEl.style.transform = 'translateX(0)';
           setTimeout(() => {
