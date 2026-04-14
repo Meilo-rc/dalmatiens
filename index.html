@@ -2399,6 +2399,7 @@ function pokeballSVG(caught, size=54){
   const borderColor = caught ? '#111' : '#888';
   const gloss = caught ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)';
   return `<svg viewBox="0 0 60 60" width="${size}" height="${size}">
+    <ellipse cx="32" cy="36" rx="21" ry="18" fill="rgba(0,0,0,0.16)"/>
     <circle cx="30" cy="30" r="27" fill="${borderColor}"/>
     <path d="M3 30 A27 27 0 0 1 57 30 Z" fill="${topColor}"/>
     <path d="M3 30 A27 27 0 0 0 57 30 Z" fill="${bottomColor}"/>
