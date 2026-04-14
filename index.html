@@ -3083,17 +3083,17 @@ function playPokeballThrowSfx(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
     const now=ctx.currentTime;
-    const o=ctx.createOscillator(), g=ctx.createGain(), f=ctx.createBiquadFilter();
-    o.type='triangle';
-    o.frequency.setValueAtTime(980, now);
-    o.frequency.exponentialRampToValueAtTime(220, now + 0.18);
-    f.type='lowpass';
-    f.frequency.setValueAtTime(1800, now);
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type='square';
+    o.frequency.setValueAtTime(1319, now);
+    o.frequency.setValueAtTime(988, now + 0.04);
+    o.frequency.setValueAtTime(740, now + 0.08);
+    o.frequency.setValueAtTime(554, now + 0.12);
     g.gain.setValueAtTime(0.0001, now);
-    g.gain.exponentialRampToValueAtTime(0.08, now + 0.015);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
-    o.connect(f); f.connect(g); g.connect(ctx.destination);
-    o.start(now); o.stop(now + 0.22);
+    g.gain.linearRampToValueAtTime(0.075, now + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(now); o.stop(now + 0.17);
     setTimeout(()=>ctx.close(), 500);
   }catch(e){}
 }
@@ -3102,26 +3102,27 @@ function playPokeballAbsorbSfx(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
     const now=ctx.currentTime;
-
     const o1=ctx.createOscillator(), g1=ctx.createGain();
     o1.type='square';
-    o1.frequency.setValueAtTime(240, now);
-    o1.frequency.exponentialRampToValueAtTime(980, now + 0.14);
+    o1.frequency.setValueAtTime(220, now);
+    o1.frequency.setValueAtTime(330, now + 0.035);
+    o1.frequency.setValueAtTime(494, now + 0.07);
+    o1.frequency.setValueAtTime(740, now + 0.105);
     g1.gain.setValueAtTime(0.0001, now);
-    g1.gain.exponentialRampToValueAtTime(0.06, now + 0.012);
-    g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+    g1.gain.linearRampToValueAtTime(0.065, now + 0.01);
+    g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
     o1.connect(g1); g1.connect(ctx.destination);
-    o1.start(now); o1.stop(now + 0.18);
+    o1.start(now); o1.stop(now + 0.15);
 
     const o2=ctx.createOscillator(), g2=ctx.createGain();
-    o2.type='sine';
-    o2.frequency.setValueAtTime(760, now + 0.03);
-    o2.frequency.exponentialRampToValueAtTime(1280, now + 0.16);
+    o2.type='square';
+    o2.frequency.setValueAtTime(988, now + 0.03);
+    o2.frequency.setValueAtTime(1319, now + 0.07);
     g2.gain.setValueAtTime(0.0001, now + 0.03);
-    g2.gain.exponentialRampToValueAtTime(0.035, now + 0.06);
-    g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.17);
+    g2.gain.linearRampToValueAtTime(0.03, now + 0.045);
+    g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
     o2.connect(g2); g2.connect(ctx.destination);
-    o2.start(now + 0.03); o2.stop(now + 0.18);
+    o2.start(now + 0.03); o2.stop(now + 0.105);
 
     setTimeout(()=>ctx.close(), 500);
   }catch(e){}
