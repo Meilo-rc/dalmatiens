@@ -170,6 +170,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   box-shadow:0 0 0 4px rgba(255,255,255,.18),6px 6px 0 rgba(38,38,38,.35);
   margin-bottom:24px;
 }
+.score-box .home-player-name{
+  display:block;
+  font-family:'Press Start 2P',cursive;
+  font-size:12px;
+  line-height:1.45;
+  color:#2f3d15;
+  margin-bottom:10px;
+}
 .score-box big{font-family:'Press Start 2P',cursive;font-size:28px;color:var(--gbc-ink);display:block;line-height:1.2;}
 .score-box span{font-family:'VT323',monospace;font-size:24px;color:#38471b;letter-spacing:1px;font-weight:400;}
 
@@ -1564,13 +1572,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   <img id="splashImg" src="splash.webp" alt="101 Dalmatiens">
   <div id="tapToStart"> START 1</div>
 
-<div id="testBtn" onclick="handleTestModeTap()"
+<div id="testBtn"
      style="
        position:absolute;
-       left:65px;
-       bottom:91px;
-       width:22px;
-       height:22px;
+       left:58px;
+       bottom:84px;
+       width:30px;
+       height:30px;
        background:#9d191f;
        opacity:.75;
        border-radius:50%;
@@ -1633,13 +1641,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   <h1 class="game-title">101 Dalmatiens<small>Attrape-les tous !</small></h1>
   <div style="height:16px"></div>
   <div class="score-box">
+    <strong id="homePlayerName" class="home-player-name">JOUEUR</strong>
     <big id="homeScore">0 / 22</big>
     <span>chiots captur&eacute;s</span>
   </div>
   <button class="btn btn-primary" onclick="goHunt()"> Partir &agrave; la chasse !</button>
   <button class="btn btn-secondary" onclick="goColl()"> Ugodex</button>
   <button class="btn btn-primary" onclick="show('#sRanking'); rafraichirClassement();">  Voir le Classement</button>
-  <button class="btn ranking" onclick="goPrint()"> QR codes &agrave; imprimer</button>
   <button id="testEndgameBtn" onclick="activateTestEndgame()" aria-label="Mode test fin de jeu" title="Mode test fin de jeu" style="position:absolute;right:6px;bottom:6px;width:34px;height:34px;border:none;border-radius:50%;background:rgba(0,0,0,0.03);color:transparent;box-shadow:none;z-index:30;cursor:pointer;"></button>
 </div>
 
@@ -2655,6 +2663,8 @@ function goHome(){
   stopHuntClean();
   syncBonusPersistence();
   show('sHome');
+  const pseudo = (localStorage.getItem('ugo_pseudo') || 'Joueur').toUpperCase();
+  if ($('homePlayerName')) $('homePlayerName').textContent = pseudo;
   $('homeScore').textContent=collected.size+' / '+TOTAL;
   updateHomeMascot();
   if (collected.size >= TOTAL) lancerConfettisHome();
@@ -3978,6 +3988,7 @@ function initialiserApplication() {
     if (pseudo) {
         syncBonusPersistence();
         show('sHome');
+        if ($('homePlayerName')) $('homePlayerName').textContent = pseudo.toUpperCase();
         $('homeScore').textContent = collected.size + ' / ' + TOTAL; // Le joueur a dj un nom -> Menu principal
         updateHomeMascot();
      } else {
@@ -4100,6 +4111,7 @@ window.addEventListener('load', () => {
     }
     setupPseudoInput();
     const splashEl = $('sSplash');
+    const testBtn = $('testBtn');
     
     if (splashEl) {
         splashEl.removeAttribute('onclick');
@@ -4124,6 +4136,18 @@ window.addEventListener('load', () => {
 
         splashEl.addEventListener('pointerup', startFromSplash);
         splashEl.addEventListener('click', startFromSplash);
+    }
+
+    if (testBtn) {
+        testBtn.addEventListener('pointerup', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        testBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleTestModeTap();
+        });
     }
 });
 
