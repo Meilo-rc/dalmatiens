@@ -979,6 +979,87 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   opacity:1;
   animation:catchSashaIdle 2.6s ease-in-out infinite;
 }
+.boss-hud{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:16;
+}
+.boss-life-wrap{
+  position:absolute;
+  left:14px;
+  bottom:152px;
+  width:132px;
+}
+.boss-life-label{
+  font-family:'Press Start 2P',cursive;
+  font-size:9px;
+  line-height:1.4;
+  color:#243018;
+  margin-bottom:6px;
+  text-shadow:0 1px 0 rgba(255,255,255,.25);
+}
+.boss-life-track{
+  width:100%;
+  height:14px;
+  background:rgba(30,40,18,.18);
+  border:3px solid #55662a;
+  border-radius:999px;
+  overflow:hidden;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.18);
+}
+.boss-life-fill{
+  width:100%;
+  height:100%;
+  background:linear-gradient(90deg,#7cff7c,#d9ff7c);
+  transition:width .45s ease;
+}
+.boss-balls{
+  position:absolute;
+  left:118px;
+  bottom:22px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.boss-ball-indicator{
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  border:2px solid #111;
+  background:linear-gradient(180deg,#d11,#fff 52%);
+  position:relative;
+  box-shadow:0 2px 0 rgba(0,0,0,.22);
+}
+.boss-ball-indicator::after{
+  content:'';
+  position:absolute;
+  inset:4px;
+  border-radius:50%;
+  background:#fff;
+}
+.boss-ball-indicator.spent{
+  background:transparent;
+  border-color:#6a6a6a;
+  box-shadow:none;
+}
+.boss-ball-indicator.spent::after{
+  inset:3px;
+  background:#d8d8d8;
+}
+.boss-hit{
+  animation:bossHitFlash .12s linear 6, bossShake .12s linear 8;
+}
+@keyframes bossShake{
+  0%{transform:translateX(0);}
+  25%{transform:translateX(-4px);}
+  75%{transform:translateX(4px);}
+  100%{transform:translateX(0);}
+}
+@keyframes bossHitFlash{
+  0%,100%{filter:brightness(1);}
+  50%{filter:brightness(2.2);}
+}
 @keyframes catchSashaIn{
   0%{transform:translate(-120%,0);}
   100%{transform:translate(0,0);}
@@ -1943,7 +2024,7 @@ function afficherRecompense(record) {
     const bonus = calculerBonus(record.created, record.updated);
     pendingTimeBonus = bonus.points;
     pendingTimeLabel = bonus.label;
-    lancerSequenceReward();
+    openUGOATBossBattle();
 }
 
 /*  DETAIL UGODEX  */
@@ -2213,6 +2294,14 @@ let barcodeDetector = null;
 let defaultHomeMascotMarkup = '';
 let playerScore = 0;
 let finisherBonusAwarded = false;
+let bossBattleActive = false;
+let bossBattleTurn = 0;
+let bossBattleBusy = false;
+let bossBattleHp = 30;
+const BOSS_TOTAL_HP = 30;
+const BOSS_ATTACKS = ['VITESSE MINI LISSE','STCA','PANNE JHMI','7700','PREAVIS DE GREVE'];
+const BOSS_PLAYER_MOVES = ['DEGROUPEMENT',"CAP D'EVITEMENT",'PASSAGE SOUS U','FICHE REFLEXE','DECLARATION PREALABLE'];
+const BOSS_DAMAGE_PATTERN = [2,4,3,5,10];
 
 /*  PERSIST  */
 function inferScoreFromCollection(ids, finisherDone){
@@ -2917,7 +3006,11 @@ function closeCatch() {
   const dexBtn = $('btnToDex');
   const backBtn = $('sCatch').querySelector('.catch-back-btn');
 
-  if (captureBtn) captureBtn.style.display = 'block';
+  if (captureBtn) {
+    captureBtn.style.display = 'block';
+    captureBtn.disabled = false;
+    captureBtn.onclick = () => doCapture();
+  }
   if (backBtn) backBtn.style.display = 'flex';
   
   // On masque le bouton "Ajouter au UgoDex" pour la prochaine fois
@@ -2931,6 +3024,10 @@ function closeCatch() {
   catchTypingToken += 1;
   pendingPup = null;
   activePupId = null;
+  bossBattleActive = false;
+  bossBattleBusy = false;
+  bossBattleTurn = 0;
+  bossBattleHp = BOSS_TOTAL_HP;
   const battleText = $('catchBattleText');
   if (battleText) battleText.textContent = 'Le joueur utilise une Pokeball.';
 }
@@ -2943,6 +3040,189 @@ function afterAddToDex(scrollToId=null){
   } else {
     goColl(scrollToId);
   }
+}
+
+function renderBossBallIndicators(){
+  const wrap = $('bossBallIndicators');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  for(let i = 0; i < 6; i++){
+    const dot = document.createElement('div');
+    dot.className = 'boss-ball-indicator' + (i < bossBattleTurn ? ' spent' : '');
+    wrap.appendChild(dot);
+  }
+}
+
+function updateBossLifeBar(){
+  const fill = $('bossLifeFill');
+  if (!fill) return;
+  fill.style.width = Math.max(0, (bossBattleHp / BOSS_TOTAL_HP) * 100) + '%';
+}
+
+function playBossExplosionSfx(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const now=ctx.currentTime;
+    const o=ctx.createOscillator(), g=ctx.createGain(), f=ctx.createBiquadFilter();
+    o.type='square';
+    o.frequency.setValueAtTime(180, now);
+    o.frequency.exponentialRampToValueAtTime(68, now + 0.22);
+    f.type='lowpass';
+    f.frequency.setValueAtTime(720, now);
+    f.Q.value = 0.4;
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.linearRampToValueAtTime(0.09, now + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
+    o.connect(f); f.connect(g); g.connect(ctx.destination);
+    o.start(now); o.stop(now + 0.25);
+    setTimeout(()=>ctx.close(), 600);
+  }catch(e){}
+}
+
+function triggerBattleHitAnimation(selector){
+  const el = document.querySelector(selector);
+  if (!el) return;
+  el.classList.remove('boss-hit');
+  void el.offsetWidth;
+  el.classList.add('boss-hit');
+  setTimeout(() => el.classList.remove('boss-hit'), 1000);
+}
+
+async function playBossFailedThrowAnimation(){
+  const container = $('catchPokeWrap');
+  const pupImg = container.querySelector('.catch-pup');
+  const existingShadow = container.querySelector('.pokeball-ground-shadow');
+  if (existingShadow) existingShadow.remove();
+  container.insertAdjacentHTML('beforeend', '<div class="pokeball-ground-shadow"></div>');
+  container.insertAdjacentHTML('beforeend', pokeballSVG(true, 150));
+  const ball = container.querySelector('svg');
+
+  playPokeballThrowSfx();
+  if (ball) ball.classList.add('pokeball-flying');
+  await rewardWait(1000);
+
+  const flash = $('captureFlash');
+  if (flash) {
+    flash.classList.add('flash-on');
+    setTimeout(() => flash.classList.remove('flash-on'), 400);
+  }
+  playPokeballAbsorbSfx();
+
+  if (pupImg) {
+    pupImg.classList.remove('idle');
+    pupImg.style.transition = 'none';
+    pupImg.style.animation = '';
+    void pupImg.offsetWidth;
+    pupImg.style.zIndex = '10';
+    if (ball) ball.style.zIndex = '14';
+    pupImg.classList.add('puppy-aspiring');
+  }
+
+  await rewardWait(900);
+  vibrate([80, 50, 120]);
+
+  if (pupImg) {
+    pupImg.classList.remove('puppy-aspiring');
+    pupImg.style.display = '';
+    pupImg.style.opacity = '1';
+    pupImg.style.transform = 'translateX(0) scale(1)';
+    pupImg.style.animation = 'none';
+    void pupImg.offsetWidth;
+    pupImg.classList.add('idle');
+  }
+
+  if (ball) ball.remove();
+  const ballShadow = container.querySelector('.pokeball-ground-shadow');
+  if (ballShadow) ballShadow.remove();
+}
+
+function prepareUGOATBossCatchScene(){
+  const wrap = $('catchPokeWrap');
+  if (!wrap) return;
+  wrap.innerHTML =
+    `<div class="boss-hud">
+      <div class="boss-life-wrap">
+        <div class="boss-life-label">SASHA</div>
+        <div class="boss-life-track"><div id="bossLifeFill" class="boss-life-fill"></div></div>
+      </div>
+      <div id="bossBallIndicators" class="boss-balls"></div>
+    </div>
+    <img class="catch-pup idle" src="pup22.webp" alt="UGOAT" style="width:auto;height:68%;object-fit:contain;filter:none;opacity:1;">
+    <img class="catch-sasha idle" src="sasha.webp" alt="Sasha" style="opacity:1;" onerror="this.style.display='none'">`;
+  updateBossLifeBar();
+  renderBossBallIndicators();
+}
+
+async function runUGOATBossTurn(){
+  if (!bossBattleActive || bossBattleBusy) return;
+  const pseudo = (localStorage.getItem('ugo_pseudo') || 'Joueur').toUpperCase();
+  const launchBtn = document.querySelector('#sCatch .btn-capture:not(#btnToDex)');
+  const backBtn = $('sCatch').querySelector('.catch-back-btn');
+  const dexBtn = $('btnToDex');
+  bossBattleBusy = true;
+  if (launchBtn) launchBtn.disabled = true;
+  if (backBtn) backBtn.style.display = 'none';
+  if (dexBtn) dexBtn.style.display = 'none';
+
+  if (bossBattleTurn < 5) {
+    await playBossFailedThrowAnimation();
+    bossBattleTurn += 1;
+    renderBossBallIndicators();
+    typeCatchBattleText('Raté ! Le UGOAT est beaucoup trop fort !', 22);
+    await rewardWait(1400);
+
+    typeCatchBattleText('<strong>UGOAT</strong> lance une attaque ' + BOSS_ATTACKS[bossBattleTurn - 1] + '.', 22);
+    playBossExplosionSfx();
+    triggerBattleHitAnimation('#catchPokeWrap .catch-sasha');
+    bossBattleHp = Math.max(0, bossBattleHp - BOSS_DAMAGE_PATTERN[bossBattleTurn - 1]);
+    updateBossLifeBar();
+    await rewardWait(1200);
+
+    typeCatchBattleText('<span class="player-name">' + pseudo + '</span> lance ' + BOSS_PLAYER_MOVES[bossBattleTurn - 1] + '.', 22);
+    triggerBattleHitAnimation('#catchPokeWrap .catch-pup');
+    await rewardWait(1200);
+
+    if (launchBtn) launchBtn.disabled = false;
+    bossBattleBusy = false;
+    return;
+  }
+
+  await playCaptureAnimation();
+  typeCatchBattleText('Le UGOAT est enfin capturé !', 24);
+  if (launchBtn) launchBtn.style.display = 'none';
+  let btn = $('btnToDex');
+  if (btn) {
+    btn.textContent = 'Ajouter au UgoDex';
+    btn.style.display = 'block';
+    btn.onclick = async () => {
+      bossBattleActive = false;
+      bossBattleBusy = false;
+      closeCatch();
+      await lancerSequenceReward();
+    };
+  }
+  bossBattleBusy = false;
+}
+
+function openUGOATBossBattle(){
+  bossBattleActive = true;
+  bossBattleTurn = 0;
+  bossBattleBusy = false;
+  bossBattleHp = BOSS_TOTAL_HP;
+  const launchBtn = document.querySelector('#sCatch .btn-capture:not(#btnToDex)');
+  const dexBtn = $('btnToDex');
+  const backBtn = $('sCatch').querySelector('.catch-back-btn');
+  $('catchPupNum').textContent = '';
+  prepareUGOATBossCatchScene();
+  typeCatchBattleText('UGOAT sauvage ! <span class="player-name">' + (localStorage.getItem('ugo_pseudo') || 'JOUEUR').toUpperCase() + '</span> prépare sa Pokeball.', 22);
+  if (launchBtn) {
+    launchBtn.style.display = 'block';
+    launchBtn.disabled = false;
+    launchBtn.onclick = () => runUGOATBossTurn();
+  }
+  if (dexBtn) dexBtn.style.display = 'none';
+  if (backBtn) backBtn.style.display = 'none';
+  show('sCatch');
 }
 
 function genQRDots(seed){
@@ -3283,18 +3563,18 @@ async function startUGOATRewardFlow() {
       } else {
         pendingTimeBonus = localBonus.points;
         pendingTimeLabel = localBonus.label;
-        lancerSequenceReward();
+        openUGOATBossBattle();
       }
     } else {
       pendingTimeBonus = localBonus.points;
       pendingTimeLabel = localBonus.label;
-      lancerSequenceReward();
+      openUGOATBossBattle();
     }
   } catch (err) {
     console.error("Erreur calcul bonus:", err);
     pendingTimeBonus = localBonus.points;
     pendingTimeLabel = localBonus.label;
-    lancerSequenceReward();
+    openUGOATBossBattle();
   }
 }
 
