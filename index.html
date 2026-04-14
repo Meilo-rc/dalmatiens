@@ -274,15 +274,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 }
 .login-screen{
   width:100%;
-  min-height:340px;
+  min-height:300px;
   background:linear-gradient(180deg,#c8db85,#a5bb67);
   border:4px solid #55662a;
   border-radius:8px;
   box-shadow:inset 0 3px 0 rgba(255,255,255,.22);
-  padding:18px 16px 20px;
+  padding:18px 16px 16px;
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
+  justify-content:flex-start;
   gap:14px;
 }
 .login-copy{
@@ -350,7 +350,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 }
 .login-actions{
   width:100%;
-  margin-top:auto;
+  margin-top:16px;
 }
 .login-actions .btn{
   width:100%;
@@ -614,16 +614,24 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   border-top:4px solid #55662a;
   box-shadow:inset 0 4px 0 rgba(255,255,255,.22);
 }
+.catch-button-slot{
+  width:100%;
+  max-width:310px;
+  min-height:62px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 .catch-battle-box{
   width:100%;
   max-width:340px;
-  min-height:112px;
+  min-height:126px;
   padding:10px 8px 4px;
 }
 .catch-battle-text{
   font-family:'VT323',monospace;
-  font-size:30px;
-  line-height:1.08;
+  font-size:34px;
+  line-height:1.06;
   color:#243018;
   text-align:left;
   font-weight:400;
@@ -631,6 +639,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   overflow-wrap:anywhere;
 }
 .catch-battle-text .player-name{
+  font-weight:700;
+}
+.catch-battle-text strong{
   font-weight:700;
 }
 .catch-num{
@@ -1108,17 +1119,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   background:#b5b5b5;
 }
 .boss-hit{
-  animation:bossHitFlash .12s linear 6, bossShake .12s linear 8;
+  animation:bossHitFlash .1s linear 8, bossShake .1s linear 10;
 }
 @keyframes bossShake{
-  0%{transform:translateX(0);}
-  25%{transform:translateX(-4px);}
-  75%{transform:translateX(4px);}
-  100%{transform:translateX(0);}
+  0%{transform:translateX(0) scale(1);}
+  25%{transform:translateX(-7px) scale(1.02);}
+  75%{transform:translateX(7px) scale(1.02);}
+  100%{transform:translateX(0) scale(1);}
 }
 @keyframes bossHitFlash{
   0%,100%{filter:brightness(1);}
-  50%{filter:brightness(2.2);}
+  50%{filter:brightness(2.8) saturate(.1);}
 }
 @keyframes catchSashaIn{
   0%{transform:translate(-120%,0);}
@@ -1585,10 +1596,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
           <div id="playerPseudoDisplay" class="is-empty"><span class="cursor">_</span></div>
           <input type="text" id="playerPseudo" placeholder="Ton pseudo..." autocomplete="off" autocapitalize="none" spellcheck="false">
         </div>
-
-        <div class="login-actions">
-          <button class="btn btn-primary" onclick="savePseudo()" style="font-size:11px; white-space:nowrap;">LET'S GO</button>
-        </div>
+      </div>
+      <div class="login-actions">
+        <button class="btn btn-primary" onclick="savePseudo()" style="font-size:11px; white-space:nowrap;">LET'S GO</button>
       </div>
     </div>
   </div>
@@ -1705,12 +1715,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
     <div class="catch-battle-box">
       <div id="catchBattleText" class="catch-battle-text">Le joueur utilise une Pokeball.</div>
     </div>
-    
-    <button class="btn-capture" onclick="doCapture()" style="width:100%;max-width:310px;">Lancer</button>
-    <button id="btnToDex" class="btn-capture btn-dex-add" 
-            style="width:100%;max-width:310px;display:none;">
-       Ajouter au UgoDex
-    </button>
+
+    <div class="catch-button-slot">
+      <button class="btn-capture" onclick="doCapture()" style="width:100%;max-width:310px;">Lancer</button>
+      <button id="btnToDex" class="btn-capture btn-dex-add" 
+              style="width:100%;max-width:310px;display:none;">
+         Ajouter au UgoDex
+      </button>
+    </div>
 </div>
 </div>
 
@@ -3145,18 +3157,27 @@ function playBossExplosionSfx(){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
     const now=ctx.currentTime;
-    const o=ctx.createOscillator(), g=ctx.createGain(), f=ctx.createBiquadFilter();
-    o.type='square';
-    o.frequency.setValueAtTime(180, now);
-    o.frequency.exponentialRampToValueAtTime(68, now + 0.22);
-    f.type='lowpass';
-    f.frequency.setValueAtTime(720, now);
-    f.Q.value = 0.4;
-    g.gain.setValueAtTime(0.0001, now);
-    g.gain.linearRampToValueAtTime(0.09, now + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
-    o.connect(f); f.connect(g); g.connect(ctx.destination);
-    o.start(now); o.stop(now + 0.25);
+    const o1=ctx.createOscillator(), g1=ctx.createGain();
+    o1.type='square';
+    o1.frequency.setValueAtTime(220, now);
+    o1.frequency.setValueAtTime(140, now + 0.05);
+    o1.frequency.setValueAtTime(82, now + 0.12);
+    g1.gain.setValueAtTime(0.0001, now);
+    g1.gain.linearRampToValueAtTime(0.12, now + 0.008);
+    g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+    o1.connect(g1); g1.connect(ctx.destination);
+    o1.start(now); o1.stop(now + 0.22);
+
+    const o2=ctx.createOscillator(), g2=ctx.createGain();
+    o2.type='square';
+    o2.frequency.setValueAtTime(880, now + 0.015);
+    o2.frequency.setValueAtTime(440, now + 0.055);
+    o2.frequency.setValueAtTime(220, now + 0.095);
+    g2.gain.setValueAtTime(0.0001, now + 0.015);
+    g2.gain.linearRampToValueAtTime(0.055, now + 0.025);
+    g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
+    o2.connect(g2); g2.connect(ctx.destination);
+    o2.start(now + 0.015); o2.stop(now + 0.14);
     setTimeout(()=>ctx.close(), 600);
   }catch(e){}
 }
@@ -3166,12 +3187,16 @@ function triggerBattleHitAnimation(selector){
   if (!el) return;
   const hadIdle = el.classList.contains('idle');
   el.classList.remove('boss-hit', 'idle');
-  el.style.animation = 'none';
+  el.style.animation = '';
+  el.style.transition = 'none';
+  el.style.filter = 'brightness(1)';
   void el.offsetWidth;
   el.classList.add('boss-hit');
   setTimeout(() => {
     el.classList.remove('boss-hit');
     el.style.animation = '';
+    el.style.transition = '';
+    el.style.filter = '';
     if (hadIdle) el.classList.add('idle');
   }, 1000);
 }
@@ -3251,7 +3276,7 @@ async function runUGOATBossTurn(){
   bossBattleBusy = true;
   if (launchBtn) {
     launchBtn.disabled = true;
-    launchBtn.style.visibility = 'hidden';
+    launchBtn.style.display = 'none';
   }
   if (backBtn) backBtn.style.display = 'none';
   if (dexBtn) dexBtn.style.display = 'none';
@@ -3282,7 +3307,7 @@ async function runUGOATBossTurn(){
 
     if (launchBtn) {
       launchBtn.disabled = false;
-      launchBtn.style.visibility = 'visible';
+      launchBtn.style.display = 'block';
     }
     typeCatchBattleText('<span class="player-name">' + pseudo + '</span> lance une Pokeball.', 22);
     bossBattleBusy = false;
@@ -3291,7 +3316,7 @@ async function runUGOATBossTurn(){
 
   await playCaptureAnimation();
   typeCatchBattleText('Le UGOAT est enfin capturé !', 24);
-  if (launchBtn) launchBtn.style.visibility = 'hidden';
+  if (launchBtn) launchBtn.style.display = 'none';
   let btn = $('btnToDex');
   if (btn) {
     btn.textContent = 'Ajouter au UgoDex';
@@ -3316,7 +3341,7 @@ function openUGOATBossBattle(){
   const backBtn = $('sCatch').querySelector('.catch-back-btn');
   $('catchPupNum').textContent = '';
   prepareUGOATBossCatchScene();
-  typeCatchBattleText('UGOAT sauvage !\n<span class="player-name">' + (localStorage.getItem('ugo_pseudo') || 'JOUEUR').toUpperCase() + '</span> prépare sa Pokeball.', 22);
+  typeCatchBattleText('Oh ! Un UGOAT sauvage !\n<span class="player-name">' + (localStorage.getItem('ugo_pseudo') || 'JOUEUR').toUpperCase() + '</span> prépare sa Pokéball...', 22);
   if (launchBtn) {
     launchBtn.style.display = 'block';
     launchBtn.disabled = false;
