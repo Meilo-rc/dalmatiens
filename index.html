@@ -943,10 +943,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   bottom:138px;
   max-width:62%;
   max-height:68%;
+  opacity:0;
   transform:none !important;
-  animation:
-    catchPupIn .75s cubic-bezier(.22,.9,.25,1) both,
-    catchPupIdle 2.4s ease-in-out .95s infinite;
 }
 #catchPokeWrap .catch-sasha{
   position:absolute;
@@ -959,10 +957,24 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   max-width:40%;
   object-fit:contain;
   z-index:8;
+  opacity:0;
   transform:none !important;
-  animation:
-    catchSashaIn .7s cubic-bezier(.22,.9,.25,1) .85s both,
-    catchSashaIdle 2.6s ease-in-out 1.6s infinite;
+}
+.catch-pup.entering{
+  opacity:1;
+  animation:catchPupIn .75s cubic-bezier(.22,.9,.25,1) both;
+}
+.catch-pup.idle{
+  opacity:1;
+  animation:catchPupIdle 2.4s ease-in-out infinite;
+}
+.catch-sasha.entering{
+  opacity:1;
+  animation:catchSashaIn .7s cubic-bezier(.22,.9,.25,1) both;
+}
+.catch-sasha.idle{
+  opacity:1;
+  animation:catchSashaIdle 2.6s ease-in-out infinite;
 }
 @keyframes catchSashaIn{
   0%{transform:translate(-120%,0);}
@@ -973,12 +985,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   50%{transform:translate(0,-3px);}
 }
 @keyframes catchPupIn{
-  0%{transform:translateX(-170%); opacity:1;}
-  100%{transform:translate(0,0) scale(1); opacity:1;}
+  0%{transform:translateX(-185%); opacity:1;}
+  100%{transform:translateX(0); opacity:1;}
 }
 @keyframes catchPupIdle{
-  0%,100%{transform:translate(0,0);}
-  50%{transform:translate(0,-4px);}
+  0%,100%{transform:translateX(0);}
+  50%{transform:translate(-2px,-4px);}
 }
   
 @keyframes mascotFloat {0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
@@ -1156,21 +1168,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 /* --- TAPE 2 : L'Aspiration Tourbillonnante du Chiot --- */
 @keyframes puppyAspiration {
   0% {
-    transform: translateY(-50%) scale(1) rotate(0deg);
+    transform: translate(0,0) scale(1) rotate(0deg);
     opacity: 1;
   }
   100% {
-    transform: translate(-80%,-50%) scale(0) rotate(1080deg);
+    transform: translate(-38px,34px) scale(0) rotate(900deg);
     opacity: 0;
   }
 }
 
 .puppy-aspiring {
   position:absolute;
-  top:50%;
-  right:4%;
+  top:auto;
+  right:1%;
   left:auto;
+  bottom:138px;
+  max-width:62%;
+  max-height:68%;
   z-index:10;
+  opacity:1;
   animation:puppyAspiration .8s ease-in forwards;
 }
 
@@ -1558,13 +1574,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
     </div>
 
     <!-- SLIDE 2 : QR -->
-    <div style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:linear-gradient(180deg,#d7e893,#a8bc69);gap:16px;">
+    <div style="min-width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:linear-gradient(180deg,#d7e893,#a8bc69);gap:14px;padding:24px 18px 92px;">
+      <div id="detailQRNote" class="detail-qr-note">
+        A utiliser pour <strong>&eacute;changer</strong> vos Ugos<br>entre dresseurs !
+      </div>
       <img id="detailQRImg"
            class="qr-pulse"
            src=""
            style="width:220px;height:220px;background:#fff;padding:4px;border:4px solid #55662a;border-radius:12px;box-shadow:0 0 0 2px rgba(255,255,255,.16),4px 4px 0 rgba(52,63,22,.22);">
-      <div id="detailQRNote" class="detail-qr-note">
-        A utiliser pour échanger vos Ugos<br>entre dresseurs !
+      <div id="detailQRScore" class="detail-qr-note" style="font-size:20px;line-height:1.35;animation:none;opacity:1;">
+        Un Ugo captur&eacute; : 10 pts<br>
+        Un Ugo &eacute;chang&eacute; : 5 pts
       </div>
     </div>
   </div>
@@ -1964,6 +1984,7 @@ function openDetail(id, fromCapture=false){
 
   const qrImg = $('detailQRImg');
   const qrNote = $('detailQRNote');
+  const qrScore = $('detailQRScore');
 
   if (id === 22) {
     if (qrImg) {
@@ -1982,6 +2003,7 @@ function openDetail(id, fromCapture=false){
       qrNote.style.animation = 'none';
       qrNote.style.textAlign = 'center';
     }
+    if (qrScore) qrScore.style.display = 'none';
   } else {
     if (qrImg) {
       qrImg.style.display = 'block';
@@ -1989,7 +2011,7 @@ function openDetail(id, fromCapture=false){
       setQrImageSource(qrImg, TRADE_QR_PREFIX + id, 220);
     }
     if (qrNote) {
-      qrNote.innerHTML = 'A utiliser pour &eacute;changer vos Ugos<br>entre dresseurs !';
+      qrNote.innerHTML = 'A utiliser pour <strong>&eacute;changer</strong> vos Ugos<br>entre dresseurs !';
       qrNote.style.fontFamily = '';
       qrNote.style.fontSize = '';
       qrNote.style.lineHeight = '';
@@ -1998,6 +2020,10 @@ function openDetail(id, fromCapture=false){
       qrNote.style.opacity = '';
       qrNote.style.animation = '';
       qrNote.style.textAlign = '';
+    }
+    if (qrScore) {
+      qrScore.style.display = 'block';
+      qrScore.innerHTML = 'Un Ugo captur&eacute; : 10 pts<br>Un Ugo &eacute;chang&eacute; : 5 pts';
     }
   }
 
@@ -2786,13 +2812,35 @@ function openCapture() {
 
   // 3. Injection de l'image du chiot
   $('catchPokeWrap').innerHTML =
-    `<img class="catch-slide-in catch-pup" src="pup${p.id}.webp" alt="${p.name}" style="width:auto;height:68%;object-fit:contain;filter:none;">` +
+    `<img class="catch-pup" src="pup${p.id}.webp" alt="${p.name}" style="width:auto;height:68%;object-fit:contain;filter:none;">` +
     `<img class="catch-sasha" src="sasha.webp" alt="Sasha" onerror="this.style.display='none'">`;
 
   // 4. Mise  jour des textes
   // $('catchPupName').textContent = p.name; // Tu peux le remettre, c'est mieux pour l'UX !
   $('catchPupNum').textContent = '';
   typeCatchBattleText('<span class="player-name">' + pseudo.toUpperCase() + '</span> utilise une Pokeball.');
+
+  const wrap = $('catchPokeWrap');
+  const pupEl = wrap ? wrap.querySelector('.catch-pup') : null;
+  const sashaEl = wrap ? wrap.querySelector('.catch-sasha') : null;
+  if (pupEl) {
+    pupEl.classList.remove('entering', 'idle', 'puppy-aspiring');
+    requestAnimationFrame(() => pupEl.classList.add('entering'));
+    setTimeout(() => {
+      pupEl.classList.remove('entering');
+      pupEl.classList.add('idle');
+    }, 760);
+  }
+  if (sashaEl) {
+    sashaEl.classList.remove('entering', 'idle');
+    setTimeout(() => {
+      sashaEl.classList.add('entering');
+      setTimeout(() => {
+        sashaEl.classList.remove('entering');
+        sashaEl.classList.add('idle');
+      }, 700);
+    }, 780);
+  }
   
   show('sCatch');
 }
