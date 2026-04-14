@@ -558,17 +558,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 .catch-battle-box{
   width:100%;
   max-width:340px;
-  min-height:78px;
-  padding:8px 6px 2px;
+  min-height:98px;
+  padding:10px 8px 4px;
 }
 .catch-battle-text{
   font-family:'VT323',monospace;
-  font-size:28px;
-  line-height:1;
+  font-size:24px;
+  line-height:1.05;
   color:#243018;
   text-align:left;
   font-weight:400;
-  white-space:nowrap;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
 }
 .catch-battle-text .player-name{
   font-weight:700;
@@ -989,7 +990,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   position:absolute;
   left:14px;
   bottom:152px;
-  width:132px;
+  width:152px;
 }
 .boss-life-label{
   font-family:'Press Start 2P',cursive;
@@ -1001,51 +1002,51 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 }
 .boss-life-track{
   width:100%;
-  height:14px;
-  background:rgba(30,40,18,.18);
+  height:16px;
+  background:#1f260f;
   border:3px solid #55662a;
-  border-radius:999px;
+  border-radius:2px;
   overflow:hidden;
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.18);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.12), 3px 3px 0 rgba(52,63,22,.18);
 }
 .boss-life-fill{
   width:100%;
   height:100%;
-  background:linear-gradient(90deg,#7cff7c,#d9ff7c);
-  transition:width .45s ease;
+  background:repeating-linear-gradient(90deg,#93ff7a 0 8px,#77dc5d 8px 16px);
+  transition:width .45s steps(10,end);
 }
 .boss-balls{
   position:absolute;
-  left:118px;
+  left:162px;
   bottom:22px;
   display:flex;
-  gap:8px;
+  gap:6px;
   align-items:center;
 }
 .boss-ball-indicator{
-  width:16px;
-  height:16px;
-  border-radius:50%;
+  width:14px;
+  height:14px;
+  border-radius:2px;
   border:2px solid #111;
-  background:linear-gradient(180deg,#d11,#fff 52%);
+  background:linear-gradient(180deg,#d11 0 48%,#fff 48% 100%);
   position:relative;
   box-shadow:0 2px 0 rgba(0,0,0,.22);
 }
 .boss-ball-indicator::after{
   content:'';
   position:absolute;
-  inset:4px;
-  border-radius:50%;
+  inset:3px;
+  border-radius:1px;
   background:#fff;
 }
 .boss-ball-indicator.spent{
-  background:transparent;
+  background:#d7d7d7;
   border-color:#6a6a6a;
   box-shadow:none;
 }
 .boss-ball-indicator.spent::after{
   inset:3px;
-  background:#d8d8d8;
+  background:#b5b5b5;
 }
 .boss-hit{
   animation:bossHitFlash .12s linear 6, bossShake .12s linear 8;
@@ -2929,15 +2930,21 @@ function typeCatchBattleText(text, speed = 26) {
   const el = $('catchBattleText');
   if (!el) return;
   const token = ++catchTypingToken;
-  el.innerHTML = '';
+  const finalHtml = text;
+  const plainText = String(text)
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]*>/g, '');
+  el.textContent = '';
   let i = 0;
 
   function tick() {
     if (token !== catchTypingToken) return;
-    el.innerHTML = text.slice(0, i);
-    if (i < text.length) {
+    el.textContent = plainText.slice(0, i);
+    if (i < plainText.length) {
       i += 1;
       setTimeout(tick, speed);
+    } else if (finalHtml.includes('<')) {
+      el.innerHTML = finalHtml;
     }
   }
 
@@ -3118,7 +3125,7 @@ async function playBossFailedThrowAnimation(){
     pupImg.classList.add('puppy-aspiring');
   }
 
-  await rewardWait(900);
+  await rewardWait(2000);
   vibrate([80, 50, 120]);
 
   if (pupImg) {
@@ -3138,11 +3145,12 @@ async function playBossFailedThrowAnimation(){
 
 function prepareUGOATBossCatchScene(){
   const wrap = $('catchPokeWrap');
+  const pseudo = (localStorage.getItem('ugo_pseudo') || 'JOUEUR').toUpperCase();
   if (!wrap) return;
   wrap.innerHTML =
     `<div class="boss-hud">
       <div class="boss-life-wrap">
-        <div class="boss-life-label">SASHA</div>
+        <div class="boss-life-label">${pseudo}</div>
         <div class="boss-life-track"><div id="bossLifeFill" class="boss-life-fill"></div></div>
       </div>
       <div id="bossBallIndicators" class="boss-balls"></div>
@@ -3160,7 +3168,10 @@ async function runUGOATBossTurn(){
   const backBtn = $('sCatch').querySelector('.catch-back-btn');
   const dexBtn = $('btnToDex');
   bossBattleBusy = true;
-  if (launchBtn) launchBtn.disabled = true;
+  if (launchBtn) {
+    launchBtn.disabled = true;
+    launchBtn.style.display = 'none';
+  }
   if (backBtn) backBtn.style.display = 'none';
   if (dexBtn) dexBtn.style.display = 'none';
 
@@ -3171,18 +3182,22 @@ async function runUGOATBossTurn(){
     typeCatchBattleText('Raté ! Le UGOAT est beaucoup trop fort !', 22);
     await rewardWait(1400);
 
-    typeCatchBattleText('<strong>UGOAT</strong> lance une attaque ' + BOSS_ATTACKS[bossBattleTurn - 1] + '.', 22);
+    typeCatchBattleText('<strong>UGOAT</strong> lance une attaque <strong>' + BOSS_ATTACKS[bossBattleTurn - 1] + '</strong>.', 22);
     playBossExplosionSfx();
     triggerBattleHitAnimation('#catchPokeWrap .catch-sasha');
     bossBattleHp = Math.max(0, bossBattleHp - BOSS_DAMAGE_PATTERN[bossBattleTurn - 1]);
     updateBossLifeBar();
-    await rewardWait(1200);
+    await rewardWait(3000);
 
-    typeCatchBattleText('<span class="player-name">' + pseudo + '</span> lance ' + BOSS_PLAYER_MOVES[bossBattleTurn - 1] + '.', 22);
+    typeCatchBattleText('<span class="player-name">' + pseudo + '</span> lance <strong>' + BOSS_PLAYER_MOVES[bossBattleTurn - 1] + '</strong>.', 22);
+    playBossExplosionSfx();
     triggerBattleHitAnimation('#catchPokeWrap .catch-pup');
-    await rewardWait(1200);
+    await rewardWait(3000);
 
-    if (launchBtn) launchBtn.disabled = false;
+    if (launchBtn) {
+      launchBtn.disabled = false;
+      launchBtn.style.display = 'block';
+    }
     bossBattleBusy = false;
     return;
   }
@@ -3214,7 +3229,7 @@ function openUGOATBossBattle(){
   const backBtn = $('sCatch').querySelector('.catch-back-btn');
   $('catchPupNum').textContent = '';
   prepareUGOATBossCatchScene();
-  typeCatchBattleText('UGOAT sauvage ! <span class="player-name">' + (localStorage.getItem('ugo_pseudo') || 'JOUEUR').toUpperCase() + '</span> prépare sa Pokeball.', 22);
+  typeCatchBattleText('UGOAT sauvage !\n<span class="player-name">' + (localStorage.getItem('ugo_pseudo') || 'JOUEUR').toUpperCase() + '</span> prépare sa Pokeball.', 22);
   if (launchBtn) {
     launchBtn.style.display = 'block';
     launchBtn.disabled = false;
