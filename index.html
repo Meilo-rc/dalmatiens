@@ -2907,6 +2907,7 @@ function startCatchIntroAnimation(pupEl, sashaEl) {
         pupEl.style.transform = 'translateX(0)';
         setTimeout(() => {
           pupEl.style.transition = 'none';
+          pupEl.style.animation = '';
           pupEl.classList.add('idle');
         }, 760);
       }
@@ -2918,6 +2919,7 @@ function startCatchIntroAnimation(pupEl, sashaEl) {
           sashaEl.style.transform = 'translateX(0)';
           setTimeout(() => {
             sashaEl.style.transition = 'none';
+            sashaEl.style.animation = '';
             sashaEl.classList.add('idle');
           }, 710);
         }, 820);
