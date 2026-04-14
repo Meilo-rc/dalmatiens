@@ -2310,7 +2310,7 @@ async function goCredits(){
           { transform: 'translateY(-115%)' }
         ],
         {
-          duration: 20000,
+          duration: 32000,
           easing: 'linear',
           fill: 'forwards'
         }
@@ -2379,6 +2379,7 @@ let bossBattleTurn = 0;
 let bossBattleBusy = false;
 let bossBattleHp = 30;
 let bossAwaitingPlayerMove = false;
+let normalCaptureBusy = false;
 const BOSS_TOTAL_HP = 30;
 const BOSS_ATTACKS = ['VITESSE MINI LISSE','STCA','PANNE JHMI','7700','PREAVIS DE GREVE'];
 const BOSS_PLAYER_MOVES = ['DEGROUPEMENT',"CAP D'EVITEMENT",'PASSAGE SOUS U','FICHE REFLEXE','DECLARATION PREALABLE'];
@@ -3514,10 +3515,17 @@ async function playCaptureAnimation() {
   
 async function doCapture() {
   // 1. Protection contre les lancements multiples
-  if (!pendingPup) return;
+  if (!pendingPup || normalCaptureBusy) return;
+  normalCaptureBusy = true;
+  const globalLaunchBtn = document.querySelector('#sCatch .btn-capture:not(#btnToDex)');
+  if (globalLaunchBtn) {
+    globalLaunchBtn.disabled = true;
+    globalLaunchBtn.style.pointerEvents = 'none';
+  }
 
-  // 2. Squence audiovisuelle : animation de la Pokball + aspiration du chiot
-  await playCaptureAnimation();
+  try {
+    // 2. Squence audiovisuelle : animation de la Pokball + aspiration du chiot
+    await playCaptureAnimation();
 
   // 3. Traitement mtier : ajout  la collection et sauvegarde
   const p = pendingPup;
@@ -3573,11 +3581,19 @@ dexBtn.onclick = () => {
   const nonSecret = PUPS.filter(x => !x.secret);
   const allNonSecret = nonSecret.every(x => collected.has(x.id));
   
-  if (allNonSecret && !collected.has(22)) {
-    
-  } else if (collected.size >= TOTAL) {
-    stopHuntClean();
-    showWin();
+    if (allNonSecret && !collected.has(22)) {
+      
+    } else if (collected.size >= TOTAL) {
+      stopHuntClean();
+      showWin();
+    }
+  } finally {
+    normalCaptureBusy = false;
+    const resetBtn = document.querySelector('#sCatch .btn-capture:not(#btnToDex)');
+    if (resetBtn && resetBtn.style.display !== 'none') {
+      resetBtn.disabled = false;
+      resetBtn.style.pointerEvents = '';
+    }
   }
 }
 
