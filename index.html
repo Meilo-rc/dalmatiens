@@ -229,14 +229,66 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 
 #sLogin{
   background:
-    radial-gradient(circle at top left,rgba(255,255,255,.3),transparent 22%),
+    radial-gradient(circle at top left,rgba(255,255,255,.24),transparent 24%),
     linear-gradient(180deg,var(--gbc-shell-light),var(--gbc-shell) 55%,var(--gbc-shell-dark)) !important;
+  justify-content:center;
+  align-items:center;
+  padding:24px;
 }
-#sLogin > div{
-  background:linear-gradient(180deg,#c8db85,#a5bb67) !important;
-  border:5px solid #55662a;
-  box-shadow:0 0 0 5px rgba(255,255,255,.12),8px 8px 0 rgba(52,63,22,.28);
-  text-align:left;
+.login-gb{
+  width:min(92vw,420px);
+  aspect-ratio:.8;
+  background:linear-gradient(180deg,#efefef,#cfcfcf 58%,#a5a5a5);
+  border:6px solid #3b3b3b;
+  border-radius:24px 24px 58px 24px;
+  box-shadow:0 0 0 6px rgba(255,255,255,.16),10px 12px 0 rgba(33,33,33,.26);
+  padding:22px 18px 26px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.login-brand{
+  width:100%;
+  font-family:'Press Start 2P',cursive;
+  font-size:10px;
+  line-height:1.4;
+  color:#3b3b3b;
+  text-align:center;
+  margin-bottom:12px;
+}
+.login-screen-shell{
+  width:100%;
+  background:#8f8f8f;
+  border:4px solid #585858;
+  border-radius:18px 18px 28px 18px;
+  padding:18px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.24);
+}
+.login-led{
+  font-family:'VT323',monospace;
+  font-size:18px;
+  color:#7f1414;
+  letter-spacing:1px;
+  margin-bottom:10px;
+}
+.login-screen{
+  width:100%;
+  min-height:340px;
+  background:linear-gradient(180deg,#c8db85,#a5bb67);
+  border:4px solid #55662a;
+  border-radius:8px;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.22);
+  padding:18px 16px 20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:14px;
+}
+.login-copy{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 #sLogin h2{
   font-family:'VT323',monospace !important;
@@ -295,6 +347,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 }
 #playerPseudoDisplay.is-empty{
   color:#475426;
+}
+.login-actions{
+  width:100%;
+  margin-top:auto;
+}
+.login-actions .btn{
+  width:100%;
 }
 #playerPseudo::placeholder{
   color:#475426;
@@ -558,13 +617,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 .catch-battle-box{
   width:100%;
   max-width:340px;
-  min-height:98px;
+  min-height:112px;
   padding:10px 8px 4px;
 }
 .catch-battle-text{
   font-family:'VT323',monospace;
-  font-size:26px;
-  line-height:1.1;
+  font-size:30px;
+  line-height:1.08;
   color:#243018;
   text-align:left;
   font-weight:400;
@@ -1026,7 +1085,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 .boss-ball-indicator{
   width:14px;
   height:14px;
-  border-radius:2px;
+  border-radius:50%;
   border:2px solid #111;
   background:linear-gradient(180deg,#d11 0 48%,#fff 48% 100%);
   position:relative;
@@ -1036,7 +1095,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   content:'';
   position:absolute;
   inset:3px;
-  border-radius:1px;
+  border-radius:50%;
   background:#fff;
 }
 .boss-ball-indicator.spent{
@@ -1511,18 +1570,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 </div>
 
 <!--  LOGIN  -->
-<div class="screen" id="sLogin" style="background:var(--noir); color:white; justify-content:center; align-items:center; text-align:center; flex-direction:column;">
-    <div style="background:var(--blanc); padding:30px; border-radius:20px; width:85%; max-width:400px;">
-        <h2 style="font-family:'Fredoka One'; color:var(--rouge); margin-bottom:14px;">BIENVENUE_</h2>
-        <p style="color:var(--noir); font-family:'Nunito'; font-weight:800; margin-bottom:15px;">Choisis un pseudo pour enregistrer tes scores</p>
-        
+<div class="screen" id="sLogin">
+  <div class="login-gb">
+    <div class="login-brand">UGO PLAYER</div>
+    <div class="login-screen-shell">
+      <div class="login-led">● PLAYER 1</div>
+      <div class="login-screen">
+        <div class="login-copy">
+          <h2>BIENVENUE_</h2>
+          <p>Choisis un pseudo pour enregistrer tes scores</p>
+        </div>
+
         <div id="pseudoWrap">
           <div id="playerPseudoDisplay" class="is-empty"><span class="cursor">_</span></div>
           <input type="text" id="playerPseudo" placeholder="Ton pseudo..." autocomplete="off" autocapitalize="none" spellcheck="false">
         </div>
-        
-    <button class="btn btn-primary" onclick="savePseudo()" style="width:100%; font-size:11px; white-space:nowrap;">LET'S GO</button>
+
+        <div class="login-actions">
+          <button class="btn btn-primary" onclick="savePseudo()" style="font-size:11px; white-space:nowrap;">LET'S GO</button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
   
 <!--  HOME  -->
