@@ -955,7 +955,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   max-width:62%;
   max-height:68%;
   opacity:0;
-  transform:none !important;
+  transform:translateX(0);
 }
 #catchPokeWrap .catch-sasha{
   position:absolute;
@@ -969,7 +969,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
   object-fit:contain;
   z-index:8;
   opacity:0;
-  transform:none !important;
+  transform:translateX(0);
 }
 .catch-pup.idle{
   opacity:1;
@@ -2788,7 +2788,7 @@ function startCatchIntroAnimation(pupEl, sashaEl) {
     sashaEl.style.animation = 'none';
     sashaEl.style.transition = 'none';
     sashaEl.style.opacity = '1';
-    sashaEl.style.transform = 'translateX(-135%)';
+    sashaEl.style.transform = 'translateX(135%)';
   }
 
   requestAnimationFrame(() => {
