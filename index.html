@@ -3181,7 +3181,7 @@ async function runUGOATBossTurn(){
   bossBattleBusy = true;
   if (launchBtn) {
     launchBtn.disabled = true;
-    launchBtn.style.display = 'none';
+    launchBtn.style.visibility = 'hidden';
   }
   if (backBtn) backBtn.style.display = 'none';
   if (dexBtn) dexBtn.style.display = 'none';
@@ -3212,15 +3212,16 @@ async function runUGOATBossTurn(){
 
     if (launchBtn) {
       launchBtn.disabled = false;
-      launchBtn.style.display = 'block';
+      launchBtn.style.visibility = 'visible';
     }
+    typeCatchBattleText('<span class="player-name">' + pseudo + '</span> lance une Pokeball.', 22);
     bossBattleBusy = false;
     return;
   }
 
   await playCaptureAnimation();
   typeCatchBattleText('Le UGOAT est enfin capturé !', 24);
-  if (launchBtn) launchBtn.style.display = 'none';
+  if (launchBtn) launchBtn.style.visibility = 'hidden';
   let btn = $('btnToDex');
   if (btn) {
     btn.textContent = 'Ajouter au UgoDex';
