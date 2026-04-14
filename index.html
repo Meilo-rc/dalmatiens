@@ -563,8 +563,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 }
 .catch-battle-text{
   font-family:'VT323',monospace;
-  font-size:24px;
-  line-height:1.05;
+  font-size:26px;
+  line-height:1.1;
   color:#243018;
   text-align:left;
   font-weight:400;
@@ -1003,7 +1003,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:linear-gradient(180d
 .boss-life-track{
   width:100%;
   height:16px;
-  background:#1f260f;
+  background:#ffffff;
   border:3px solid #55662a;
   border-radius:2px;
   overflow:hidden;
@@ -3094,10 +3094,16 @@ function playBossExplosionSfx(){
 function triggerBattleHitAnimation(selector){
   const el = document.querySelector(selector);
   if (!el) return;
-  el.classList.remove('boss-hit');
+  const hadIdle = el.classList.contains('idle');
+  el.classList.remove('boss-hit', 'idle');
+  el.style.animation = 'none';
   void el.offsetWidth;
   el.classList.add('boss-hit');
-  setTimeout(() => el.classList.remove('boss-hit'), 1000);
+  setTimeout(() => {
+    el.classList.remove('boss-hit');
+    el.style.animation = '';
+    if (hadIdle) el.classList.add('idle');
+  }, 1000);
 }
 
 async function playBossFailedThrowAnimation(){
