@@ -2793,6 +2793,39 @@ function updateHint(){
   }
 }
 
+function isIOSLikeDevice() {
+  const ua = navigator.userAgent || '';
+  return /iPad|iPhone|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function waitForVideoReady(video, timeout = 2500) {
+  return new Promise(resolve => {
+    if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
+      resolve(true);
+      return;
+    }
+
+    let done = false;
+    const finish = (ok) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      video.removeEventListener('loadedmetadata', onReady);
+      video.removeEventListener('loadeddata', onReady);
+      video.removeEventListener('canplay', onReady);
+      resolve(ok);
+    };
+    const onReady = () => {
+      if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) finish(true);
+    };
+    const timer = setTimeout(() => finish(false), timeout);
+
+    video.addEventListener('loadedmetadata', onReady);
+    video.addEventListener('loadeddata', onReady);
+    video.addEventListener('canplay', onReady);
+  });
+}
+
 async function goHunt(){
   show('sAR');
   $('arScore').textContent=collected.size+'/'+TOTAL;
@@ -2821,20 +2854,33 @@ async function goHunt(){
   if(!got){showSysMsg('\ud83d\udcf5 Cam\u00e9ra inaccessible.');return;}
 
   const v=$('arVideo');
+  v.setAttribute('playsinline', 'true');
+  v.setAttribute('webkit-playsinline', 'true');
+  v.muted = true;
+  v.autoplay = true;
   v.srcObject=camStream;
   try{await v.play();}catch(e){v.oncanplay=()=>{v.play().catch(()=>{});v.oncanplay=null;};}
+  const videoReady = await waitForVideoReady(v, isIOSLikeDevice() ? 3200 : 2200);
+  if (!videoReady) {
+    showSysMsg('\ud83d\udcf5 La cam\u00e9ra est ouverte, mais l\'image n\'est pas encore pr\u00eate. Attends 1 seconde puis retente le scan.');
+  }
 
   scheduleAlert();
   // Scurit : on nettoie une boucle existante avant d'en lancer une autre
   if (scanLoop) clearInterval(scanLoop);
   // Lance le scan auto toutes les 1.5 secondes
-   scanLoop = setInterval(() => takeSnap(false), 1500);
+  setTimeout(() => takeSnap(false), isIOSLikeDevice() ? 500 : 250);
+  scanLoop = setInterval(() => takeSnap(false), isIOSLikeDevice() ? 1100 : 1500);
 }
 
 // Prend une photo et analyse le QR
 async function takeSnap(isManual = false) { 
   const v = $('arVideo');
-  if (!camStream || v.readyState < 2 || scanInFlight) return;
+  if (!camStream || scanInFlight) return;
+  if (v.readyState < 2 || !v.videoWidth || !v.videoHeight) {
+    if (isManual) showScanResult('Caméra en cours de démarrage, réessaie dans un instant.','#ffaa44');
+    return;
+  }
   scanInFlight = true;
 
   const btn = $('snapBtn');
@@ -2861,13 +2907,20 @@ async function takeSnap(isManual = false) {
 
   if (!found && typeof jsQR === 'function') { // Si toujours pas trouv, essaie jsQR
     try{
-      const img=captureImageData(v,canvas,600);
-      const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'attemptBoth'});
-      if(code&&code.data){ processQRData(code.data); found=true; }
-      else {
-        const img2=captureImageData(v,canvas,v.videoWidth);
-        const code2=jsQR(img2.data,img2.width,img2.height,{inversionAttempts:'attemptBoth'});
-        if(code2&&code2.data){ processQRData(code2.data); found=true; }
+      const sizes = Array.from(new Set([
+        600,
+        900,
+        Math.min(1280, Math.max(v.videoWidth || 0, v.videoHeight || 0))
+      ].filter(size => size && size > 0)));
+
+      for (const size of sizes) {
+        const img=captureImageData(v,canvas,size);
+        const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'attemptBoth'});
+        if(code&&code.data){
+          processQRData(code.data);
+          found=true;
+          break;
+        }
       }
     }catch(e){}
   }
